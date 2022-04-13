@@ -21,9 +21,22 @@ namespace TravianHelper.UI
             }
         }
 
+        private ServerSettingsViewModel _serverSettingsVM;
+
+        public ServerSettingsViewModel ServerSettingsVM
+        {
+            get => _serverSettingsVM;
+            set
+            {
+                _serverSettingsVM = value;
+                RaisePropertyChanged(() => ServerSettingsVM);
+            }
+        }
+
         public NewPageViewModel()
         {
-            ProxySettingsVM = new ProxySettingsViewModel();
+            ProxySettingsVM  = new ProxySettingsViewModel();
+            ServerSettingsVM = new ServerSettingsViewModel();
         }
     }
 }

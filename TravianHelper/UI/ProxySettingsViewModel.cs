@@ -9,6 +9,7 @@ using Microsoft.Practices.Prism;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using TravianHelper.Settings;
+using TravianHelper.TravianEntities;
 
 namespace TravianHelper.UI
 {
@@ -47,6 +48,7 @@ namespace TravianHelper.UI
             {
                 _selectedProxy = value;
                 RaisePropertyChanged(() => SelectedProxy);
+                RaiseCanExecChanged();
                 CurrentProxy = _selectedProxy;
                 if (SelectedProxy != null)
                 {
@@ -82,16 +84,24 @@ namespace TravianHelper.UI
 
         public DelegateCommand AddCmd    { get; }
         public DelegateCommand EditCmd   { get; }
+        public DelegateCommand DeleteCmd { get; }
         public DelegateCommand SaveCmd   { get; }
         public DelegateCommand CancelCmd { get; }
 
         public ProxySettingsViewModel()
         {
             AddCmd  = new DelegateCommand(OnAdd);
-            EditCmd = new DelegateCommand(OnEdit);
+            EditCmd = new DelegateCommand(OnEdit, () => SelectedProxy != null);
+            DeleteCmd = new DelegateCommand(OnDelete, () => SelectedProxy != null);
             SaveCmd = new DelegateCommand(OnSave);
             CancelCmd = new DelegateCommand(OnCancel);
             Init();
+        }
+
+        private void RaiseCanExecChanged()
+        {
+            EditCmd.RaiseCanExecuteChanged();
+            DeleteCmd.RaiseCanExecuteChanged();
         }
 
         public void Init(Proxy sel = null)
@@ -112,13 +122,25 @@ namespace TravianHelper.UI
             IsEditMode   = true;
             CurrentProxy = g.Db.GetCollection<Proxy>().AsQueryable().FirstOrDefault(x => x.Id == SelectedProxy.Id);
             if (CurrentProxy == null)
-            {
                 IsEditMode = false;
-            }
+        }
+
+        private void OnDelete()
+        {
+            IsEditMode = true;
+            if (MessageBox.Show($"Точно удалить прокси {SelectedProxy}?", "", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No) != MessageBoxResult.Yes) return;
+            g.Db.GetCollection<Proxy>().Delete(SelectedProxy);
+            Init();
+            IsEditMode = false;
         }
 
         private void OnSave()
         {
+            if (string.IsNullOrEmpty(CurrentProxy.Ip))
+            {
+                MessageBox.Show("Неправильно введен ip");
+                return;
+            }
             var spip = CurrentProxy.Ip.Split('.');
             if (spip.Length != 4)
             {
@@ -140,20 +162,20 @@ namespace TravianHelper.UI
             }
             if (CurrentProxy.Id == 0)
             {
-                g.Db.GetCollection<Proxy>().InsertOne(CurrentProxy);
+                g.Db.GetCollection<Proxy>().Insert(CurrentProxy);
             }
             else
             {
-                g.Db.GetCollection<Proxy>().ReplaceOne(CurrentProxy.Id, CurrentProxy);
+                g.Db.GetCollection<Proxy>().Update(CurrentProxy);
             }
-            Init();
+            Init(SelectedProxy);
             IsEditMode = false;
         }
 
         private void OnCancel()
         {
-            IsEditMode   = false;
             CurrentProxy = SelectedProxy;
+            IsEditMode   = false;
         }
     }
 }

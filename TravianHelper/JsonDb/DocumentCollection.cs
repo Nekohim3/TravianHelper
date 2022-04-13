@@ -8,23 +8,21 @@ using Newtonsoft.Json.Converters;
 
 namespace TravianHelper.JsonDb
 {
-    public class DocumentCollection<T>// : IDocumentCollection<T>
+    public class DocumentCollection<T> : IDocumentCollection<T>
     {
         private readonly string _path;
         private readonly string _idField;
         private readonly Lazy<List<T>> _data;
-        private readonly Func<string, Func<List<T>, T>, bool, Task<T>> _commit;
+        private readonly Func<string, Func<List<T>, bool>, bool, Task<bool>> _commit;
         private readonly Func<T, T> _insertConvert;
-        private readonly Func<T> _createNewInstance;
 
-        public DocumentCollection(Func<string, Func<List<T>, T>, bool, Task<T>> commit, Lazy<List<T>> data, string path, string idField, Func<T, T> insertConvert, Func<T> createNewInstance)
+        public DocumentCollection(Func<string, Func<List<T>, bool>, bool, Task<bool>> commit, Lazy<List<T>> data, string path, string idField, Func<T, T> insertConvert)
         {
             _path = path;
             _idField = idField;
             _commit = commit;
             _data = data;
             _insertConvert = insertConvert;
-            _createNewInstance = createNewInstance;
         }
 
         public int Count => _data.Value.Count;
@@ -37,52 +35,19 @@ namespace TravianHelper.JsonDb
 
         public dynamic GetNextIdValue() => GetNextIdValue(_data.Value);
 
-        public T Insert(T item)
+        public bool Insert(T item)
         {
-            T UpdateAction(List<T> data)
+            bool UpdateAction(List<T> data)
             {
                 var itemToInsert = GetItemToInsert(GetNextIdValue(data, item), item, _insertConvert);
                 data.Add(itemToInsert);
-                return itemToInsert;
+                ((dynamic) item).Id = itemToInsert.Id;
+                return true;
             }
 
             ExecuteLocked(UpdateAction, _data.Value);
-
             return _commit(_path, UpdateAction, false).Result;
         }
-
-        public bool Replace(Predicate<T> filter, T item, bool upsert = false)
-        {
-            T UpdateAction(List<T> data)
-            {
-                var matches = data.Where(e => filter(e));
-
-                if (!matches.Any())
-                {
-                    if (!upsert)
-                        return default;
-
-                    var newItem = _createNewInstance();
-                    ObjectExtensions.CopyProperties(item, newItem);
-                    var insertItem = _insertConvert(newItem);
-                    data.Add(insertItem);
-                    return insertItem;
-                }
-
-                var index = data.IndexOf(matches.First());
-                data[index] = item;
-
-                return item;
-            }
-
-            if (ExecuteLocked(UpdateAction, _data.Value) == default)
-                return default;
-
-            return _commit(_path, UpdateAction, false).Result;
-        }
-
-        public bool Replace(dynamic id, T item, bool upsert = false) => Replace(GetFilterPredicate(id), item, upsert);
-        
 
         public bool Update(Predicate<T> filter, dynamic item)
         {
@@ -99,13 +64,12 @@ namespace TravianHelper.JsonDb
                 return true;
             }
 
-            if (!ExecuteLocked(UpdateAction, _data.Value))
-                return false;
-
-            return _commit(_path, UpdateAction, false).Result;
+            return ExecuteLocked(UpdateAction, _data.Value) && _commit(_path, UpdateAction, false).Result;
         }
 
         public bool Update(dynamic id, dynamic item) => Update(GetFilterPredicate(id), item);
+
+        public bool Update(T item) => Update(GetFieldValue(item, _idField), item);
 
         public bool Delete(Predicate<T> filter)
         {
@@ -127,7 +91,9 @@ namespace TravianHelper.JsonDb
 
         public bool Delete(dynamic id) => Delete(GetFilterPredicate(id));
 
-        private T ExecuteLocked(Func<List<T>, T> func, List<T> data)
+        public bool Delete(T item) => Delete(GetFieldValue(item, _idField));
+
+        private bool ExecuteLocked(Func<List<T>, bool> func, List<T> data)
         {
             lock (data)
             {
@@ -135,7 +101,7 @@ namespace TravianHelper.JsonDb
             }
         }
 
-        private dynamic GetNextIdValue(List<T> data, T item = default(T))
+        private dynamic GetNextIdValue(List<T> data, T item = default)
         {
             if (!data.Any())
             {

@@ -2,7 +2,7 @@
 
 namespace TravianHelper.Settings
 {
-    public class ServerConfig : NotificationObject
+    public class ServerConfig : DbEntity
     {
         private string _server;
 
@@ -16,7 +16,7 @@ namespace TravianHelper.Settings
             }
         }
 
-        private string _domain;
+        private string _domain = "kingdoms.com";
 
         public string Domain
         {
@@ -38,6 +38,23 @@ namespace TravianHelper.Settings
                 _region = value;
                 RaisePropertyChanged(() => Region);
             }
+        }
+
+        public ServerConfig()
+        {
+            
+        }
+
+        public ServerConfig(string server, string domain, string region)
+        {
+            Server = server;
+            Domain = domain;
+            Region = Region;
+        }
+
+        public override string ToString()
+        {
+            return $"{Server}.{Domain}";
         }
     }
 }

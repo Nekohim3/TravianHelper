@@ -3,6 +3,96 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:TravianHelper">
     <Application.Resources>
-         
+        <Style TargetType="TextBlock">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Foreground" Value="#ccc"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Foreground" Value="#ccc"/>
+            <Setter Property="Background" Value="#333"/>
+        </Style>
+        <Style TargetType="ListView">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Foreground" Value="#ccc"/>
+            <Setter Property="Background" Value="#222"/>
+            <Setter Property="BorderBrush" Value="#777"/>
+        </Style>
+        <Style TargetType="ListViewItem">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Grid Margin="5,1,5,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="BorderForSelect" Background="#55777777"  Visibility="Collapsed" Margin="-5,0,-5,0"/>
+                            <TextBlock Grid.Column="0" Text="{Binding }" Margin="0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="BorderForSelect" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Foreground" Value="#ccc"/>
+            <Setter Property="BorderBrush" Value="#955"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupBox}">
+                        <Grid SnapsToDevicePixels="true">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderThickness="0" CornerRadius="0" Background="Transparent">
+                                <ContentPresenter Margin="0,3,0,1" ContentSource="Header" RecognizesAccessKey="True" TextBlock.FontWeight="Bold"/>
+                            </Border>
+                            <Border Grid.Row="1" SnapsToDevicePixels="True" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="0"
+                                    Padding="{TemplateBinding Padding}"
+                                    Margin="1,0,1,1">
+                                <ContentPresenter />
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Foreground" Value="#ffcccccc"/>
+            <Setter Property="Background" Value="#222"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="#777" BorderThickness="1" x:Name="BBorder">
+                            <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" x:Name="Box"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BBorder" Property="Background" Value="#555"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BBorder" Property="Background" Value="#000"/>
+                                <Setter TargetName="BBorder" Property="BorderBrush" Value="#f55"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Box" Property="Foreground" Value="#777"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>

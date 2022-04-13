@@ -221,6 +221,7 @@
     <Compile Include="JsonDb\IDocumentCollection.cs" />
     <Compile Include="JsonDb\ObjectExtensions.cs" />
     <Compile Include="Settings\DbEntity.cs" />
+    <Compile Include="TravianEntities\Account.cs" />
     <Compile Include="UI\AccountSettingsViewModel.cs" />
     <Compile Include="UI\MainWindowViewModel.cs" />
     <Compile Include="TravianEntities\BaseTravianEntity.cs" />

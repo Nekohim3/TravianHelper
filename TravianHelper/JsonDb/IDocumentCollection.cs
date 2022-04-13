@@ -42,80 +42,7 @@ namespace TravianHelper.JsonDb
         /// </summary>
         /// <param name="item">New item to be inserted</param>
         /// <returns>true if operation is successful</returns>
-        bool InsertOne(T item);
-
-        /// <summary>
-        /// Insert single item
-        /// </summary>
-        /// <param name="item">New item to be inserted</param>
-        /// <returns>true if operation is successful</returns>
-        Task<bool> InsertOneAsync(T item);
-
-        /// <summary>
-        /// Insert items
-        /// </summary>
-        /// <param name="items">New items to be inserted</param>
-        /// <returns>true if operation is successful</returns>
-        bool InsertMany(IEnumerable<T> items);
-
-        /// <summary>
-        /// Insert items
-        /// </summary>
-        /// <param name="items">New items to be inserted</param>
-        /// <returns>true if operation is successful</returns>
-        Task<bool> InsertManyAsync(IEnumerable<T> items);
-
-        /// <summary>
-        /// Replace the first item matching the filter
-        /// </summary>
-        /// <param name="filter">First item matching the predicate will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <param name="upsert">Will item be inserted if not found</param>
-        /// <returns>true if item found for replacement</returns>
-        bool ReplaceOne(Predicate<T> filter, T item, bool upsert = false);
-
-        /// <summary>
-        /// Replace the item matching the id
-        /// </summary>
-        /// <param name="id">The item matching the id-value will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <param name="upsert">Will item be inserted if not found</param>
-        /// <returns>true if item found for replacement</returns>
-        bool ReplaceOne(dynamic id, T item, bool upsert = false);
-
-        /// <summary>
-        /// Replace the first item matching the filter
-        /// </summary>
-        /// <param name="filter">First item matching the predicate will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <param name="upsert">Will item be inserted if not found</param>
-        /// <returns>true if item found for replacement</returns>
-        Task<bool> ReplaceOneAsync(Predicate<T> filter, T item, bool upsert = false);
-
-        /// <summary>
-        /// Replace the item matching the id
-        /// </summary>
-        /// <param name="id">The item matching the id-value will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <param name="upsert">Will item be inserted if not found</param>
-        /// <returns>true if item found for replacement</returns>
-        Task<bool> ReplaceOneAsync(dynamic id, T item, bool upsert = false);
-
-        /// <summary>
-        /// Replace all items matching the filter
-        /// </summary>
-        /// <param name="filter">All items matching the predicate will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <returns>true if items found for replacement</returns>
-        bool ReplaceMany(Predicate<T> filter, T item);
-
-        /// <summary>
-        /// Replace all items matching the filter
-        /// </summary>
-        /// <param name="filter">All items matching the predicate will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <returns>true if items found for replacement</returns>
-        Task<bool> ReplaceManyAsync(Predicate<T> filter, T item);
+        bool Insert(T item);
 
         /// <summary>
         /// Update the first item matching the filter
@@ -123,7 +50,7 @@ namespace TravianHelper.JsonDb
         /// <param name="filter">First item matching the predicate will be replaced</param>
         /// <param name="item">New content</param>
         /// <returns>true if item found for update</returns>
-        bool UpdateOne(Predicate<T> filter, dynamic item);
+        bool Update(Predicate<T> filter, dynamic item);
 
         /// <summary>
         /// Update the item matching the id
@@ -131,81 +58,23 @@ namespace TravianHelper.JsonDb
         /// <param name="id">The item matching the id-value will be replaced</param>
         /// <param name="item">New content</param>
         /// <returns>true if item found for update</returns>
-        bool UpdateOne(dynamic id, dynamic item);
-
-        /// <summary>
-        /// Update the first item matching the filter
-        /// </summary>
-        /// <param name="filter">First item matching the predicate will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <returns>true if item found for update</returns>
-        Task<bool> UpdateOneAsync(Predicate<T> filter, dynamic item);
-
-        /// <summary>
-        /// Update the item matching the id
-        /// </summary>
-        /// <param name="id">The item matching the id-value will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <returns>true if item found for update</returns>
-        Task<bool> UpdateOneAsync(dynamic id, dynamic item);
-
-        /// <summary>
-        /// Update all items matching the filter
-        /// </summary>
-        /// <param name="filter">All items matching the predicate will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <returns>true if items found for update</returns>
-        bool UpdateMany(Predicate<T> filter, dynamic item);
-
-        /// <summary>
-        /// Update all items matching the filter
-        /// </summary>
-        /// <param name="filter">All items matching the predicate will be replaced</param>
-        /// <param name="item">New content</param>
-        /// <returns>true if items found for update</returns>
-        Task<bool> UpdateManyAsync(Predicate<T> filter, dynamic item);
+        bool Update(dynamic id, dynamic item);
+        bool Update(T item);
 
         /// <summary>
         /// Delete first item matching the filter
         /// </summary>
         /// <param name="filter">First item matching the predicate will be deleted</param>
         /// <returns>true if item found for deletion</returns>
-        bool DeleteOne(Predicate<T> filter);
+        bool Delete(Predicate<T> filter);
 
         /// <summary>
         /// Delete the item matching the id
         /// </summary>
         /// <param name="id">The item matching the id-value will be deleted</param>
         /// <returns>true if item found for deletion</returns>
-        bool DeleteOne(dynamic id);
-
-        /// <summary>
-        /// Delete first item matching the filter
-        /// </summary>
-        /// <param name="filter">First item matching the predicate will be deleted</param>
-        /// <returns>true if item found for deletion</returns>
-        Task<bool> DeleteOneAsync(Predicate<T> filter);
-
-        /// <summary>
-        /// Delete the item matching the id
-        /// </summary>
-        /// <param name="id">The item matching the id-value will be deleted</param>
-        /// <returns>true if item found for deletion</returns>
-        Task<bool> DeleteOneAsync(dynamic id);
-
-        /// <summary>
-        /// Delete all items matching the filter
-        /// </summary>
-        /// <param name="filter">All items matching the predicate will be deleted</param>
-        /// <returns>true if items found for deletion</returns>
-        bool DeleteMany(Predicate<T> filter);
-
-        /// <summary>
-        /// Delete all items matching the filter
-        /// </summary>
-        /// <param name="filter">All items matching the predicate will be deleted</param>
-        /// <returns>true if items found for deletion</returns>
-        Task<bool> DeleteManyAsync(Predicate<T> filter);
+        bool Delete(dynamic id);
+        bool Delete(T item);
 
         /// <summary>
         /// Number of items in the collection

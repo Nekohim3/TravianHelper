@@ -37,6 +37,7 @@ namespace TravianHelper.UI
         public TabManager()
         {
             TabList = new ObservableCollection<Tab>();
+            TabList.Add(new Tab(new Account(){Name = "Nekohime"}));
             TabList.Add(new Tab(null, "+"));
         }
     }

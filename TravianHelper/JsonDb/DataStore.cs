@@ -290,9 +290,8 @@ namespace TravianHelper.JsonDb
             // NOTE 27.6.2017: Should this be new Func<JToken, T>(e => e.ToObject<T>())?
             var readConvert = new Func<JToken, T>(e => JsonConvert.DeserializeObject<T>(e.ToString()));
             var insertConvert = new Func<T, T>(e => e);
-            var createNewInstance = new Func<T>(() => Activator.CreateInstance<T>());
 
-            return GetCollection(name ?? _convertPathToCorrectCamelCase(typeof(T).Name), readConvert, insertConvert, createNewInstance);
+            return GetCollection(name ?? _convertPathToCorrectCamelCase(typeof(T).Name), readConvert, insertConvert);
         }
 
         public IDocumentCollection<dynamic> GetCollection(string name)
@@ -300,9 +299,8 @@ namespace TravianHelper.JsonDb
             // As we don't want to return JObject when using dynamic, JObject will be converted to ExpandoObject
             var readConvert = new Func<JToken, dynamic>(e => JsonConvert.DeserializeObject<ExpandoObject>(e.ToString(), _converter) as dynamic);
             var insertConvert = new Func<dynamic, dynamic>(e => JsonConvert.DeserializeObject<ExpandoObject>(JsonConvert.SerializeObject(e), _converter));
-            var createNewInstance = new Func<dynamic>(() => new ExpandoObject());
 
-            return GetCollection(name, readConvert, insertConvert, createNewInstance);
+            return GetCollection(name, readConvert, insertConvert);
         }
 
         public IDictionary<string, ValueType> GetKeys(ValueType? typeToGet = null)
@@ -339,7 +337,7 @@ namespace TravianHelper.JsonDb
             }
         }
 
-        private IDocumentCollection<T> GetCollection<T>(string path, Func<JToken, T> readConvert, Func<T, T> insertConvert, Func<T> createNewInstance)
+        private IDocumentCollection<T> GetCollection<T>(string path, Func<JToken, T> readConvert, Func<T, T> insertConvert)
         {
             var data = new Lazy<List<T>>(() =>
             {
@@ -364,8 +362,7 @@ namespace TravianHelper.JsonDb
                 data,
                 path,
                 _keyProperty,
-                insertConvert,
-                createNewInstance);
+                insertConvert);
         }
 
         private async Task<bool> CommitItem(Func<(bool, JObject)> commitOperation, bool isOperationAsync)

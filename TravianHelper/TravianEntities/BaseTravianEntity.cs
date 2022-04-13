@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Practices.Prism.ViewModel;
 using Newtonsoft.Json;
+using TravianHelper.Settings;
 
 namespace TravianHelper.TravianEntities
 {
-    public class BaseTravianEntity : NotificationObject
+    public class BaseTravianEntity : DbEntity
     {
         private string _desc;
         [JsonIgnore]
