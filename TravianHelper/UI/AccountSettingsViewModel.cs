@@ -27,7 +27,33 @@ namespace TravianHelper.UI
             }
         }
 
-        private ObservableCollection<Account> _accountList;
+        private string _name;
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                RaisePropertyChanged(() => Name);
+                if (!CustomMail)
+                    Mail = $"{_name}gj@candassociates.com";
+            }
+        }
+
+        private string _mail;
+
+        public string Mail
+        {
+            get => _mail;
+            set
+            {
+                _mail = value;
+                RaisePropertyChanged(() => Mail);
+            }
+        }
+
+        private ObservableCollection<Account> _accountList = new ObservableCollection<Account>();
 
         public ObservableCollection<Account> AccountList
         {
@@ -48,6 +74,7 @@ namespace TravianHelper.UI
             {
                 _selectedAccount = value;
                 RaisePropertyChanged(() => SelectedAccount);
+                IsEditMode = false;
                 RaiseCanExecChanged();
                 CurrentAccount = SelectedAccount;
             }
@@ -65,18 +92,83 @@ namespace TravianHelper.UI
             }
         }
 
+        private bool _customMail;
+
+        public bool CustomMail
+        {
+            get => _customMail;
+            set
+            {
+                _customMail = value;
+                RaisePropertyChanged(() => CustomMail);
+                if(!CustomMail)
+                    Mail = $"{_name}gj@candassociates.com";
+            }
+        }
+
+        private ObservableCollection<Proxy> _proxyList = new ObservableCollection<Proxy>();
+
+        public ObservableCollection<Proxy> ProxyList
+        {
+            get => _proxyList;
+            set
+            {
+                _proxyList = value;
+                RaisePropertyChanged(() => ProxyList);
+            }
+        }
+
+        private Proxy _selectedProxy;
+
+        public Proxy SelectedProxy
+        {
+            get => _selectedProxy;
+            set
+            {
+                _selectedProxy = value;
+                RaisePropertyChanged(() => SelectedProxy);
+            }
+        }
+
+        private ObservableCollection<ServerConfig> _serverList = new ObservableCollection<ServerConfig>();
+
+        public ObservableCollection<ServerConfig> ServerList
+        {
+            get => _serverList;
+            set
+            {
+                _serverList = value;
+                RaisePropertyChanged(() => ServerList);
+            }
+        }
+
+        private ServerConfig _selectedServer;
+
+        public ServerConfig SelectedServer
+        {
+            get => _selectedServer;
+            set
+            {
+                _selectedServer = value;
+                RaisePropertyChanged(() => SelectedServer);
+            }
+        }
+
+        private Action _update;
+
         public DelegateCommand AddCmd { get; }
         public DelegateCommand EditCmd { get; }
         public DelegateCommand DeleteCmd { get; }
         public DelegateCommand SaveCmd { get; }
         public DelegateCommand CancelCmd { get; }
 
-        public AccountSettingsViewModel()
+        public AccountSettingsViewModel(Action update)
         {
-            AddCmd = new DelegateCommand(OnAdd);
-            EditCmd = new DelegateCommand(OnEdit, () => SelectedAccount != null);
+            _update   = update;
+            AddCmd    = new DelegateCommand(OnAdd);
+            EditCmd   = new DelegateCommand(OnEdit,   () => SelectedAccount != null);
             DeleteCmd = new DelegateCommand(OnDelete, () => SelectedAccount != null);
-            SaveCmd = new DelegateCommand(OnSave);
+            SaveCmd   = new DelegateCommand(OnSave);
             CancelCmd = new DelegateCommand(OnCancel);
             Init();
         }
@@ -87,17 +179,22 @@ namespace TravianHelper.UI
             DeleteCmd.RaiseCanExecuteChanged();
         }
 
-        public void Init(Account sel = null)
+        public void Init()
         {
             AccountList.Clear();
-            AccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable());
-            SelectedAccount = sel == null ? AccountList.FirstOrDefault() : AccountList.FirstOrDefault(x => x.Id == sel.Id);
+            AccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable());ProxyList.Clear();
+            ProxyList.AddRange(g.Db.GetCollection<Proxy>().AsQueryable());
+            ServerList.Clear();
+            ServerList.AddRange(g.Db.GetCollection<ServerConfig>().AsQueryable());
         }
 
         private void OnAdd()
         {
-            IsEditMode = true;
-            SelectedAccount = new Account();
+            IsEditMode     = true;
+            CurrentAccount = new Account();
+            CustomMail     = false;
+            Name           = "";
+            Mail           = "";
         }
 
         private void OnEdit()
@@ -106,6 +203,14 @@ namespace TravianHelper.UI
             CurrentAccount = g.Db.GetCollection<Account>().AsQueryable().FirstOrDefault(x => x.Id == SelectedAccount.Id);
             if (CurrentAccount == null)
                 IsEditMode = false;
+            else
+            {
+                SelectedProxy  = ProxyList.FirstOrDefault(x => x.Id  == CurrentAccount.ProxyId);
+                SelectedServer = ServerList.FirstOrDefault(x => x.Id == CurrentAccount.ServerId);
+                CustomMail     = false;
+                Name           = CurrentAccount.Name;
+                Mail           = CurrentAccount.Email;
+            }
         }
 
         private void OnDelete()
@@ -113,12 +218,16 @@ namespace TravianHelper.UI
             IsEditMode = true;
             if (MessageBox.Show($"Точно удалить аккаунт {SelectedAccount}?", "", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             g.Db.GetCollection<Account>().Delete(SelectedAccount);
-            Init();
+            _update?.Invoke();
             IsEditMode = false;
         }
 
         private void OnSave()
         {
+            CurrentAccount.ProxyId  = SelectedProxy?.Id;
+            CurrentAccount.ServerId = SelectedServer?.Id;
+            CurrentAccount.Email    = Mail;
+            CurrentAccount.Name     = Name;
             if (CurrentAccount.Id == 0)
             {
                 g.Db.GetCollection<Account>().Insert(CurrentAccount);
@@ -127,7 +236,7 @@ namespace TravianHelper.UI
             {
                 g.Db.GetCollection<Account>().Update(CurrentAccount);
             }
-            Init(SelectedAccount);
+            _update?.Invoke();
             IsEditMode = false;
         }
 

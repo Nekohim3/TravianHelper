@@ -33,10 +33,30 @@ namespace TravianHelper.UI
             }
         }
 
+        private AccountSettingsViewModel _accountSettingsVM;
+
+        public AccountSettingsViewModel AccountSettingsVM
+        {
+            get => _accountSettingsVM;
+            set
+            {
+                _accountSettingsVM = value;
+                RaisePropertyChanged(() => AccountSettingsVM);
+            }
+        }
+
         public NewPageViewModel()
         {
-            ProxySettingsVM  = new ProxySettingsViewModel();
-            ServerSettingsVM = new ServerSettingsViewModel();
+            ProxySettingsVM   = new ProxySettingsViewModel(UpdateAll);
+            ServerSettingsVM  = new ServerSettingsViewModel(UpdateAll);
+            AccountSettingsVM = new AccountSettingsViewModel(UpdateAll);
+        }
+
+        public void UpdateAll()
+        {
+            ProxySettingsVM.Init();
+            ServerSettingsVM.Init();
+            AccountSettingsVM.Init();
         }
     }
 }

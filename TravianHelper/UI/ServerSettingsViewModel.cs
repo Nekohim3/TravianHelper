@@ -9,6 +9,7 @@ using Microsoft.Practices.Prism;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using TravianHelper.Settings;
+using TravianHelper.TravianEntities;
 
 namespace TravianHelper.UI
 {
@@ -47,13 +48,12 @@ namespace TravianHelper.UI
             {
                 _selectedServer = value;
                 RaisePropertyChanged(() => SelectedServer);
+                IsEditMode = false;
                 RaiseCanExecChanged();
                 CurrentServer = _selectedServer;
+                UsedAccountList.Clear();
                 if (SelectedServer != null)
-                {
-                    UsedAccountList.Clear();
-                    UsedAccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable());
-                }
+                    UsedAccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable().Where(x => x.ServerId == _selectedServer.Id));
             }
         }
 
@@ -81,14 +81,17 @@ namespace TravianHelper.UI
             }
         }
 
+        private Action _update;
+
         public DelegateCommand AddCmd    { get; }
         public DelegateCommand EditCmd   { get; }
         public DelegateCommand DeleteCmd { get; }
         public DelegateCommand SaveCmd   { get; }
         public DelegateCommand CancelCmd { get; }
 
-        public ServerSettingsViewModel()
+        public ServerSettingsViewModel(Action update)
         {
+            _update   = update;
             AddCmd    = new DelegateCommand(OnAdd);
             EditCmd   = new DelegateCommand(OnEdit,   () => SelectedServer != null);
             DeleteCmd = new DelegateCommand(OnDelete, () => SelectedServer != null);
@@ -103,11 +106,10 @@ namespace TravianHelper.UI
             DeleteCmd.RaiseCanExecuteChanged();
         }
 
-        public void Init(ServerConfig sel = null)
+        public void Init()
         {
             ServerList.Clear();
             ServerList.AddRange(g.Db.GetCollection<ServerConfig>().AsQueryable());
-            SelectedServer = sel == null ? ServerList.FirstOrDefault() : ServerList.FirstOrDefault(x => x.Id == sel.Id);
         }
 
         private void OnAdd()
@@ -130,7 +132,7 @@ namespace TravianHelper.UI
         {
             if (MessageBox.Show($"Точно удалить мир {SelectedServer}?", "", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             g.Db.GetCollection<ServerConfig>().Delete(SelectedServer);
-            Init();
+            _update?.Invoke();
         }
 
         private void OnSave()
@@ -143,7 +145,7 @@ namespace TravianHelper.UI
             {
                 g.Db.GetCollection<ServerConfig>().Update(CurrentServer);
             }
-            Init(SelectedServer);
+            _update?.Invoke();
             IsEditMode = false;
         }
 

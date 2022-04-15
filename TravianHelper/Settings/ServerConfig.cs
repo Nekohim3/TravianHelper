@@ -40,16 +40,29 @@ namespace TravianHelper.Settings
             }
         }
 
+        private int _linkOffset;
+
+        public int LinkOffset
+        {
+            get => _linkOffset;
+            set
+            {
+                _linkOffset = value;
+                RaisePropertyChanged(() => LinkOffset);
+            }
+        }
+
         public ServerConfig()
         {
             
         }
 
-        public ServerConfig(string server, string domain, string region)
+        public ServerConfig(string server, string domain, string region, int linkOffset)
         {
-            Server = server;
-            Domain = domain;
-            Region = Region;
+            Server     = server;
+            Domain     = domain;
+            Region     = region;
+            LinkOffset = linkOffset;
         }
 
         public override string ToString()

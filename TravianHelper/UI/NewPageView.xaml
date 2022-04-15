@@ -6,29 +6,104 @@
       xmlns:local="clr-namespace:TravianHelper.UI"
       xmlns:converters="clr-namespace:TravianHelper.Converters"
       mc:Ignorable="d" d:DataContext="{d:DesignInstance local:NewPageViewModel}"
-      d:DesignHeight="500" d:DesignWidth="1280"
+      d:DesignHeight="900" d:DesignWidth="1600"
       Title="NewPageView">
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
     </Page.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="200"/>
-                <RowDefinition Height="200"/>
-            </Grid.RowDefinitions>
-            <GroupBox Grid.Row="1" Header="Прокси" DataContext="{Binding ProxySettingsVM}" Margin="5,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="300"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0"></Grid>
+        <Grid Grid.Row="1">
+            <GroupBox Header="Аккаунты" DataContext="{Binding AccountSettingsVM}" Margin="5,0,5,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Add" Command="{Binding AddCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
+                        <Button Content="Edit" Command="{Binding EditCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
+                        <Button Content="Delete" Command="{Binding DeleteCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
+                    </StackPanel>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding AccountList}" SelectedItem="{Binding SelectedAccount}" VerticalAlignment="Stretch">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Ellipse Width="10" Height="10" Fill="LawnGreen" Visibility="{Binding Loaded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Width="*" MinWidth="150" Header="Name" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Width="auto" MinWidth="100" Header="Password" Binding="{Binding Password}"/>
+                            <DataGridTextColumn Width="auto" MinWidth="200" Header="Email" Binding="{Binding Email}"/>
+                            <DataGridTextColumn Width="auto" MinWidth="400" Header="Ref" Binding="{Binding RefLink}"/>
+                            <DataGridTextColumn Width="auto" MinWidth="150" Header="Server" Binding="{Binding Server}"/>
+                            <DataGridTextColumn Width="auto" MinWidth="150" Header="Proxy" Binding="{Binding Proxy}"/>
+                            <DataGridTextColumn Width="50" MinWidth="50" Header="Trial" Binding="{Binding RegComplete}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <!---->
+                    <GroupBox Header="Данные" Grid.Row="2" Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="500"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Name" Margin="5,3,5,3"/>
+                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="5,3,5,3"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Text="Password" Margin="5,3,5,3"/>
+                            <TextBox Text="{Binding CurrentAccount.Password, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="3" Margin="5,3,5,3"/>
+                            <TextBlock Grid.Row="0" Grid.Column="4" VerticalAlignment="Center" Text="Ref Link" Margin="5,3,5,3"/>
+                            <TextBox Text="{Binding CurrentAccount.RefLink, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="5" Margin="5,3,5,3"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Proxy" Margin="5,3,5,3"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ProxyList}" SelectedItem="{Binding SelectedProxy}" Margin="5,3,5,3"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Text="Proxy" Margin="5,3,5,3"/>
+                            <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding ServerList}" SelectedItem="{Binding SelectedServer}" Margin="5,3,5,3"/>
+                            <TextBlock Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" Text="Email" Margin="5,3,5,3"/>
+                            <Grid Grid.Row="1" Grid.Column="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox  Text="{Binding Mail, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" Margin="5,3,5,3" IsEnabled="{Binding CustomMail}"/>
+                                <CheckBox Grid.Column="1" IsChecked="{Binding CustomMail}" VerticalAlignment="Center" Content="Свой адрес" Margin="5,3,5,3"/>
+                            </Grid>
+                            <Button Grid.Row="0" Command="{Binding SaveCmd}" Grid.Column="6" Content="Save" Margin="5,3,5,3" Width="80"/>
+                            <Button Grid.Row="1" Command="{Binding CancelCmd}" Grid.Column="6" Content="Cancel" Margin="5,3,5,3" Width="80"/>
+                        </Grid>
+
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="550"/>
+                <ColumnDefinition Width="*" MinWidth="550"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="Прокси" DataContext="{Binding ProxySettingsVM}" Margin="5,0,0,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition Width="160"/>
-                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*" MinWidth="160"/>
+                        <ColumnDefinition Width="*" MinWidth="150"/>
+                        <ColumnDefinition Width="200" MinWidth="200"/>
                     </Grid.ColumnDefinitions>
                     <ListView ItemsSource="{Binding ProxyList}" SelectedItem="{Binding SelectedProxy}"/>
                     <Grid Grid.Column="1" Margin="5,0,5,0">
@@ -84,12 +159,12 @@
                     </Grid>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="Миры" DataContext="{Binding ServerSettingsVM}" Margin="5,0,0,5">
+            <GroupBox Grid.Column="1" Header="Миры" DataContext="{Binding ServerSettingsVM}" Margin="0,0,5,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition Width="160"/>
-                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*" MinWidth="160"/>
+                        <ColumnDefinition Width="*" MinWidth="150"/>
+                        <ColumnDefinition Width="200" MinWidth="200"/>
                     </Grid.ColumnDefinitions>
                     <ListView ItemsSource="{Binding ServerList}" SelectedItem="{Binding SelectedServer}"/>
                     <Grid Grid.Column="1" Margin="5,0,5,0">
@@ -116,9 +191,11 @@
                         <TextBlock Text="Сервер" Grid.Row="0" Grid.Column="0" Margin="1"/>
                         <TextBlock Text="Домен" Grid.Row="1" Grid.Column="0" Margin="1"/>
                         <TextBlock Text="Регион" Grid.Row="2" Grid.Column="0" Margin="1"/>
+                        <TextBlock Text="Link Offset" Grid.Row="3" Grid.Column="0" Margin="1"/>
                         <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.Server}" Grid.Row="0" Grid.Column="1" Margin="1"/>
                         <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.Domain}" Grid.Row="1" Grid.Column="1" Margin="1"/>
                         <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.Region}" Grid.Row="2" Grid.Column="1" Margin="1"/>
+                        <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.LinkOffset}" Grid.Row="3" Grid.Column="1" Margin="1"/>
 
                         <Grid Grid.Column="0" Grid.Row="5" ColumnSpan="2">
                             <Grid Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityReverseConverter}}">
@@ -143,9 +220,6 @@
                     </Grid>
                 </Grid>
             </GroupBox>
-        </Grid>
-        <Grid Grid.Column="1">
-
         </Grid>
     </Grid>
 </Page>

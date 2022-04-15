@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using TravianHelper.Settings;
 
 namespace TravianHelper.TravianEntities
 {
@@ -32,6 +33,18 @@ namespace TravianHelper.TravianEntities
             {
                 _email = value;
                 RaisePropertyChanged(() => Email);
+            }
+        }
+
+        private string _refLink;
+
+        public string RefLink
+        {
+            get => _refLink;
+            set
+            {
+                _refLink = value;
+                RaisePropertyChanged(() => RefLink);
             }
         }
 
@@ -71,6 +84,23 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private Proxy _proxy;
+
+        public Proxy Proxy
+        {
+            get
+            {
+                if (_proxy == null && ProxyId.HasValue)
+                    _proxy = g.Db.GetCollection<Proxy>().AsQueryable().FirstOrDefault(x => x.Id == ProxyId);
+                return _proxy;
+            }
+            set
+            {
+                _proxy = value;
+                RaisePropertyChanged(() => Proxy);
+            }
+        }
+
         private int? _serverId;
 
         public int? ServerId
@@ -80,6 +110,23 @@ namespace TravianHelper.TravianEntities
             {
                 _serverId = value;
                 RaisePropertyChanged(() => ServerId);
+            }
+        }
+
+        private ServerConfig _server;
+        [JsonIgnore]
+        public ServerConfig Server
+        {
+            get
+            {
+                if (_server == null && ServerId.HasValue)
+                    _server = g.Db.GetCollection<ServerConfig>().AsQueryable().FirstOrDefault(x => x.Id == ServerId);
+                return _server;
+            }
+            set
+            {
+                _server = value;
+                RaisePropertyChanged(() => Server);
             }
         }
 

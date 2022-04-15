@@ -16,10 +16,11 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <ListView Grid.Row="0" Foreground="AliceBlue" ItemsSource="{Binding Source={x:Static local:g.TabManager}, Path=TabList}" SelectedItem="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab}" Margin="-1,-1,-1,0" 
-                  BorderThickness="1" BorderBrush="#99ff0000">
+                  BorderThickness="0" BorderBrush="#955">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
@@ -104,8 +105,8 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-
-        <Frame Grid.Row="1" NavigationUIVisibility="Hidden" Content="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab.Page}">
+        <Border Grid.Row="1" BorderThickness="1" BorderBrush="#955" Height="1"/>
+        <Frame Grid.Row="2" NavigationUIVisibility="Hidden" Content="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab.Page}">
             <Frame.Style>
                 <Style TargetType="Frame">
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>

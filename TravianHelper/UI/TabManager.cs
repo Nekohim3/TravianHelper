@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Practices.Prism.ViewModel;
+using TravianHelper.TravianEntities;
 
 namespace TravianHelper.UI
 {

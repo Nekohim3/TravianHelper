@@ -48,13 +48,12 @@ namespace TravianHelper.UI
             {
                 _selectedProxy = value;
                 RaisePropertyChanged(() => SelectedProxy);
+                IsEditMode = false;
                 RaiseCanExecChanged();
                 CurrentProxy = _selectedProxy;
+                UsedAccountList.Clear();
                 if (SelectedProxy != null)
-                {
-                    UsedAccountList.Clear();
-                    UsedAccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable());
-                }
+                    UsedAccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable().Where(x => x.ProxyId == _selectedProxy.Id));
             }
         }
 
@@ -82,18 +81,21 @@ namespace TravianHelper.UI
             }
         }
 
+        private Action _update;
+
         public DelegateCommand AddCmd    { get; }
         public DelegateCommand EditCmd   { get; }
         public DelegateCommand DeleteCmd { get; }
         public DelegateCommand SaveCmd   { get; }
         public DelegateCommand CancelCmd { get; }
 
-        public ProxySettingsViewModel()
+        public ProxySettingsViewModel(Action update)
         {
-            AddCmd  = new DelegateCommand(OnAdd);
-            EditCmd = new DelegateCommand(OnEdit, () => SelectedProxy != null);
+            _update   = update;
+            AddCmd    = new DelegateCommand(OnAdd);
+            EditCmd   = new DelegateCommand(OnEdit,   () => SelectedProxy != null);
             DeleteCmd = new DelegateCommand(OnDelete, () => SelectedProxy != null);
-            SaveCmd = new DelegateCommand(OnSave);
+            SaveCmd   = new DelegateCommand(OnSave);
             CancelCmd = new DelegateCommand(OnCancel);
             Init();
         }
@@ -104,11 +106,10 @@ namespace TravianHelper.UI
             DeleteCmd.RaiseCanExecuteChanged();
         }
 
-        public void Init(Proxy sel = null)
+        public void Init()
         {
             ProxyList.Clear();
             ProxyList.AddRange(g.Db.GetCollection<Proxy>().AsQueryable());
-            SelectedProxy = sel == null ? ProxyList.FirstOrDefault() : ProxyList.FirstOrDefault(x => x.Id == sel.Id);
         }
 
         private void OnAdd()
@@ -130,7 +131,7 @@ namespace TravianHelper.UI
             IsEditMode = true;
             if (MessageBox.Show($"Точно удалить прокси {SelectedProxy}?", "", MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             g.Db.GetCollection<Proxy>().Delete(SelectedProxy);
-            Init();
+            _update?.Invoke();
             IsEditMode = false;
         }
 
@@ -168,7 +169,7 @@ namespace TravianHelper.UI
             {
                 g.Db.GetCollection<Proxy>().Update(CurrentProxy);
             }
-            Init(SelectedProxy);
+            _update?.Invoke();
             IsEditMode = false;
         }
 
