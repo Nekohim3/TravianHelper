@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using TravianHelper.UI;
+using TravianHelper.Utils;
 
 namespace TravianHelper
 {
@@ -18,7 +19,7 @@ namespace TravianHelper
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            //Logger.Init();
+            Logger.Init();
             AppDomain.CurrentDomain.UnhandledException       += CurrentDomain_UnhandledException;
             Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
             g.LoadAll();
@@ -36,12 +37,12 @@ namespace TravianHelper
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            //Logger.ErrorQ(e.ExceptionObject as Exception);
+            Logger.ErrorQ(e.ExceptionObject as Exception);
         }
 
         private void CurrentOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            //Logger.ErrorQ(e.Exception);
+            Logger.ErrorQ(e.Exception);
         }
     }
 }

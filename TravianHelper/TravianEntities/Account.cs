@@ -245,27 +245,15 @@ namespace TravianHelper.TravianEntities
 
         #region Ignored Properties
 
-        private bool _running;
+        private bool? _running;
         [JsonIgnore]
-        public bool Running
+        public bool? Running
         {
             get => _running;
             set
             {
                 _running = value;
                 RaisePropertyChanged(() => Running);
-            }
-        }
-
-        private bool _loaded;
-        [JsonIgnore]
-        public bool Loaded
-        {
-            get => _loaded;
-            set
-            {
-                _loaded = value;
-                RaisePropertyChanged(() => Loaded);
             }
         }
 
@@ -278,6 +266,16 @@ namespace TravianHelper.TravianEntities
         public Account()
         {
             
+        }
+
+        public void Start()
+        {
+
+        }
+
+        public void Stop()
+        {
+
         }
 
         public override string ToString()

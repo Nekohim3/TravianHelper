@@ -33,6 +33,9 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="ListViewItem">
                                 <Grid Height="20" Margin="5">
+                                    <Grid.InputBindings>
+                                        <MouseBinding Gesture="MiddleClick" Command="{Binding CloseCmd}"/>
+                                    </Grid.InputBindings>
                                     <Grid.Style>
                                         <Style TargetType="Grid">
                                             <Style.Triggers>

@@ -32,14 +32,33 @@ namespace TravianHelper.UI
             {
                 _selectedTab = value;
                 RaisePropertyChanged(() => SelectedTab);
+                if (SelectedTab != null)
+                    if (!SelectedTab.IsAccount)
+                        ((NewPageViewModel)SelectedTab.Page.DataContext).UpdateAll();
             }
         }
 
         public TabManager()
         {
             TabList = new ObservableCollection<Tab>();
-            TabList.Add(new Tab(new Account(){Name = "Nekohime"}));
             TabList.Add(new Tab(null, "+"));
+            SelectedTab = TabList.FirstOrDefault();
+        }
+
+        public void OpenTab(Account acc)
+        {
+            TabList.Insert(TabList.Count - 1, new Tab(acc));
+            SelectedTab = TabList.FirstOrDefault(x => x.Account == acc);
+            acc.Start();
+        }
+
+        public void CloseTab(Tab tab)
+        {
+            if (!tab.IsAccount) return;
+            var ind = TabList.IndexOf(tab);
+            TabList.Remove(tab);
+            SelectedTab = ind == 0 ? TabList[0] : TabList[ind - 1];
+            tab.Account.Stop();
         }
     }
 }

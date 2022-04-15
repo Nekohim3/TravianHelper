@@ -31,13 +31,15 @@
                         <Button Content="Add" Command="{Binding AddCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
                         <Button Content="Edit" Command="{Binding EditCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
                         <Button Content="Delete" Command="{Binding DeleteCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
+                        <Separator Background="#955" Margin="0,0,0,3" />
+                        <Button Content="Run" Command="{Binding RunCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
                     </StackPanel>
                     <DataGrid Grid.Row="1" ItemsSource="{Binding AccountList}" SelectedItem="{Binding SelectedAccount}" VerticalAlignment="Stretch">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Ellipse Width="10" Height="10" Fill="LawnGreen" Visibility="{Binding Loaded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <Ellipse Width="10" Height="10" Fill="LawnGreen" Visibility="{Binding Running, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

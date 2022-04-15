@@ -162,30 +162,46 @@ namespace TravianHelper.UI
         public DelegateCommand SaveCmd { get; }
         public DelegateCommand CancelCmd { get; }
 
+        public DelegateCommand RunCmd { get; }
+
         public AccountSettingsViewModel(Action update)
         {
             _update   = update;
-            AddCmd    = new DelegateCommand(OnAdd);
+            AddCmd    = new DelegateCommand(OnAdd, () => ServerList.Count > 0);
             EditCmd   = new DelegateCommand(OnEdit,   () => SelectedAccount != null);
             DeleteCmd = new DelegateCommand(OnDelete, () => SelectedAccount != null);
             SaveCmd   = new DelegateCommand(OnSave);
             CancelCmd = new DelegateCommand(OnCancel);
+            RunCmd = new DelegateCommand(OnRun, () => SelectedAccount != null && !SelectedAccount.Running.HasValue);
+
             Init();
         }
 
         private void RaiseCanExecChanged()
         {
+            AddCmd.RaiseCanExecuteChanged();
             EditCmd.RaiseCanExecuteChanged();
             DeleteCmd.RaiseCanExecuteChanged();
+            RunCmd.RaiseCanExecuteChanged();
         }
 
         public void Init()
         {
             AccountList.Clear();
-            AccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable());ProxyList.Clear();
+            AccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable());
+            ProxyList.Clear();
+            ProxyList.Add(new Proxy(-1, "Не использовать", 0, "", ""));
             ProxyList.AddRange(g.Db.GetCollection<Proxy>().AsQueryable());
+            SelectedProxy = ProxyList.FirstOrDefault();
             ServerList.Clear();
             ServerList.AddRange(g.Db.GetCollection<ServerConfig>().AsQueryable());
+            SelectedServer = ServerList.FirstOrDefault();
+            RaiseCanExecChanged();
+        }
+
+        private void OnRun()
+        {
+            g.TabManager.OpenTab(SelectedAccount);
         }
 
         private void OnAdd()
@@ -224,7 +240,7 @@ namespace TravianHelper.UI
 
         private void OnSave()
         {
-            CurrentAccount.ProxyId  = SelectedProxy?.Id;
+            CurrentAccount.ProxyId  = SelectedProxy.Id > 0 ? SelectedProxy?.Id : null;
             CurrentAccount.ServerId = SelectedServer?.Id;
             CurrentAccount.Email    = Mail;
             CurrentAccount.Name     = Name;

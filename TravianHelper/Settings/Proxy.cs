@@ -68,7 +68,7 @@ namespace TravianHelper.Settings
 
         public override string ToString()
         {
-            return $"{Ip}:{Port}";
+            return $"{Ip}{(Port == 0 ? "" : ":")}{(Port == 0 ? "" : Port.ToString())}";
         }
     }
 }

@@ -67,7 +67,7 @@ namespace TravianHelper.UI
 
         private void OnClose()
         {
-
+            g.TabManager.CloseTab(this);
         }
     }
 }
