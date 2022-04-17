@@ -62,6 +62,11 @@ namespace TravianHelper.UI
                 Page             = new NewPageView();
                 Page.DataContext = new NewPageViewModel();
             }
+            else
+            {
+                Page             = new BrowserPageView();
+                Page.DataContext = new BrowserPageViewModel(acc);
+            }
             CloseCmd = new DelegateCommand(OnClose);
         }
 

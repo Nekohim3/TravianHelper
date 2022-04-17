@@ -30,7 +30,7 @@ namespace TravianHelper.Settings
 
         private string _region;
 
-        public string Region// com, ru
+        public string Region
         {
             get => _region;
             set
@@ -40,29 +40,16 @@ namespace TravianHelper.Settings
             }
         }
 
-        private int _linkOffset;
-
-        public int LinkOffset
-        {
-            get => _linkOffset;
-            set
-            {
-                _linkOffset = value;
-                RaisePropertyChanged(() => LinkOffset);
-            }
-        }
-
         public ServerConfig()
         {
             
         }
 
-        public ServerConfig(string server, string domain, string region, int linkOffset)
+        public ServerConfig(string server, string domain, string region)
         {
             Server     = server;
             Domain     = domain;
-            Region     = region;
-            LinkOffset = linkOffset;
+            Region = region;
         }
 
         public override string ToString()

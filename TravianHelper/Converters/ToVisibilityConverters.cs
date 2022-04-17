@@ -39,4 +39,34 @@ namespace TravianHelper.Converters
             throw new NotImplementedException();
         }
     }
+    [ValueConversion(typeof(bool), typeof(Visibility))]
+    public class NullableBoolToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object                           value, Type targetType, object parameter,
+                              System.Globalization.CultureInfo culture)
+        {
+            return (value != null && ((bool?)value) == true) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object                           value, Type targetType, object parameter,
+                                  System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    [ValueConversion(typeof(bool), typeof(Visibility))]
+    public class NullableBoolToVisibilityReverseConverter : IValueConverter
+    {
+        public object Convert(object                           value, Type targetType, object parameter,
+                              System.Globalization.CultureInfo culture)
+        {
+            return (value != null && ((bool?)value) == false) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object                           value, Type targetType, object parameter,
+                                  System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

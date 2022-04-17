@@ -178,13 +178,13 @@ namespace TravianHelper.JsonDb
 
                 if (IsPropertyReferenceType(srcProp) && IsPropertyReferenceType(targetProperty))
                 {
-                    var target = targetProperty.GetValue(destination, null);
-                    var sourcePropertyValue = GetValue(source, srcProp);
+                    //var target = targetProperty.GetValue(destination, null);
+                    //var sourcePropertyValue = GetValue(source, srcProp);
 
-                    if (target == null || sourcePropertyValue == null)
-                        targetProperty.SetValue(destination, sourcePropertyValue);
-                    else
-                        CopyProperties(sourcePropertyValue, target);
+                    //if (target == null || sourcePropertyValue == null)
+                    //    targetProperty.SetValue(destination, sourcePropertyValue);
+                    //else
+                    //    CopyProperties(sourcePropertyValue, target);
 
                     continue;
                 }

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OpenQA.Selenium;
 
 namespace TravianHelper.SeleniumHost
 {
@@ -23,6 +24,20 @@ namespace TravianHelper.SeleniumHost
         public SeleniumHostWPF()
         {
             InitializeComponent();
+        }
+
+        public DriverService DriverService
+        {
+            get => (DriverService)GetValue(DriverServiceProperty);
+            set => SetValue(DriverServiceProperty, value);
+        }
+
+        public static readonly DependencyProperty DriverServiceProperty =
+            DependencyProperty.Register(nameof(DriverService), typeof(DriverService), typeof(SeleniumHostWPF), new PropertyMetadata(default(DriverService), DriverServicePropertyChanged));
+
+        private static void DriverServicePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is SeleniumHostWPF that) that.SeleniumHost.DriverService = e.NewValue as DriverService;
         }
     }
 }

@@ -1,0 +1,34 @@
+﻿<Page x:Class="TravianHelper.UI.BrowserPageView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TravianHelper.UI"
+      mc:Ignorable="d" d:DataContext="{d:DesignInstance local:BrowserPageViewModel}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="BrowserPageView">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ContentControl Grid.Row="0" Content="{Binding Account.Driver.Host}"/>
+        <Grid Grid.Row="1" IsEnabled="{Binding Account.Loaded}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <!--<Button Width="100" Margin="3" Grid.Column="1" Content="Register"/>-->
+            <CheckBox Grid.Column="4" Margin="3" Content="Fast build" IsChecked="{Binding Account.FastBuildWorker.Working}" IsEnabled="{Binding Account.FastBuildWorker.NotBlockWait}"/>
+            <CheckBox Grid.Column="5" Margin="3" Content="Auto adv"/>
+            <CheckBox Grid.Column="6" Margin="3" Content="Auto robber"/>
+            <Button Width="50" Margin="3" Grid.Column="7" Content="Settings" Command="{Binding SettingsCmd}"/>
+        </Grid>
+    </Grid>
+</Page>

@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Newtonsoft.Json;
+using OpenQA.Selenium;
 using TravianHelper.Settings;
+using TravianHelper.Utils;
+using Proxy = TravianHelper.Settings.Proxy;
 
 namespace TravianHelper.TravianEntities
 {
     public class Account : BaseTravianEntity
     {
         #region Properties
+
+        private object _lock = new object();
 
         private string _name;
 
@@ -72,6 +79,22 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private Player _player;
+        [JsonIgnore]
+        public Player Player
+        {
+            get => _player;
+            set
+            {
+                _player = value;
+                RaisePropertyChanged(() => Player);
+            }
+        }
+
+        [JsonIgnore] public int PlayerId => Driver?.GetPlayerId() ?? -1;
+
+        #region Account settings
+
         private int? _proxyId;
 
         public int? ProxyId
@@ -85,7 +108,7 @@ namespace TravianHelper.TravianEntities
         }
 
         private Proxy _proxy;
-
+        [JsonIgnore]
         public Proxy Proxy
         {
             get
@@ -130,17 +153,67 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        #endregion
+
         #region BuildSettings
 
-        private int _fastBuildDelay;
+        private int _fastBuildDelayMin;
 
-        public int FastBuildDelay
+        public int FastBuildDelayMin
         {
-            get => _fastBuildDelay;
+            get => _fastBuildDelayMin;
             set
             {
-                _fastBuildDelay = value;
-                RaisePropertyChanged(() => FastBuildDelay);
+                _fastBuildDelayMin = value;
+                RaisePropertyChanged(() => FastBuildDelayMin);
+            }
+        }
+
+        private int _fastBuildDelayMax;
+
+        public int FastBuildDelayMax
+        {
+            get => _fastBuildDelayMax;
+            set
+            {
+                _fastBuildDelayMax = value;
+                RaisePropertyChanged(() => FastBuildDelayMax);
+            }
+        }
+
+        private bool _useRandomDelay;
+
+        public bool UseRandomDelay
+        {
+            get => _useRandomDelay;
+            set
+            {
+                _useRandomDelay = value;
+                RaisePropertyChanged(() => UseRandomDelay);
+            }
+        }
+
+        private bool _useSingleBuild;
+
+        public bool UseSingleBuild
+        {
+            get => _useSingleBuild;
+            set
+            {
+                _useSingleBuild = value;
+                RaisePropertyChanged(() => UseSingleBuild);
+            }
+        }
+
+        private bool _useMultiBuild;
+
+        public bool UseMultiBuild
+        {
+            get => _useMultiBuild;
+            set
+            {
+                _useMultiBuild = value;
+                RaisePropertyChanged(() => UseMultiBuild);
             }
         }
 
@@ -188,15 +261,15 @@ namespace TravianHelper.TravianEntities
             }
         }
 
-        private int _maxHpForHeal;
+        private int _healTo;
 
-        public int MaxHpForHeal
+        public int HealTo
         {
-            get => _maxHpForHeal;
+            get => _healTo;
             set
             {
-                _maxHpForHeal = value;
-                RaisePropertyChanged(() => MaxHpForHeal);
+                _healTo = value;
+                RaisePropertyChanged(() => HealTo);
             }
         }
 
@@ -239,6 +312,18 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private bool _sendHero;
+
+        public bool SendHero
+        {
+            get => _sendHero;
+            set
+            {
+                _sendHero = value;
+                RaisePropertyChanged(() => SendHero);
+            }
+        }
+        
         #endregion
 
         #endregion
@@ -257,25 +342,273 @@ namespace TravianHelper.TravianEntities
             }
         }
 
-        //Driver
+        private bool _loaded;
+        [JsonIgnore]
+        public bool Loaded
+        {
+            get => _loaded;
+            set
+            {
+                _loaded = value;
+                RaisePropertyChanged(() => Loaded);
+            }
+        }
+
+        private Driver _driver;
+        [JsonIgnore]
+        public Driver Driver
+        {
+            get => _driver;
+            set
+            {
+                _driver = value;
+                RaisePropertyChanged(() => Driver);
+            }
+        }
         //worker threads
 
+        private FastBuildWorker _fastBuildWorker;
+        [JsonIgnore]
+        public FastBuildWorker FastBuildWorker
+        {
+            get => _fastBuildWorker;
+            set
+            {
+                _fastBuildWorker = value;
+                RaisePropertyChanged(() => FastBuildWorker);
+            }
+        }
 
         #endregion
 
+
+
         public Account()
         {
-            
+            Player          = new Player(this);
+            FastBuildWorker = new FastBuildWorker(this);
         }
 
         public void Start()
         {
+            if(Running.HasValue) return;
+            if (Proxy == null && ProxyId.HasValue)
+            {
+                MessageBox.Show("Не найден прокси!");
+                Running = null;
+                return;
+            }
 
+            if (Server == null)
+            {
+                MessageBox.Show("Не найден мир!");
+                Running = null;
+                return;
+            }
+
+            Running = false;
+            Logger.Info($"[{Name}]: Account start");
+            Driver = new Driver();
+            if (Player == null) Player = new Player(this);
+            ThreadPool.QueueUserWorkItem(s =>
+            {
+                Driver.Init(this);
+                try
+                {
+                    if (RegComplete || string.IsNullOrEmpty(RefLink))
+                        Driver.Chrome.Navigate().GoToUrl($"https://{Server.Server}.{Server.Domain}");
+                    else
+                        Driver.Chrome.Navigate().GoToUrl(RefLink);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Браузер не смог загрузить страницу");
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        g.TabManager.CloseTab(g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == Id));
+                    });
+                    return;
+                }
+
+                Application.Current.Dispatcher.Invoke(() => {
+                                                          Running = true;
+                                                      });
+
+                while (Running == true)
+                {
+                    try
+                    {
+                        var ele = Driver.Wait(By.Id("villageList"));
+                        if (ele != null)
+                        {
+                            if (!RegComplete)
+                            {
+                                RegComplete = true;
+                                g.Db.GetCollection<Account>().Update(this);
+                            }
+
+                            if (RegComplete)
+                            {
+                                UpdateAll();
+                                Application.Current.Dispatcher.Invoke(() => { Loaded = true; });
+                                break;
+                            }
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                    Thread.Sleep(1000);
+                }
+            });
         }
 
         public void Stop()
         {
+            if(!Running.HasValue) return;
+            Logger.Info($"[{Name}]: Account stop");
+            Running                 = false;
+            FastBuildWorker.Working = false;
+            Application.Current.Dispatcher.Invoke(() =>
+                                                  {
+                                                      Driver.Dispose();
+                                                  });
+            Driver  = null;
+            Running = null;
+        }
 
+
+        public bool UpdateAll()
+        {
+            Driver.GetCache_All();
+            Driver.GetCache(new List<string> { "Collection:Quest:", "Collection:HeroItem:own" });
+            return true;
+        }
+
+        public void Update(dynamic data = null, long time = -1)
+        {
+            if (data == null) return;
+            lock (_lock)
+            {
+                var playerData = Driver.GetDataArrayByName(data.cache, "Player:");
+                if (playerData != null)
+                    foreach (var x in playerData)
+                        Player.Update(x, time);
+
+                var heroData = Driver.GetDataArrayByName(data.cache, "Hero:");
+                if (heroData != null)
+                    foreach (var x in heroData)
+                        Player.Hero.Update(x, time);
+
+                var questListData = Driver.GetDataArrayByName(data.cache, "Collection:Quest:<>");
+                if (questListData != null)
+                    foreach (var x in questListData)
+                        Player.UpdateQuestList(x, time);
+
+                var villageListData = Driver.GetDataArrayByName(data.cache, "Collection:Village:own");
+                if (villageListData != null)
+                    foreach (var x in villageListData)
+                        Player.UpdateVillageList(x, time);
+
+                var villageData = Driver.GetDataArrayByName(data.cache, "Village:");
+                if (villageData != null)
+                {
+                    foreach (var x in villageData)
+                    {
+                        var vid = Convert.ToInt32(x.name.ToString().Split(':')[1]);
+                        var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
+                        if (village != null)
+                            village.Update(x, time);
+                        else
+                            Player.VillageList.Add(new Village(this, x, time));
+                    }
+                }
+
+                var buildingListData = Driver.GetDataArrayByName(data.cache, "Collection:Building:");
+                if (buildingListData != null)
+                {
+                    foreach (var x in buildingListData)
+                    {
+                        var vid = Convert.ToInt32(x.name.ToString().Split(':')[2]);
+                        var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
+                        if (village != null)
+                            village.UpdateBuildingList(x, time);
+                    }
+                }
+
+                var buildingData = Driver.GetDataArrayByName(data.cache, "Building:");
+                if (buildingData != null)
+                {
+                    foreach (var x in buildingData)
+                    {
+                        var vid = Convert.ToInt32(x.data.villageId);
+                        var bid = Convert.ToInt32(x.name.ToString().Split(':')[1]);
+                        var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
+                        if (village != null)
+                        {
+                            var building = village.BuildingList.FirstOrDefault(c => c.Id == bid);
+                            if (building != null)
+                                building.Update(x, time);
+                            else
+                                village.BuildingList.Add(new Building(this, village, x, time));
+                        }
+                    }
+                }
+
+                var buildingQueueData = Driver.GetDataArrayByName(data.cache, "BuildingQueue:<>");
+                if (buildingQueueData != null)
+                {
+                    foreach (var x in buildingQueueData)
+                    {
+                        var vid = Convert.ToInt32(x.data.villageId);
+                        var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
+                        if (village != null)
+                        {
+                            village.UpdateBuildingQueue(x, time);
+                        }
+                    }
+                }
+
+                var stationaryTroopsData = Driver.GetDataArrayByName(data.cache, "Collection:Troops:stationary:<>");
+                if (stationaryTroopsData != null)
+                {
+                    foreach (var x in stationaryTroopsData)
+                    {
+                        var vid = Convert.ToInt32(x.name.ToString().Split(':')[3]);
+                        var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
+                        if (village != null)
+                        {
+                            village.UpdateStationaryTroops(x, time);
+                        }
+                    }
+                }
+
+                var movingTroopsData = Driver.GetDataArrayByName(data.cache, "Collection:Troops:moving:<>");
+                if (movingTroopsData != null)
+                {
+                    foreach (var x in movingTroopsData)
+                    {
+                        var vid = Convert.ToInt32(x.name.ToString().Split(':')[3]);
+                        var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
+                        if (village != null)
+                        {
+                            village.UpdateMovingTroops(x, time);
+                        }
+                    }
+                }
+
+                var heroItemsData = Driver.GetDataArrayByName(data.cache, "Collection:HeroItem:own");
+                if (heroItemsData != null)
+                    foreach (var x in heroItemsData)
+                        Player.Hero.UpdateItems(x);
+            }
+        }
+
+        public void Save()
+        {
+            g.Db.GetCollection<Account>().Update(this);
         }
 
         public override string ToString()

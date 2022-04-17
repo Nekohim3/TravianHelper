@@ -18,11 +18,11 @@ namespace TravianHelper
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            g.Init();
             base.OnStartup(e);
             Logger.Init();
-            AppDomain.CurrentDomain.UnhandledException       += CurrentDomain_UnhandledException;
-            Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
-            g.LoadAll();
+            //AppDomain.CurrentDomain.UnhandledException       += CurrentDomain_UnhandledException;
+            //Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
             var f  = new MainWindow();
             var vm = new MainWindowViewModel();
             f.DataContext         = vm;

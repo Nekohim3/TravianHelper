@@ -19,39 +19,17 @@ namespace TravianHelper
         public static DataStore           Db            { get; set; }
         public static string              UserDataPath  { get; set; }
         public static MainWindowViewModel MainViewModel { get; set; }
-
-        public static TabManager TabManager { get; set; }
-
-        public static ObservableCollection<Proxy>        ProxyList        { get; set; } = new ObservableCollection<Proxy>();
-        public static ObservableCollection<ServerConfig> ServerList { get; set; } = new ObservableCollection<ServerConfig>();
-
-        static g()
+        public static TabManager          TabManager    { get; set; }
+        
+        public static void Init()
         {
             UserDataPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             if (!Directory.Exists($"{UserDataPath}\\UserData"))
                 Directory.CreateDirectory($"{UserDataPath}\\UserData");
-            UserDataPath = $"{UserDataPath}\\UserData";
-            Db           = new DataStore($"{UserDataPath}\\Database", reloadBeforeGetCollection:true);
-            LoadAll();
-            TabManager = new TabManager();
-        }
-
-        public static void LoadAll()
-        {
-            LoadProxyList();
-            LoadServerList();
-        }
-
-        public static void LoadProxyList()
-        {
-            ProxyList.Clear();
-            ProxyList.AddRange(Db.GetCollection<Proxy>().AsQueryable());
-        }
-
-        public static void LoadServerList()
-        {
-            ServerList.Clear();
-            ServerList.AddRange(Db.GetCollection<ServerConfig>().AsQueryable());
+            UserDataPath   = $"{UserDataPath}\\UserData";
+            Db             = new DataStore($"{UserDataPath}\\Database", reloadBeforeGetCollection: true);
+            TabManager     = new TabManager();
+            TabManager.OpenSettingsTab();
         }
     }
 }

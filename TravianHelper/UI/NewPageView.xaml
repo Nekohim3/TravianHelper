@@ -5,12 +5,15 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TravianHelper.UI"
       xmlns:converters="clr-namespace:TravianHelper.Converters"
+      xmlns:travianHelper="clr-namespace:TravianHelper"
       mc:Ignorable="d" d:DataContext="{d:DesignInstance local:NewPageViewModel}"
       d:DesignHeight="900" d:DesignWidth="1600"
       Title="NewPageView">
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
+        <converters:NullableBoolToVisibilityConverter x:Key="NullableBoolToVisibilityConverter"/>
+        <converters:NullableBoolToVisibilityReverseConverter x:Key="NullableBoolToVisibilityReverseConverter"/>
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -32,6 +35,7 @@
                         <Button Content="Edit" Command="{Binding EditCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
                         <Button Content="Delete" Command="{Binding DeleteCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
                         <Separator Background="#955" Margin="0,0,0,3" />
+                        <Button Content="Run switch" Command="{Binding RunAndSwitchCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
                         <Button Content="Run" Command="{Binding RunCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
                     </StackPanel>
                     <DataGrid Grid.Row="1" ItemsSource="{Binding AccountList}" SelectedItem="{Binding SelectedAccount}" VerticalAlignment="Stretch">
@@ -39,7 +43,10 @@
                             <DataGridTemplateColumn>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Ellipse Width="10" Height="10" Fill="LawnGreen" Visibility="{Binding Running, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <Grid>
+                                        <Ellipse Width="10" Height="10" Fill="LawnGreen" Visibility="{Binding Running, Converter={StaticResource NullableBoolToVisibilityConverter}}"/>
+                                            <Ellipse Width="10" Height="10" Fill="Red" Visibility="{Binding Running, Converter={StaticResource NullableBoolToVisibilityReverseConverter}}"/>
+                                        </Grid>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -100,7 +107,7 @@
                 <ColumnDefinition Width="*" MinWidth="550"/>
                 <ColumnDefinition Width="*" MinWidth="550"/>
             </Grid.ColumnDefinitions>
-            <GroupBox Grid.Column="0" Header="Прокси" DataContext="{Binding ProxySettingsVM}" Margin="5,0,0,5">
+            <GroupBox Grid.Column="0" Header="Прокси" DataContext="{Binding ProxySettingsVM}" Margin="5,0,0,5" IsEnabled="{Binding Source={x:Static travianHelper:g.TabManager}, Path=AllStopped}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MinWidth="160"/>
@@ -161,7 +168,7 @@
                     </Grid>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Column="1" Header="Миры" DataContext="{Binding ServerSettingsVM}" Margin="0,0,5,5">
+            <GroupBox Grid.Column="1" Header="Миры" DataContext="{Binding ServerSettingsVM}" Margin="0,0,5,5"  IsEnabled="{Binding Source={x:Static travianHelper:g.TabManager}, Path=AllStopped}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MinWidth="160"/>
@@ -192,12 +199,10 @@
                         </Grid.RowDefinitions>
                         <TextBlock Text="Сервер" Grid.Row="0" Grid.Column="0" Margin="1"/>
                         <TextBlock Text="Домен" Grid.Row="1" Grid.Column="0" Margin="1"/>
-                        <TextBlock Text="Регион" Grid.Row="2" Grid.Column="0" Margin="1"/>
-                        <TextBlock Text="Link Offset" Grid.Row="3" Grid.Column="0" Margin="1"/>
+                        <TextBlock Text="Регион" Grid.Row="3" Grid.Column="0" Margin="1"/>
                         <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.Server}" Grid.Row="0" Grid.Column="1" Margin="1"/>
                         <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.Domain}" Grid.Row="1" Grid.Column="1" Margin="1"/>
-                        <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.Region}" Grid.Row="2" Grid.Column="1" Margin="1"/>
-                        <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.LinkOffset}" Grid.Row="3" Grid.Column="1" Margin="1"/>
+                        <TextBox IsEnabled="{Binding IsEditMode}" Text="{Binding CurrentServer.Region}" Grid.Row="3" Grid.Column="1" Margin="1"/>
 
                         <Grid Grid.Column="0" Grid.Row="5" ColumnSpan="2">
                             <Grid Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityReverseConverter}}">

@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:TravianHelper.Converters"
         xmlns:ui="clr-namespace:TravianHelper.UI"
         mc:Ignorable="d" d:DataContext="{d:DesignInstance ui:MainWindowViewModel}"
-        Title="MainWindow" Height="1000" Width="1600" Background="#222">
+        Title="MainWindow" Height="1000" Width="1600" Background="#222" MinWidth="1280">
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ListView Grid.Row="0" Foreground="AliceBlue" ItemsSource="{Binding Source={x:Static local:g.TabManager}, Path=TabList}" SelectedItem="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab}" Margin="-1,-1,-1,0" 
+        <ListView  Grid.Row="0" Foreground="AliceBlue" ItemsSource="{Binding Source={x:Static local:g.TabManager}, Path=TabList}" SelectedItem="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab}" Margin="-1,-1,-1,0" 
                   BorderThickness="0" BorderBrush="#955">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -54,14 +54,16 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Border Grid.ColumnSpan="2" x:Name="BorderForSelect" Background="#55777777"  Visibility="Collapsed" Margin="-5"/>
-                                    <!--<Ellipse Grid.Column="0" Margin="3" Fill="Green" Width="10" Height="10" Visibility="{Binding Running, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <Ellipse Grid.Column="0" Margin="3" Fill="Red" Width="10" Height="10" Visibility="{Binding Running, Converter={StaticResource BoolToVisibilityReverseConverter}}"/>-->
-                                    <TextBlock Grid.Column="1" Text="{Binding TabName}" Margin="0" VerticalAlignment="Center" FontSize="15">
+                                    <TextBlock Grid.Column="1" Text="{Binding TabName}" Width="80" Height="25" Margin="0" VerticalAlignment="Center" FontSize="15">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsAccount}" Value="False">
                                                         <Setter Property="TextAlignment" Value="Center"/>
+                                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsAccount}" Value="True">
+                                                        <Setter Property="HorizontalAlignment" Value="Left"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

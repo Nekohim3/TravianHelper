@@ -67,7 +67,7 @@ namespace TravianHelper.SeleniumHost
 
             _browserHandle = browserProcess.MainWindowHandle;
 
-            Resize += (sender, e) => { UnsafeNativeMethods.MoveWindow(_browserHandle.Value, -8, 0, Width + 16, Height + 8, true); };
+            Resize += (sender, e) => { UnsafeNativeMethods.MoveWindow(_browserHandle.Value, -8, -43, Width + 16, Height + 8 + 43, true); };
 
             UnsafeNativeMethods.SetParent(_browserHandle.Value, Handle);
             UnsafeNativeMethods.MoveWindow(_browserHandle.Value, -8, 0, Width + 16, Height + 8, true);

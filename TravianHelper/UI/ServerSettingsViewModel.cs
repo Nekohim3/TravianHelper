@@ -137,6 +137,11 @@ namespace TravianHelper.UI
 
         private void OnSave()
         {
+            if (string.IsNullOrEmpty(CurrentServer.Region))
+            {
+                if(MessageBox.Show("Регион не указан. Авто регистрация не будет работать. Все равно добавить мир?", "", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                    return;
+            }
             if (CurrentServer.Id == 0)
             {
                 g.Db.GetCollection<ServerConfig>().Insert(CurrentServer);

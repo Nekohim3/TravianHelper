@@ -264,7 +264,20 @@
     </Compile>
     <Compile Include="Settings\DbEntity.cs" />
     <Compile Include="TravianEntities\Account.cs" />
+    <Compile Include="TravianEntities\Building.cs" />
+    <Compile Include="TravianEntities\Hero.cs" />
+    <Compile Include="TravianEntities\HeroItem.cs" />
+    <Compile Include="TravianEntities\Player.cs" />
+    <Compile Include="TravianEntities\Quest.cs" />
+    <Compile Include="TravianEntities\Queue.cs" />
+    <Compile Include="TravianEntities\Resource.cs" />
+    <Compile Include="TravianEntities\Troops.cs" />
+    <Compile Include="TravianEntities\Village.cs" />
     <Compile Include="UI\AccountSettingsViewModel.cs" />
+    <Compile Include="UI\BrowserPageView.xaml.cs">
+      <DependentUpon>BrowserPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\BrowserPageViewModel.cs" />
     <Compile Include="UI\MainWindowViewModel.cs" />
     <Compile Include="TravianEntities\BaseTravianEntity.cs" />
     <Compile Include="Settings\Proxy.cs" />
@@ -276,11 +289,21 @@
     <Compile Include="UI\NewPageViewModel.cs" />
     <Compile Include="UI\ProxySettingsViewModel.cs" />
     <Compile Include="UI\ServerSettingsViewModel.cs" />
+    <Compile Include="UI\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SettingsViewModel.cs" />
     <Compile Include="UI\Tab.cs" />
     <Compile Include="UI\TabManager.cs" />
     <Compile Include="Utils\Driver.cs" />
+    <Compile Include="Utils\FastBuildWorker.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\RPG.cs" />
     <Page Include="SeleniumHost\SeleniumHostWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\BrowserPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -297,6 +320,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\NewPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

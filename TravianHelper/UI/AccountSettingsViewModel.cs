@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using Microsoft.Practices.Prism;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using TravianHelper.Settings;
 using TravianHelper.TravianEntities;
+using MessageBox = System.Windows.MessageBox;
 
 namespace TravianHelper.UI
 {
@@ -37,7 +39,7 @@ namespace TravianHelper.UI
                 _name = value;
                 RaisePropertyChanged(() => Name);
                 if (!CustomMail)
-                    Mail = $"{_name}gj@candassociates.com";
+                    Mail = $"{_name}gj@candassociates.com".ToLower();
             }
         }
 
@@ -163,16 +165,18 @@ namespace TravianHelper.UI
         public DelegateCommand CancelCmd { get; }
 
         public DelegateCommand RunCmd { get; }
+        public DelegateCommand RunAndSwitchCmd { get; }
 
         public AccountSettingsViewModel(Action update)
         {
             _update   = update;
             AddCmd    = new DelegateCommand(OnAdd, () => ServerList.Count > 0);
-            EditCmd   = new DelegateCommand(OnEdit,   () => SelectedAccount != null);
-            DeleteCmd = new DelegateCommand(OnDelete, () => SelectedAccount != null);
+            EditCmd   = new DelegateCommand(OnEdit,   () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            DeleteCmd = new DelegateCommand(OnDelete, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
             SaveCmd   = new DelegateCommand(OnSave);
             CancelCmd = new DelegateCommand(OnCancel);
-            RunCmd = new DelegateCommand(OnRun, () => SelectedAccount != null && !SelectedAccount.Running.HasValue);
+            RunCmd = new DelegateCommand(OnRun, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            RunAndSwitchCmd = new DelegateCommand(OnRunAndSwitch, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
 
             Init();
         }
@@ -183,12 +187,22 @@ namespace TravianHelper.UI
             EditCmd.RaiseCanExecuteChanged();
             DeleteCmd.RaiseCanExecuteChanged();
             RunCmd.RaiseCanExecuteChanged();
+            RunAndSwitchCmd.RaiseCanExecuteChanged();
         }
 
         public void Init()
         {
+            if(g.TabManager == null) return;
             AccountList.Clear();
-            AccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable());
+            var accList = g.Db.GetCollection<Account>().AsQueryable().ToList();
+            for (var i = 0; i < accList.Count; i++)
+            {
+                var acc = g.TabManager.TabList.FirstOrDefault(c => c.IsAccount && c.Account.Id == accList[i].Id);
+                if (acc != null)
+                    accList[i] = acc.Account;
+            }
+
+            AccountList.AddRange(accList);
             ProxyList.Clear();
             ProxyList.Add(new Proxy(-1, "Не использовать", 0, "", ""));
             ProxyList.AddRange(g.Db.GetCollection<Proxy>().AsQueryable());
@@ -202,6 +216,13 @@ namespace TravianHelper.UI
         private void OnRun()
         {
             g.TabManager.OpenTab(SelectedAccount);
+            RaiseCanExecChanged();
+        }
+
+        private void OnRunAndSwitch()
+        {
+            g.TabManager.OpenTab(SelectedAccount, true);
+            RaiseCanExecChanged();
         }
 
         private void OnAdd()
@@ -211,6 +232,9 @@ namespace TravianHelper.UI
             CustomMail     = false;
             Name           = "";
             Mail           = "";
+
+            CurrentAccount.Password = AccountList.LastOrDefault()?.Password;
+            CurrentAccount.RefLink  = AccountList.LastOrDefault()?.RefLink;
         }
 
         private void OnEdit()
@@ -221,7 +245,7 @@ namespace TravianHelper.UI
                 IsEditMode = false;
             else
             {
-                SelectedProxy  = ProxyList.FirstOrDefault(x => x.Id  == CurrentAccount.ProxyId);
+                SelectedProxy  = ProxyList.FirstOrDefault(x => x.Id == CurrentAccount.ProxyId) ?? ProxyList.FirstOrDefault();
                 SelectedServer = ServerList.FirstOrDefault(x => x.Id == CurrentAccount.ServerId);
                 CustomMail     = false;
                 Name           = CurrentAccount.Name;
@@ -240,12 +264,47 @@ namespace TravianHelper.UI
 
         private void OnSave()
         {
-            CurrentAccount.ProxyId  = SelectedProxy.Id > 0 ? SelectedProxy?.Id : null;
+            if (Name.Length < 5 || Name.Length > 8)
+            {
+                MessageBox.Show("В имени аккаунта допускается от 5 до 8 символов");
+                return;
+            }
+            CurrentAccount.ProxyId  = SelectedProxy?.Id > 0 ? SelectedProxy?.Id : null;
             CurrentAccount.ServerId = SelectedServer?.Id;
             CurrentAccount.Email    = Mail;
             CurrentAccount.Name     = Name;
+            var lst = AccountList.ToList();
+            if (CurrentAccount.Id != 0)
+                lst = lst.Where(x => x.Id != CurrentAccount.Id).ToList();
+            if (lst.Count(x => x.Name == CurrentAccount.Name) != 0)
+            {
+                MessageBox.Show("Аккаунт с таким именем уже существует");
+                return;
+            }
+            if (lst.Count(x => x.Email == CurrentAccount.Email) != 0)
+            {
+                MessageBox.Show("Аккаунт с таким мылом уже существует");
+                return;
+            }
+
             if (CurrentAccount.Id == 0)
             {
+                CurrentAccount.FastBuildDelayMin = 5;
+                CurrentAccount.FastBuildDelayMax = 15;
+                CurrentAccount.UseRandomDelay    = true;
+                CurrentAccount.UseSingleBuild    = true;
+                CurrentAccount.UseMultiBuild     = false;
+
+                CurrentAccount.SellGoods     = true;
+                CurrentAccount.UseOin        = true;
+                CurrentAccount.MinHpForHeal  = 30;
+                CurrentAccount.HealTo        = 100;
+                CurrentAccount.MinHpForAdv   = 15;
+                CurrentAccount.AutoResurrect = false;
+
+                CurrentAccount.SendSettlers  = true;
+                CurrentAccount.SendHero      = false;
+                
                 g.Db.GetCollection<Account>().Insert(CurrentAccount);
             }
             else

@@ -33,23 +33,35 @@ namespace TravianHelper.UI
                 _selectedTab = value;
                 RaisePropertyChanged(() => SelectedTab);
                 if (SelectedTab != null)
-                    if (!SelectedTab.IsAccount)
-                        ((NewPageViewModel)SelectedTab.Page.DataContext).UpdateAll();
+                {
+                    if (!_selectedTab.IsAccount)
+                        ((NewPageViewModel) SelectedTab.Page.DataContext).UpdateAll();
+                }
             }
         }
+
+        public bool AnyRunning => TabList.Any(x => x.IsAccount && x.Account.Running.HasValue);
+        public bool AllStopped => TabList.Where(x => x.IsAccount).All(x => !x.Account.Running.HasValue);
 
         public TabManager()
         {
             TabList = new ObservableCollection<Tab>();
+        }
+
+        public void OpenSettingsTab()
+        {
             TabList.Add(new Tab(null, "+"));
             SelectedTab = TabList.FirstOrDefault();
         }
 
-        public void OpenTab(Account acc)
+        public void OpenTab(Account acc, bool sw = false)
         {
             TabList.Insert(TabList.Count - 1, new Tab(acc));
-            SelectedTab = TabList.FirstOrDefault(x => x.Account == acc);
+            if(sw)
+                SelectedTab = TabList.FirstOrDefault(x => x.Account == acc);
             acc.Start();
+            RaisePropertyChanged(() => AnyRunning);
+            RaisePropertyChanged(() => AllStopped);
         }
 
         public void CloseTab(Tab tab)
@@ -59,6 +71,8 @@ namespace TravianHelper.UI
             TabList.Remove(tab);
             SelectedTab = ind == 0 ? TabList[0] : TabList[ind - 1];
             tab.Account.Stop();
+            RaisePropertyChanged(() => AnyRunning);
+            RaisePropertyChanged(() => AllStopped);
         }
     }
 }

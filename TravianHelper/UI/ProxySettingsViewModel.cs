@@ -93,8 +93,8 @@ namespace TravianHelper.UI
         {
             _update   = update;
             AddCmd    = new DelegateCommand(OnAdd);
-            EditCmd   = new DelegateCommand(OnEdit,   () => SelectedProxy != null);
-            DeleteCmd = new DelegateCommand(OnDelete, () => SelectedProxy != null);
+            EditCmd   = new DelegateCommand(OnEdit,   () => SelectedProxy != null && g.Db.GetCollection<Account>().AsQueryable().Count(x => x.ProxyId == SelectedProxy.Id) == 0);
+            DeleteCmd = new DelegateCommand(OnDelete, () => SelectedProxy != null && g.Db.GetCollection<Account>().AsQueryable().Count(x => x.ProxyId == SelectedProxy.Id) == 0);
             SaveCmd   = new DelegateCommand(OnSave);
             CancelCmd = new DelegateCommand(OnCancel);
             Init();

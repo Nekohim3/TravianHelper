@@ -1,0 +1,117 @@
+﻿<Window x:Class="TravianHelper.UI.SettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TravianHelper.UI"
+        xmlns:conv="clr-namespace:TravianHelper.Converters"
+        mc:Ignorable="d" d:DataContext="{d:DesignInstance local:SettingsViewModel}" WindowStartupLocation="CenterScreen"
+        Title="{Binding Title}" Height="500" Width="500">
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <conv:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Header="Быстрая постройка">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <CheckBox Grid.Row="0" Content="Только выбранная деревня" IsChecked="{Binding UseSingleBuild}" Margin="3"/>
+                <CheckBox Grid.Row="1" Content="Все деревни" IsChecked="{Binding UseMultiBuild}" Margin="3"/>
+                <CheckBox Grid.Row="2" Content="Рандомная задержка" IsChecked="{Binding RandomDelay}" Margin="3" IsEnabled="{Binding UseMultiBuild}"/>
+                <Grid Grid.Row="3" Visibility="{Binding RandomDelay, Converter={StaticResource BoolToVisibilityReverseConverter}}" IsEnabled="{Binding UseMultiBuild}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Задержка(сек):" Margin="3"/>
+                    <Slider Grid.Column="1" Minimum="1" Maximum="60" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1" Margin="3" Value="{Binding FastBuildDelayMin, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Grid.Column="2" Width="30" Text="{Binding FastBuildDelayMin}" Margin="3"/>
+                </Grid>
+                <Grid Grid.Row="3" Visibility="{Binding RandomDelay, Converter={StaticResource BoolToVisibilityConverter}}" IsEnabled="{Binding UseMultiBuild}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Задержка мин(сек):" Margin="3"/>
+                    <Slider Grid.Row="0" Grid.Column="1" Minimum="1" Maximum="60" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1" Margin="3" Value="{Binding FastBuildDelayMin, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Width="30" Text="{Binding FastBuildDelayMin}" Margin="3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Задержка макс(сек):" Margin="3"/>
+                    <Slider Grid.Row="1" Grid.Column="1" Minimum="1" Maximum="60" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1" Margin="3" Value="{Binding FastBuildDelayMax, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Width="30" Text="{Binding FastBuildDelayMax}" Margin="3"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Header="Лагеря">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <CheckBox Grid.Row="0" Content="Отправлять героя" IsChecked="{Binding SendHero}" Margin="3"/>
+                <CheckBox Grid.Row="2" Content="Отправлять поселков" IsChecked="{Binding SendSettlers}" Margin="3"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="2" Header="Приключения">
+            <Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <CheckBox Grid.Row="0" Content="Продавать ценности" IsChecked="{Binding SellGoods}" Margin="3"/>
+                    <CheckBox Grid.Row="1" Content="Использовать мазик" IsChecked="{Binding UseOin}" Margin="3"/>
+                    <Grid Grid.Row="2" Visibility="{Binding UseOin, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Порог хп" Margin="3"/>
+                        <Slider Grid.Row="0" Grid.Column="1" Minimum="1" Maximum="100" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1" Margin="3" Value="{Binding MinHpForHeal, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Width="30" Text="{Binding MinHpForHeal}" Margin="3"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Хилять до" Margin="3"/>
+                        <Slider Grid.Row="1" Grid.Column="1" Minimum="1" Maximum="100" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1" Margin="3" Value="{Binding HealTo, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Width="30" Text="{Binding HealTo}" Margin="3"/>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Мин. хп для отправки" Margin="3"/>
+                        <Slider Grid.Column="1" Minimum="1" Maximum="100" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1" Margin="3" Value="{Binding MinHpForAdv, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock  Grid.Column="2" Width="30" Text="{Binding MinHpForAdv}" Margin="3"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

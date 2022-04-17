@@ -39,6 +39,48 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="{x:Type CheckBox}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <BulletDecorator Background="Transparent">
+                            <BulletDecorator.Bullet>
+                                <Border x:Name="Border" Width="13" Height="13" CornerRadius="0" Background="#222" BorderThickness="1" BorderBrush="#955">
+                                    <Grid x:Name="CheckMark">
+                                        <Line StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" x:Name="CheckMark1" X1="2" Y1="2" X2="9" Y2="9" Stroke="#955" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                        <Line StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"  x:Name="CheckMark2" X1="2" Y1="9" X2="9" Y2="2" Stroke="#955" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                    </Grid>
+                                    <!--<Path Width="7" Height="7" x:Name="CheckMark" SnapsToDevicePixels="True" Stroke="#955" StrokeThickness="2" Data="M 0 0 L 7 7 M 0 7 L 7 0" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>-->
+                                </Border>
+                            </BulletDecorator.Bullet>
+                            <TextBlock x:Name="TB" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{TemplateBinding Content}" Foreground="#ccc"/>
+                            <!--<ContentPresenter Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>-->
+                        </BulletDecorator>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="false">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#f55" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#f55" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="Border" Property="Background" Value="#00000000" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#55777777" />
+                                <Setter TargetName="TB" Property="Foreground" Value="#777"/>
+                                <Setter TargetName="CheckMark1" Property="Stroke" Value="#777"/>
+                                <Setter TargetName="CheckMark2" Property="Stroke" Value="#777"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style TargetType="GroupBox">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Foreground" Value="#ccc"/>
@@ -125,11 +167,9 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-
         <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
             <ScrollViewer x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
         </ControlTemplate>
-
         <Style TargetType="{x:Type ComboBox}">
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Margin" Value="0,1,0,1" />
@@ -212,8 +252,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style
-               TargetType="{x:Type Separator}"
+        <Style TargetType="{x:Type Separator}"
                BasedOn="{StaticResource {x:Type Separator}}">
             <Setter Property="Margin" Value="6,0,6,0"/>
             <Setter Property="LayoutTransform">
@@ -313,7 +352,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
         <Style TargetType="{x:Type DataGridColumnHeader}">
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -346,7 +384,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
         <Style TargetType="{x:Type DataGridCell}">
             <Setter Property="OverridesDefaultStyle" Value="true" />
             <Setter Property="Background" Value="#fff" />
