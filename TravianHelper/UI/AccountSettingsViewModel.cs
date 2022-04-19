@@ -204,7 +204,7 @@ namespace TravianHelper.UI
 
             AccountList.AddRange(accList);
             ProxyList.Clear();
-            ProxyList.Add(new Proxy(-1, "Не использовать", 0, "", ""));
+            ProxyList.Add(new Proxy(-1, "Не использовать", 0, "", "", ""));
             ProxyList.AddRange(g.Db.GetCollection<Proxy>().AsQueryable());
             SelectedProxy = ProxyList.FirstOrDefault();
             ServerList.Clear();

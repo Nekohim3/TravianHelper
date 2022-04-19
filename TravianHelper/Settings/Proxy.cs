@@ -52,23 +52,36 @@ namespace TravianHelper.Settings
             }
         }
 
+        private string _note;
+
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+                RaisePropertyChanged(() => Note);
+            }
+        }
+
         public Proxy()
         {
 
         }
 
-        public Proxy(int id, string ip, int port, string userName, string password)
+        public Proxy(int id, string ip, int port, string userName, string password, string note)
         {
             Id       = id;
             Ip       = ip;
             Port     = port;
             UserName = userName;
             Password = password;
+            Note     = note;
         }
 
         public override string ToString()
         {
-            return $"{Ip}{(Port == 0 ? "" : ":")}{(Port == 0 ? "" : Port.ToString())}";
+            return $"{Ip}{(Port == 0 ? "" : ":")}{(Port == 0 ? "" : Port.ToString())} {(string.IsNullOrEmpty(Note) ? "" : "(")}{Note}{(string.IsNullOrEmpty(Note) ? "" : ")")}";
         }
     }
 }

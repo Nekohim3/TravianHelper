@@ -7,109 +7,14 @@
         xmlns:converters="clr-namespace:TravianHelper.Converters"
         xmlns:ui="clr-namespace:TravianHelper.UI"
         mc:Ignorable="d" d:DataContext="{d:DesignInstance ui:MainWindowViewModel}"
-        Title="MainWindow" Height="1000" Width="1600" Background="#222" MinWidth="1280">
-    <Window.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
-
-    </Window.Resources>
-    <Grid>
+        Title="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab.TabName}" Height="1000" Width="1600" Background="#222" MinWidth="1280" WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize"
+        Style="{StaticResource VS2012WindowStyle}">
+    <Grid Margin="0,0,0,0" Grid.IsSharedSizeScope="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ListView  Grid.Row="0" Foreground="AliceBlue" ItemsSource="{Binding Source={x:Static local:g.TabManager}, Path=TabList}" SelectedItem="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab}" Margin="-1,-1,-1,0" 
-                  BorderThickness="0" BorderBrush="#955">
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListViewItem">
-                                <Grid Height="20" Margin="5">
-                                    <Grid.InputBindings>
-                                        <MouseBinding Gesture="MiddleClick" Command="{Binding CloseCmd}"/>
-                                    </Grid.InputBindings>
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsAccount}" Value="False">
-                                                    <Setter Property="Width" Value="20"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsAccount}" Value="True">
-                                                    <Setter Property="Width" Value="100"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.ColumnSpan="2" x:Name="BorderForSelect" Background="#55777777"  Visibility="Collapsed" Margin="-5"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TabName}" Width="80" Height="25" Margin="0" VerticalAlignment="Center" FontSize="15">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsAccount}" Value="False">
-                                                        <Setter Property="TextAlignment" Value="Center"/>
-                                                        <Setter Property="HorizontalAlignment" Value="Center"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsAccount}" Value="True">
-                                                        <Setter Property="HorizontalAlignment" Value="Left"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <Grid Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="15" Height="15" Margin="-15,0,0,0" x:Name="GridCross">
-                                        <Grid.InputBindings>
-                                            <MouseBinding Gesture="LeftClick" Command="{Binding CloseCmd}"/>
-                                        </Grid.InputBindings>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsAccount}" Value="False">
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </DataTrigger>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background"  Value="#ffdddddd"/>
-                                                    </Trigger>
-                                                    <Trigger Property="IsMouseOver" Value="False">
-                                                        <Setter Property="Background" Value="Transparent"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <Grid Width="11" Height="11">
-                                            <Line X1="1" Y1="0" X2="12" Y2="11" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
-                                            <Line X1="0" Y1="1" X2="11" Y2="12" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
-                                            <Line X1="0" Y1="10" X2="10" Y2="0" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
-                                            <Line X1="1" Y1="11" X2="11" Y2="1" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
-                                            <Line X1="1" Y1="1" X2="10" Y2="10" Stroke="#ff777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
-                                            <Line X1="1" Y1="10" X2="10" Y2="1" Stroke="#ff777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
-                                        </Grid>
-                                    </Grid>
-
-                                </Grid>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsSelected" Value="true">
-                                        <Setter TargetName="BorderForSelect" Property="Visibility" Value="Visible"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="#955" Height="1"/>
         <Frame Grid.Row="2" NavigationUIVisibility="Hidden" Content="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab.Page}">
             <Frame.Style>

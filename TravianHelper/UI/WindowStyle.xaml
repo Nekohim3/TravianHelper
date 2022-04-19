@@ -1,0 +1,205 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    x:Class="TravianHelper.UI.VS2012WindowStyle"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:local="clr-namespace:TravianHelper">
+
+    <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="#222" />
+    <SolidColorBrush x:Key="VS2012WindowBorderBrush" Color="#955" />
+    <SolidColorBrush x:Key="VS2012WindowBorderBrushInactive" Color="#522" />
+
+    <Style x:Key="VS2012WindowStyleTitleBarButton" TargetType="{x:Type Button}">
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Border x:Name="PART_border" Background="Transparent"/>
+                        <ContentPresenter />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_border" Property="Background" Value="#99777777" />
+                            <Setter TargetName="PART_border" Property="Opacity" Value="0.7" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PART_border" Property="BorderBrush" Value="{StaticResource VS2012WindowBorderBrush}"/>
+                            <Setter TargetName="PART_border" Property="Opacity" Value="1" />
+                            <Setter Property="Foreground" Value="#99777777"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="VS2012WindowStyle" TargetType="Window">
+        <Setter Property="WindowStyle" Value="None" />
+        <Setter Property="AllowsTransparency" Value="true" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="ResizeMode" Value="CanResizeWithGrip" />
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <WindowChrome NonClientFrameEdges="None" GlassFrameThickness="0" ResizeBorderThickness="7" CaptionHeight="26" />
+            </Setter.Value>
+        </Setter>
+        <EventSetter Event="Loaded" Handler="WindowLoaded" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Window}">
+                    <Border x:Name="PART_Container" Padding="7 7 7 5">
+                        <Grid TextOptions.TextRenderingMode="ClearType" TextOptions.TextFormattingMode="Display" Grid.IsSharedSizeScope="True">
+                            <Border x:Name="PART_Border" Width="Auto" Height="Auto" Background="#222" BorderBrush="{StaticResource VS2012WindowBorderBrush}" BorderThickness="1" Padding="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="26"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <Border x:Name="TitleBar" Background="{StaticResource TitleBarBackgroundBrush}" BorderThickness="0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ListView  Foreground="AliceBlue" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                                           Grid.Column="0" 
+                                                           ItemsSource="{Binding Source={x:Static local:g.TabManager}, Path=TabList}"  
+                                                           SelectedItem="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab}" 
+                                                           BorderThickness="0"  
+                                                           BorderBrush="#955">
+                                                    <ListView.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ListView.ItemsPanel>
+                                                    <ListView.ItemContainerStyle>
+                                                        <Style TargetType="ListViewItem">
+                                                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="ListViewItem">
+                                                                        <Grid Height="26" Margin="5,0,5,0" VerticalAlignment="Center">
+                                                                            <Grid.InputBindings>
+                                                                                <MouseBinding Gesture="MiddleClick" Command="{Binding CloseCmd}"/>
+                                                                            </Grid.InputBindings>
+                                                                            <Grid.Style>
+                                                                                <Style TargetType="Grid">
+                                                                                    <Style.Triggers>
+                                                                                        <DataTrigger Binding="{Binding IsAccount}" Value="False">
+                                                                                            <Setter Property="Width" Value="20"/>
+                                                                                        </DataTrigger>
+                                                                                        <DataTrigger Binding="{Binding IsAccount}" Value="True">
+                                                                                            <Setter Property="Width" Value="100"/>
+                                                                                        </DataTrigger>
+                                                                                    </Style.Triggers>
+                                                                                </Style>
+                                                                            </Grid.Style>
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="Auto"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                                <ColumnDefinition Width="Auto"/>
+                                                                            </Grid.ColumnDefinitions>
+                                                                            <Border Grid.ColumnSpan="2" x:Name="BorderForSelect" Background="#55777777"  Visibility="Collapsed" Margin="-5"/>
+                                                                            <TextBlock Grid.Column="1" Text="{Binding TabName}" Width="80" VerticalAlignment="Center">
+                                                                                <TextBlock.Style>
+                                                                                    <Style TargetType="TextBlock">
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding IsAccount}" Value="False">
+                                                                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                                                            </DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding IsAccount}" Value="True">
+                                                                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </TextBlock.Style>
+                                                                            </TextBlock>
+                                                                            <Grid Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="15" Height="15" Margin="-15,0,0,0" x:Name="GridCross">
+                                                                                <Grid.InputBindings>
+                                                                                    <MouseBinding Gesture="LeftClick" Command="{Binding CloseCmd}"/>
+                                                                                </Grid.InputBindings>
+                                                                                <Grid.Style>
+                                                                                    <Style TargetType="Grid">
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding IsAccount}" Value="False">
+                                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                            </DataTrigger>
+                                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                                <Setter Property="Background"  Value="#ffdddddd"/>
+                                                                                            </Trigger>
+                                                                                            <Trigger Property="IsMouseOver" Value="False">
+                                                                                                <Setter Property="Background" Value="Transparent"/>
+                                                                                            </Trigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Grid.Style>
+                                                                                <Grid Width="11" Height="11">
+                                                                                    <Line X1="1" Y1="0" X2="12" Y2="11" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                                                                    <Line X1="0" Y1="1" X2="11" Y2="12" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                                                                    <Line X1="0" Y1="10" X2="10" Y2="0" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                                                                    <Line X1="1" Y1="11" X2="11" Y2="1" Stroke="#55777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                                                                    <Line X1="1" Y1="1" X2="10" Y2="10" Stroke="#ff777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                                                                    <Line X1="1" Y1="10" X2="10" Y2="1" Stroke="#ff777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
+                                                                                </Grid>
+                                                                            </Grid>
+
+                                                                        </Grid>
+                                                                        <ControlTemplate.Triggers>
+                                                                            <Trigger Property="IsSelected" Value="true">
+                                                                                <Setter TargetName="BorderForSelect" Property="Visibility" Value="Visible"/>
+                                                                            </Trigger>
+                                                                        </ControlTemplate.Triggers>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Style>
+                                                    </ListView.ItemContainerStyle>
+                                                </ListView>
+                                                <Button x:Name="MinButton" Grid.Column="2" VerticalAlignment="Top" Width="34" Height="26" Style="{StaticResource VS2012WindowStyleTitleBarButton}" Click="MinButtonClick" WindowChrome.IsHitTestVisibleInChrome="True">
+                                                    <Grid MaxHeight="9" MaxWidth="9">
+                                                        <Path Stroke="#955" StrokeThickness="1" Stretch="None" RenderOptions.EdgeMode="Aliased" Data="M0,8 H8 M0,7 H8 M0,6 H8" />
+                                                    </Grid>
+                                                </Button>
+                                                <Button Grid.Column="3" x:Name="MaxButton" VerticalAlignment="Top" Width="34" Height="26" Style="{StaticResource VS2012WindowStyleTitleBarButton}" Click="MaxButtonClick" WindowChrome.IsHitTestVisibleInChrome="True">
+                                                    <Grid MaxHeight="9" MaxWidth="9">
+                                                        <Path x:Name="PART_MaxButton_Path" Stroke="#955" StrokeThickness="1" Stretch="None" RenderOptions.EdgeMode="Aliased" Data="M0,0 H8 V8 H0 V0 M0,1 H8 M0,2 H8" />
+                                                    </Grid>
+                                                </Button>
+                                                <Button Grid.Column="4" x:Name="CloseButton"  VerticalAlignment="Top" Width="34" Height="26" Style="{StaticResource VS2012WindowStyleTitleBarButton}" Click="CloseButtonClick" WindowChrome.IsHitTestVisibleInChrome="True">
+                                                    <Grid MaxHeight="9" MaxWidth="9">
+                                                        <Path Stroke="#955" StrokeThickness="1.5" Stretch="None" Data="M0,0 L8,8 M0,8 L8,0" />
+                                                    </Grid>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                    <ContentPresenter Grid.Row="1"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="WindowState" Value="Maximized">
+                            <Setter TargetName="PART_MaxButton_Path" Property="Data" Value="M0,3 H5 V8 H0 V3 M0,4 H5 M3,0 H8 V5 H7 M3,1 H8"/>
+                            <Setter TargetName="PART_Border" Property="BorderThickness" Value="0"/>
+                        </Trigger>
+                        <Trigger Property="WindowState" Value="Normal">
+                            <Setter TargetName="PART_Border" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect Color="black" Opacity="0.5" BlurRadius="7" ShadowDepth="2" Direction="315"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsActive" Value="False">
+                            <Setter TargetName="PART_Border" Property="BorderBrush" Value="{StaticResource VS2012WindowBorderBrushInactive}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

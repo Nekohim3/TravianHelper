@@ -51,9 +51,6 @@ namespace TravianHelper.UI
                 IsEditMode = false;
                 RaiseCanExecChanged();
                 CurrentServer = _selectedServer;
-                UsedAccountList.Clear();
-                if (SelectedServer != null)
-                    UsedAccountList.AddRange(g.Db.GetCollection<Account>().AsQueryable().Where(x => x.ServerId == _selectedServer.Id));
             }
         }
 
@@ -66,18 +63,6 @@ namespace TravianHelper.UI
             {
                 _currentServer = value;
                 RaisePropertyChanged(() => CurrentServer);
-            }
-        }
-
-        private ObservableCollection<Account> _usedAccountList = new ObservableCollection<Account>();
-
-        public ObservableCollection<Account> UsedAccountList
-        {
-            get => _usedAccountList;
-            set
-            {
-                _usedAccountList = value;
-                RaisePropertyChanged(() => UsedAccountList);
             }
         }
 

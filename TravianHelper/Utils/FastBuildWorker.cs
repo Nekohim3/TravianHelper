@@ -20,13 +20,26 @@ namespace TravianHelper.Utils
             get => _working;
             set
             {
-                if(_working == value) 
-                    return;
-                _working = value;
-                if (_working)
-                    Run();
+                if (Account.UseSingleBuild || Account.UseMultiBuild)
+                {
+                    if (_working == value)
+                        return;
+                    _working = value;
+                    if (_working)
+                        Run();
+                    else
+                        NotBlockWait = false;
+                }
                 else
-                    NotBlockWait = false;
+                {
+                    if (_working && !value)
+                    {
+                        _working     = false;
+                        NotBlockWait = false;
+                    }
+                }
+                
+
                 RaisePropertyChanged(() => Working);
             }
         }
@@ -42,6 +55,8 @@ namespace TravianHelper.Utils
                 RaisePropertyChanged(() => NotBlockWait);
             }
         }
+
+        private DateTime _lastMultiCheck = DateTime.MinValue;
 
         private Account _account;
 
@@ -90,7 +105,7 @@ namespace TravianHelper.Utils
                             if (!string.IsNullOrEmpty(finish) && !string.IsNullOrEmpty(currentTime) && qTypeNumber != 0 && !string.IsNullOrEmpty(vid))
                             {
                                 var time = Convert.ToInt32(Convert.ToDouble(finish.Replace(".", ","))) - Convert.ToInt32(Convert.ToDouble(currentTime.Replace(".", ",")));
-                                if (time < 298)
+                                if (time < 299)
                                 {
                                     try
                                     {
@@ -110,22 +125,58 @@ namespace TravianHelper.Utils
                         }
                         
                     }
-                    //Account.Driver.GetCache(Account.Player.VillageList.Select(x => $"BuildingQueue:{x.Id}").ToList());
-                    //foreach (var x in Account.Player.VillageList.ToList())
-                    //{
-                    //    var q1 = x.Queue.Queue.FirstOrDefault(c => c.idq == 1);
-                    //    var q2 = x.Queue.Queue.FirstOrDefault(c => c.idq == 2);
-                    //    var q5 = x.Queue.Queue.FirstOrDefault(c => c.idq == 5);
-                    //    if (q1 != default((int, int, int, int)))
-                    //        if (q1.finishTime - x.Queue.UpdateTimeStamp < 295)
-                    //            Account.Driver.FinishNow(x.Id, 1, 0);
-                    //    if (q2 != default((int, int, int, int)))
-                    //        if (q2.finishTime - x.Queue.UpdateTimeStamp < 295)
-                    //            Account.Driver.FinishNow(x.Id, 2, 0);
-                    //    if (q5 != default((int, int, int, int)))
-                    //        if (q5.finishTime - x.Queue.UpdateTimeStamp < 295)
-                    //            Account.Driver.FinishNow(x.Id, 5, 0);
-                    //}
+
+                    if (Account.UseMultiBuild)
+                    {
+                        var check = false;
+                        if (!Account.UseRandomDelay)
+                        {
+                            if ((DateTime.Now - _lastMultiCheck).TotalSeconds > Account.FastBuildDelayMin)
+                                check = true;
+                        }
+                        else
+                        {
+                            var r     = new Random();
+                            var delay = r.Next(Account.FastBuildDelayMin, Account.FastBuildDelayMax);
+                            if ((DateTime.Now - _lastMultiCheck).TotalSeconds > delay)
+                                check = true;
+                        }
+
+                        if (check)
+                        {
+                            Account.Driver.GetCache(Account.Player.VillageList.Select(x => $"BuildingQueue:{x.Id}").ToList());
+                            foreach (var x in Account.Player.VillageList.ToList())
+                            {
+                                var q1 = x.Queue.QueueList.FirstOrDefault(c => c.QueueId == 1);
+                                var q2 = x.Queue.QueueList.FirstOrDefault(c => c.QueueId == 2);
+                                var q5 = x.Queue.QueueList.FirstOrDefault(c => c.QueueId == 5);
+                                if (q1 != null)
+                                    if (q1.FinishTime - x.Queue.UpdateTimeStamp < 299)
+                                    {
+                                        Account.Driver.FinishNow(x.Id, 1, 0);
+                                        Thread.Sleep(500);
+                                        _lastMultiCheck = DateTime.Now;
+                                    }
+
+                                if (q2 != null)
+                                    if (q2.FinishTime - x.Queue.UpdateTimeStamp < 299)
+                                    {
+                                        Account.Driver.FinishNow(x.Id, 2, 0);
+                                        Thread.Sleep(500);
+                                        _lastMultiCheck = DateTime.Now;
+                                    }
+
+                                if (q5 != null)
+                                    if (q5.FinishTime - x.Queue.UpdateTimeStamp < 299)
+                                    {
+                                        Account.Driver.FinishNow(x.Id, 5, 0);
+                                        Thread.Sleep(500);
+                                        _lastMultiCheck = DateTime.Now;
+                                    }
+                            }
+                        }
+                    }
+                    
                 }
 
                 Thread.Sleep(500);

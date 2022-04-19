@@ -31,6 +31,8 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        public string NameWithNote => $"{Name} {(string.IsNullOrEmpty(Note) ? "" : "(")}{Note}{(string.IsNullOrEmpty(Note) ? "" : ")")}";
+
         private string _email;
 
         public string Email
@@ -64,6 +66,18 @@ namespace TravianHelper.TravianEntities
             {
                 _password = value;
                 RaisePropertyChanged(() => Password);
+            }
+        }
+
+        private string _note;
+
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+                RaisePropertyChanged(() => Note);
             }
         }
 

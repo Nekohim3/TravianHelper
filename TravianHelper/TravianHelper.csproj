@@ -295,6 +295,7 @@
     <Compile Include="UI\SettingsViewModel.cs" />
     <Compile Include="UI\Tab.cs" />
     <Compile Include="UI\TabManager.cs" />
+    <Compile Include="UI\WindowStyle.cs" />
     <Compile Include="Utils\Driver.cs" />
     <Compile Include="Utils\FastBuildWorker.cs" />
     <Compile Include="Utils\Logger.cs" />
@@ -324,6 +325,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\WindowStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

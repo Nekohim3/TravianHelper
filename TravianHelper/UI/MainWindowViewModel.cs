@@ -4,7 +4,6 @@ namespace TravianHelper.UI
 {
     public class MainWindowViewModel : NotificationObject
     {
-        
         public MainWindowViewModel()
         {
 
