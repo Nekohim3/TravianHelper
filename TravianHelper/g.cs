@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Practices.Prism;
 using Microsoft.Practices.Prism.ViewModel;
 using Newtonsoft.Json;
+using SmorcIRL.TempMail;
 using TravianHelper.JsonDb;
 using TravianHelper.Settings;
 using TravianHelper.UI;
@@ -20,15 +21,16 @@ namespace TravianHelper
         public static string              UserDataPath  { get; set; }
         public static MainWindowViewModel MainViewModel { get; set; }
         public static TabManager          TabManager    { get; set; }
-        
+        public static string              Domain        { get; set; }
         public static void Init()
         {
             UserDataPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             if (!Directory.Exists($"{UserDataPath}\\UserData"))
                 Directory.CreateDirectory($"{UserDataPath}\\UserData");
-            UserDataPath   = $"{UserDataPath}\\UserData";
-            Db             = new DataStore($"{UserDataPath}\\Database", reloadBeforeGetCollection: true);
-            TabManager     = new TabManager();
+            UserDataPath = $"{UserDataPath}\\UserData";
+            Db           = new DataStore($"{UserDataPath}\\Database", reloadBeforeGetCollection: true);
+            Domain       = new MailClient().GetFirstAvailableDomainName().GetAwaiter().GetResult();
+            TabManager   = new TabManager();
             TabManager.OpenSettingsTab();
         }
     }

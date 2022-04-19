@@ -17,7 +17,46 @@ namespace TravianHelper.UI
 {
     public class AccountSettingsViewModel : NotificationObject
     {
-        private bool _isEditMode;
+        private char[] _chars = new[]
+                               {
+                                   '0',
+                                   '1',
+                                   '2',
+                                   '3',
+                                   '4',
+                                   '5',
+                                   '6',
+                                   '7',
+                                   '8',
+                                   '9',
+                                   'q',
+                                   'w',
+                                   'e',
+                                   'r',
+                                   't',
+                                   'y',
+                                   'u',
+                                   'i',
+                                   'o',
+                                   'p',
+                                   'a',
+                                   's',
+                                   'd',
+                                   'f',
+                                   'g',
+                                   'h',
+                                   'j',
+                                   'k',
+                                   'l',
+                                   'z',
+                                   'x',
+                                   'c',
+                                   'v',
+                                   'b',
+                                   'n',
+                                   'm'
+                               };
+        private bool     _isEditMode;
 
         public bool IsEditMode
         {
@@ -39,7 +78,10 @@ namespace TravianHelper.UI
                 _name = value;
                 RaisePropertyChanged(() => Name);
                 if (!CustomMail)
-                    Mail = $"{_name}gj@candassociates.com".ToLower();
+                {
+                    var r = new Random(_name.Sum(x => x));
+                    Mail = $"{_name}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}@{g.Domain}".ToLower();
+                }
             }
         }
 

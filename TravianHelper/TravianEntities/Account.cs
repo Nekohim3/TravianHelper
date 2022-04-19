@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
 using OpenQA.Selenium;
+using SmorcIRL.TempMail;
 using TravianHelper.Settings;
 using TravianHelper.Utils;
 using Proxy = TravianHelper.Settings.Proxy;
@@ -390,6 +391,18 @@ namespace TravianHelper.TravianEntities
             {
                 _fastBuildWorker = value;
                 RaisePropertyChanged(() => FastBuildWorker);
+            }
+        }
+
+        private MailClient _mailClient;
+        [JsonIgnore]
+        public MailClient MailClient
+        {
+            get => _mailClient;
+            set
+            {
+                _mailClient = value;
+                RaisePropertyChanged(() => MailClient);
             }
         }
 

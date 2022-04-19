@@ -263,6 +263,8 @@
       <DependentUpon>SeleniumHostWPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings\DbEntity.cs" />
+    <Compile Include="StaticData\BuildingsData.cs" />
+    <Compile Include="StaticData\TribeData.cs" />
     <Compile Include="TravianEntities\Account.cs" />
     <Compile Include="TravianEntities\Building.cs" />
     <Compile Include="TravianEntities\Hero.cs" />
@@ -296,10 +298,21 @@
     <Compile Include="UI\Tab.cs" />
     <Compile Include="UI\TabManager.cs" />
     <Compile Include="UI\WindowStyle.cs" />
+    <Compile Include="Utils\Commands\ActivateCmd.cs" />
+    <Compile Include="Utils\Commands\BaseCommand.cs" />
+    <Compile Include="Utils\Commands\BuildingUpgradeCmd.cs" />
+    <Compile Include="Utils\Commands\ChooseTribeCmd.cs" />
+    <Compile Include="Utils\Commands\DialogActionCmd.cs" />
+    <Compile Include="Utils\Commands\GetRegLinkCmd.cs" />
+    <Compile Include="Utils\Commands\MailRegCmd.cs" />
+    <Compile Include="Utils\Commands\RegLoginCmd.cs" />
+    <Compile Include="Utils\Commands\SetSettingsCmd.cs" />
     <Compile Include="Utils\Driver.cs" />
     <Compile Include="Utils\FastBuildWorker.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\RegistrationWorker.cs" />
     <Compile Include="Utils\RPG.cs" />
+    <Compile Include="Utils\TravTask.cs" />
     <Page Include="SeleniumHost\SeleniumHostWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

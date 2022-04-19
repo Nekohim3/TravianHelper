@@ -178,10 +178,10 @@ namespace TravianHelper.Utils
             return dynamicDecodedSessionJson.id;
         }
 
-        public dynamic PostJo(JObject json, ResponseType type = ResponseType.Cache)
+        public dynamic PostJo(JObject json, ResponseType type = ResponseType.Cache, int counterCount = 3)
         {
             var counter = 0;
-            while (counter < 5)
+            while (counter < counterCount)
             {
                 try
                 {
