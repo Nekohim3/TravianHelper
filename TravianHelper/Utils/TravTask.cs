@@ -87,8 +87,8 @@ namespace TravianHelper.Utils
         ///
         /// NpcTrade остальное поровну
         /// </summary>
-        //BuildingUpgrade:vid:Type:Location(0 for find):BuildIfNotExist(0/1):FinishNow(0/1):Price(-1(item)/0(5min)/1(gold));Comment
-        //BU:10:25:1:0:0;
+        //BuildingUpgrade:vid:Type:Location(0 for find):FinishNow(0/1):Price(-1(item)/0(5min)/1(gold));Comment
+        //BU:10:25:0:0;
 
         //BuildingDestroy:vid:Type:Location(0 for find):FinishNow:Price;Comment
         //BD:10:25:1:0;

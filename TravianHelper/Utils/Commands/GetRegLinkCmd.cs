@@ -68,6 +68,7 @@ namespace TravianHelper.Utils.Commands
                     {
                         var str = DecodeQuotedPrintables(msgSource);
                         Link = str.Substring(str.IndexOf($"http://www.kingdoms.com/{Account.Server.Region}/#action=activation;token="), 90 + Account.Server.Region.Length);
+                        return true;
                     }
                     else
                     {

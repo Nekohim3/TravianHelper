@@ -496,14 +496,14 @@ namespace TravianHelper.TravianEntities
         {
             if(!Running.HasValue) return;
             Logger.Info($"[{Name}]: Account stop");
-            Running                 = false;
-            FastBuildWorker.Working = false;
             Application.Current.Dispatcher.Invoke(() =>
-                                                  {
-                                                      Driver.Dispose();
-                                                  });
-            Driver  = null;
-            Running = null;
+            {
+                Running                 = false;
+                FastBuildWorker.Working = false;
+                Driver.Dispose();
+                Driver  = null;
+                Running = null;
+            });
         }
 
 

@@ -75,6 +75,7 @@ namespace TravianHelper.Utils.Commands
                 try
                 {
                     if (!Account.Driver.DialogAction(QuestId, DialogId, Command, Input)) throw new Exception(errorMsg);
+                    return true;
                 }
                 catch (Exception e)
                 {

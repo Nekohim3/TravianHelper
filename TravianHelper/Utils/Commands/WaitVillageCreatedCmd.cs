@@ -2,42 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using TravianHelper.StaticData;
 using TravianHelper.TravianEntities;
 
 namespace TravianHelper.Utils.Commands
 {
-    public class ChooseTribeCmd : BaseCommand
+    public class WaitVillageCreatedCmd : BaseCommand
     {
-        private int _tribeId;
-
-        public int TribeId
+        public WaitVillageCreatedCmd(Account acc) : base(acc)
         {
-            get => _tribeId;
-            set
-            {
-                _tribeId = value;
-                RaisePropertyChanged(() => TribeId);
-            }
-        }
-
-        public ChooseTribeCmd(Account acc, int tribeId) : base(acc)
-        {
-            TribeId = tribeId;
-            Display = $"ChooseTribe:{TribesData.GetByTribeId(TribeId)?.Name}";
+            Display = "WaitVillageCreated";
         }
 
         public override bool Exec(int counterCount = 0)
         {
-            var errorMsg = $"[{Account.NameWithNote}]: ErrorChooseTribe ({TribeId})";
+            var errorMsg = $"[{Account.NameWithNote}]: Error WaitVillageCreatedCmd";
             var counter  = 0;
             while (counter <= counterCount)
             {
                 try
                 {
-                    if (!Account.Driver.ChooseTribe(TribeId)) throw new Exception($"{errorMsg}");
+                    Account.Player.Update();
+                    Account.Player.UpdateVillageList();
+                    if(Account.Player.VillageList.Count != 1 || Account.Player.VillageList[0].Id < 0)
+                    {
+                        counter++;
+                        Logger.Error(errorMsg);
+                        Thread.Sleep(5000);
+                    }
+
                     return true;
                 }
                 catch (Exception e)

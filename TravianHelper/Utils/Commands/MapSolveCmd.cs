@@ -4,40 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using TravianHelper.StaticData;
 using TravianHelper.TravianEntities;
 
 namespace TravianHelper.Utils.Commands
 {
-    public class ChooseTribeCmd : BaseCommand
+    public class MapSolveCmd : BaseCommand
     {
-        private int _tribeId;
-
-        public int TribeId
+        public MapSolveCmd(Account acc) : base(acc)
         {
-            get => _tribeId;
-            set
-            {
-                _tribeId = value;
-                RaisePropertyChanged(() => TribeId);
-            }
-        }
-
-        public ChooseTribeCmd(Account acc, int tribeId) : base(acc)
-        {
-            TribeId = tribeId;
-            Display = $"ChooseTribe:{TribesData.GetByTribeId(TribeId)?.Name}";
+            Display = "SolveMap";
         }
 
         public override bool Exec(int counterCount = 0)
         {
-            var errorMsg = $"[{Account.NameWithNote}]: ErrorChooseTribe ({TribeId})";
+            var errorMsg = $"[{Account.NameWithNote}]: Error MapSolveCmd";
             var counter  = 0;
             while (counter <= counterCount)
             {
                 try
                 {
-                    if (!Account.Driver.ChooseTribe(TribeId)) throw new Exception($"{errorMsg}");
+                    new MapSolver().Solve(Account);
                     return true;
                 }
                 catch (Exception e)
