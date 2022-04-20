@@ -69,7 +69,9 @@
                                                            ItemsSource="{Binding Source={x:Static local:g.TabManager}, Path=TabList}"  
                                                            SelectedItem="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab}" 
                                                            BorderThickness="0"  
-                                                           BorderBrush="#955">
+                                                           FocusVisualStyle="{x:Null}"
+                                                           Background="#222"
+                                                            BorderBrush="#955">
                                                     <ListView.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <StackPanel Orientation="Horizontal"/>

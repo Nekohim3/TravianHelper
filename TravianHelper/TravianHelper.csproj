@@ -318,7 +318,9 @@
     <Compile Include="Utils\FastBuildWorker.cs" />
     <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\MapSolver.cs" />
+    <Compile Include="Utils\OldTaskListWorker.cs" />
     <Compile Include="Utils\RegistrationWorker.cs" />
+    <Compile Include="Utils\RobberWorker.cs" />
     <Compile Include="Utils\RPG.cs" />
     <Compile Include="Utils\TravTask.cs" />
     <Page Include="SeleniumHost\SeleniumHostWPF.xaml">

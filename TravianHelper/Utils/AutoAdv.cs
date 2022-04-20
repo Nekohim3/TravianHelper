@@ -118,7 +118,8 @@ namespace TravianHelper.Utils
 
                 }
 
-                Thread.Sleep(500);
+                for(var i = 0; i < 60 && Working; i++)
+                    Thread.Sleep(500);
             }
 
             Application.Current.Dispatcher.Invoke(() =>

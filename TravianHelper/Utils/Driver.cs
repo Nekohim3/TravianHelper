@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -44,6 +45,20 @@ namespace TravianHelper.Utils
         public  int                 ChromePid          { get; set; }
         public  IntPtr              ChromeWindowHandle { get; set; }
         private DateTime            _lastRespDate = DateTime.MinValue;
+
+        private bool _nonReg;
+
+        public bool NonReg
+        {
+            get => _nonReg;
+            set
+            {
+                _nonReg = value;
+                RaisePropertyChanged(() => NonReg);
+            }
+        }
+
+        private Thread _regTh { get; set; }
 
         public SeleniumHostWPF Host
         {
@@ -121,6 +136,7 @@ namespace TravianHelper.Utils
             }
 
             RestClient = new RestClient(RestOptions);
+            NonReg     = true;
             Logger.Info($"[{Account.Name}]: End driver initialization");
         }
 
@@ -288,6 +304,270 @@ namespace TravianHelper.Utils
             }
 
             return lst.Count != 0 ? lst : null;
+        }
+
+        public void Registration()
+        {
+            if(!NonReg) return;
+            NonReg = false;
+            _regTh = new Thread(RegThFunc);
+            _regTh.Start();
+        }
+        public void RegThFunc()
+        {
+            MClient = new MailClient();
+            var domain = MClient.GetFirstAvailableDomainName().GetAwaiter().GetResult();
+            Thread.Sleep(5000);
+            var counter = 0;
+            while (counter <= 5)
+            {
+                try
+                {
+                    MClient.Register($"{Account.Name}gj@{domain}", Account.Password).GetAwaiter().GetResult();
+                    break;
+                }
+                catch (Exception e)
+                {
+                    counter++;
+                    Thread.Sleep(5000);
+                }
+            }
+
+            if (counter > 5)
+            {
+                MessageBox.Show("Error mail reg");
+                return;
+            }
+
+            Login($"{Account.Name}gj@{domain}", Account.Password);
+            Thread.Sleep(5000);
+            ChooseTribe(2);
+            Thread.Sleep(3000);
+            PostJo(JObject.Parse(
+                                 "{\"controller\":\"player\",\"action\":\"changeSettings\",\"params\":{\"newSettings\":{\"premiumConfirmation\":3,\"lang\":\"ru\",\"onlineStatusFilter\":2,\"extendedSimulator\":false,\"musicVolume\":0,\"soundVolume\":0,\"uiSoundVolume\":50,\"muteAll\":true,\"timeZone\":\"3.0\",\"timeFormat\":0,\"attacksFilter\":2,\"mapFilter\":123,\"enableTabNotifications\":true,\"disableAnimations\":true,\"enableHelpNotifications\":true,\"enableWelcomeScreen\":true,\"notpadsVisible\":false}},\"session\":\"" +
+                                 GetSession() + "\"}"));
+            DialogAction(1, 1, "setName", Account.Name);
+            var msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
+            while (msgArr.Length == 0)
+            {
+                Thread.Sleep(5000);
+                msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
+            }
+
+            Thread.Sleep(5000);
+
+            var msg = "";
+            counter = 0;
+            while (counter <= 5)
+            {
+                try
+                {
+                    msg = MClient.GetMessageSource(msgArr.FirstOrDefault(x => x.Subject.ToLower().Contains("travian kingdoms")).Id).GetAwaiter().GetResult().Data;
+                    break;
+                }
+                catch (Exception e)
+                {
+                    counter++;
+                    Thread.Sleep(5000);
+                }
+            }
+
+            if (counter > 5)
+            {
+                MessageBox.Show("Error mail reg");
+                return;
+            }
+
+
+            var str = DecodeQuotedPrintables(msg);
+
+            var link = str.Substring(str.IndexOf($"http://www.kingdoms.com/{Account.Server.Region}/#action=activation;token="), 90 + Account.Server.Region.Length);
+            JsExec.ExecuteScript("window.open()");
+            Chrome.SwitchTo().Window(Chrome.WindowHandles.Last());
+            Chrome.Navigate().GoToUrl(link);
+            Thread.Sleep(5000);
+            Activate();
+            Thread.Sleep(5000);
+            Chrome.Close();
+            Chrome.SwitchTo().Window(Chrome.WindowHandles.First());
+            Thread.Sleep(5000);
+            DialogAction(1, 1, "activate");
+            Thread.Sleep(1500);
+            Account.Player.Update();
+            Account.Player.UpdateVillageList();
+            var vid = Account.Player.VillageList.First().Id;
+            SendTroops(vid, 536920065, 3, false, "resources", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+            Thread.Sleep(10000);
+            DialogAction(1, 2, "backToVillage");
+            Thread.Sleep(1500);
+            BuildingUpgrade(vid, 33, 22);
+            Thread.Sleep(6000);
+            BuildingUpgrade(vid, 29, 19);
+            Thread.Sleep(1500);
+            RecruitUnits(vid, 29, 19, "12", 3);//////////////////////////
+            Thread.Sleep(1500);
+            DialogAction(30, 1, "attack");
+            Thread.Sleep(10000);
+            DialogAction(34, 1, "activate");
+            Thread.Sleep(1500);
+            DialogAction(34, 1, "face");
+            Thread.Sleep(1500);
+            DialogAction(35, 1, "activate");
+            Thread.Sleep(1500);
+            BuildingUpgrade(vid, 2, 4);
+            Thread.Sleep(6000);
+            DialogAction(203, 1, "activate");
+            Thread.Sleep(1500);
+            DialogAction(203, 1, "become_governor");
+            Thread.Sleep(1500);
+            DialogAction(204, 1, "activate");
+            Thread.Sleep(3000);
+            new MapSolver().Solve(Account);
+            Thread.Sleep(2000);
+            DialogAction(302, 1, "activate");
+            Thread.Sleep(5000);
+            var counter1 = 0;
+            while (Account.Player.VillageList.Count != 1 || Account.Player.VillageList[0].Id < 0)
+            {
+                Account.Player.Update();
+                Account.Player.UpdateVillageList();
+
+                counter1++;
+                if (counter1 > 10)
+                {
+                    Account.Name = "REG ERROR";
+                    Account.Save();
+                    return;
+                }
+
+                Thread.Sleep(5000);
+            }
+
+            vid = Account.Player.VillageList.First().Id;
+
+            var newList = new List<int>();
+            var destv = -1;
+            counter1 = 0;
+            while (newList.Count == 0)
+            {
+                newList.Clear();
+                var data = PostJo(RPG.GetCache_MapDetails(GetSession(), vid));
+                foreach (var q in data.cache)
+                    if (q.data.npcInfo != null)
+                        newList.Add(Convert.ToInt32(q.name.ToString().Split(':')[1]));
+
+                counter1++;
+                if (counter1 > 10)
+                {
+                    Account.Name = "REG ERROR";
+                    Account.Save();
+                    return;
+                }
+
+                Thread.Sleep(5000);
+            }
+
+            var d1 = Math.Abs(vid - newList[0]);
+            var d2 = Math.Abs(vid - newList[1]);
+            destv = d1 >= d2 ? newList[0] : newList[1];
+
+            if (destv == -1) return;
+            SendTroops(vid, destv, 3, false, "resources", 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+            Thread.Sleep(20000);
+            DialogAction(303, 1, "activate");
+            Thread.Sleep(2000);
+            Account.Player.Hero.Update();
+            Account.Player.Hero.UpdateItems();
+            UseHeroItem(1, Account.Player.Hero.Items.First(x => x.ItemType == 120).Id, vid);
+            Thread.Sleep(10000);
+            DialogAction(399, 1, "activate");
+            Thread.Sleep(3000);
+            DialogAction(399, 1, "finish");
+            Thread.Sleep(1500);
+            CollectReward(vid, 205);
+            Thread.Sleep(1500);
+            UpdateVillageName(vid, Account.Name);
+            Thread.Sleep(1500);
+            CollectReward(vid, 202);
+            Thread.Sleep(3000);
+            Chrome.Navigate().Refresh();
+            Thread.Sleep(5000);
+            Account.RegComplete = true;
+            Account.Save();
+            Account.UpdateAll();
+            Account.OldTaskListWorker.Init();
+            NonReg = true;
+        }
+
+        public string DecodeQuotedPrintables(string input, string charSet = "")
+        {
+            if (string.IsNullOrEmpty(charSet))
+            {
+                var charSetOccurences = new Regex(@"=\?.*\?Q\?", RegexOptions.IgnoreCase);
+                var charSetMatches = charSetOccurences.Matches(input);
+                foreach (Match match in charSetMatches)
+                {
+                    charSet = match.Groups[0].Value.Replace("=?", "").Replace("?Q?", "");
+                    input = input.Replace(match.Groups[0].Value, "").Replace("?=", "");
+                }
+            }
+
+            Encoding enc = new ASCIIEncoding();
+            if (!string.IsNullOrEmpty(charSet))
+            {
+                try
+                {
+                    enc = Encoding.GetEncoding(charSet);
+                }
+                catch
+                {
+                    enc = new ASCIIEncoding();
+                }
+            }
+
+            //decode iso-8859-[0-9]
+            var occurences = new Regex(@"=[0-9A-Z]{2}", RegexOptions.Multiline);
+            var matches = occurences.Matches(input);
+            foreach (Match match in matches)
+            {
+                try
+                {
+                    byte[] b = new byte[] { byte.Parse(match.Groups[0].Value.Substring(1), System.Globalization.NumberStyles.AllowHexSpecifier) };
+                    char[] hexChar = enc.GetChars(b);
+                    input = input.Replace(match.Groups[0].Value, hexChar[0].ToString());
+                }
+                catch { }
+            }
+
+            //decode base64String (utf-8?B?)
+            occurences = new Regex(@"\?utf-8\?B\?.*\?", RegexOptions.IgnoreCase);
+            matches = occurences.Matches(input);
+            foreach (Match match in matches)
+            {
+                byte[] b = Convert.FromBase64String(match.Groups[0].Value.Replace("?utf-8?B?", "").Replace("?UTF-8?B?", "").Replace("?", ""));
+                string temp = Encoding.UTF8.GetString(b);
+                input = input.Replace(match.Groups[0].Value, temp);
+            }
+
+            input = input.Replace("=\r\n", "");
+            return input;
+        }
+
+        public void Login(string email, string pass)
+        {
+            Chrome.SwitchTo().Frame(Chrome.FindElementsByTagName("iframe").FirstOrDefault(x => x.GetAttribute("Class") == "mellon-iframe"));
+            Chrome.SwitchTo().Frame(Chrome.FindElementByTagName("iframe"));
+            Chrome.FindElement(By.Name("email")).SendKeys(email);
+            Chrome.FindElement(By.Name("password[password]")).SendKeys(pass);
+            JsExec.ExecuteScript("arguments[0].click();", Chrome.FindElement(By.Name("termsAccepted")));
+            Chrome.FindElement(By.Name("submit")).Click();
+        }
+
+        public void Activate()
+        {
+            Chrome.SwitchTo().Frame(Chrome.FindElementsByTagName("iframe").FirstOrDefault(x => x.GetAttribute("Class") == "mellon-iframe"));
+            Chrome.SwitchTo().Frame(Chrome.FindElementByTagName("iframe"));
+            Chrome.FindElement(By.Name("activate")).Click();
         }
 
         #region TReq

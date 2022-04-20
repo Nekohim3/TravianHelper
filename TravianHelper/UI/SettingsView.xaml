@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TravianHelper.UI"
         xmlns:conv="clr-namespace:TravianHelper.Converters"
         mc:Ignorable="d" d:DataContext="{d:DesignInstance local:SettingsViewModel}" WindowStartupLocation="CenterScreen"
-        Title="{Binding Title}" Height="500" Width="500">
+        Title="{Binding Title}" Height="500" Width="500" Background="#222">
     <Window.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <conv:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>

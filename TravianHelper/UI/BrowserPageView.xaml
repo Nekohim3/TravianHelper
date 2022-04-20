@@ -4,17 +4,36 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TravianHelper.UI"
+      xmlns:converters="clr-namespace:TravianHelper.Converters"
       mc:Ignorable="d" d:DataContext="{d:DesignInstance local:BrowserPageViewModel}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="BrowserPageView">
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
+        <converters:NullableBoolToVisibilityConverter x:Key="NullableBoolToVisibilityConverter"/>
+        <converters:NullableBoolToVisibilityReverseConverter x:Key="NullableBoolToVisibilityReverseConverter"/>
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ContentControl Grid.Row="0" Content="{Binding Account.Driver.Host}"/>
-        <Grid Grid.Row="1" IsEnabled="{Binding Account.Loaded}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding Account.Driver.Host}"/>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <ListView ItemsSource="{Binding Account.OldTaskListWorker.TaskList}" SelectedItem="{Binding Account.OldTaskListWorker.SelectedTask}" Width="200" Style="{StaticResource ListViewStyle}"
+                      ItemContainerStyle="{StaticResource ListViewItemStyle}">
+            </ListView>
+
+        </Grid>
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -23,12 +42,28 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <!--<Button Width="100" Margin="3" Grid.Column="1" Content="Register"/>-->
-            <CheckBox Grid.Column="4" Margin="3" Content="Fast build" IsChecked="{Binding Account.FastBuildWorker.Working}" IsEnabled="{Binding Account.FastBuildWorker.NotBlockWait}"/>
-            <CheckBox Grid.Column="5" Margin="3" Content="Auto adv"/>
-            <CheckBox Grid.Column="6" Margin="3" Content="Auto robber"/>
-            <Button Width="50" Margin="3" Grid.Column="7" Content="Settings" Command="{Binding SettingsCmd}"/>
+            <Grid Grid.Column="0" IsEnabled="{Binding Account.Running}">
+                <Button Width="50" Margin="3" Content="Register" Command="{Binding Account.RegCmd}" Visibility="{Binding Account.RegComplete, Converter={StaticResource BoolToVisibilityReverseConverter}}" IsEnabled="{Binding Account.Driver.NonReg}"/>
+            </Grid>
+            <Grid Grid.Column="10" IsEnabled="{Binding Account.Loaded}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="4" Margin="3" Content="Fast build" IsChecked="{Binding Account.FastBuildWorker.Working}" IsEnabled="{Binding Account.FastBuildWorker.NotBlockWait}"/>
+                <CheckBox Grid.Column="5" Margin="3" Content="Auto adv"/>
+                <CheckBox Grid.Column="6" Margin="3" Content="Auto robber"/>
+                <Button Width="50" Margin="3" Grid.Column="7" Content="Settings" Command="{Binding SettingsCmd}"/>
+            </Grid>
         </Grid>
+        
     </Grid>
 </Page>

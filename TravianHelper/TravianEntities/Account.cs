@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Practices.Prism.Commands;
 using Newtonsoft.Json;
 using OpenQA.Selenium;
 using SmorcIRL.TempMail;
@@ -91,6 +92,18 @@ namespace TravianHelper.TravianEntities
             {
                 _regComplete = value;
                 RaisePropertyChanged(() => RegComplete);
+            }
+        }
+
+        private int _currentTaskId;
+
+        public int CurrentTaskId
+        {
+            get => _currentTaskId;
+            set
+            {
+                _currentTaskId = value;
+                RaisePropertyChanged(() => CurrentTaskId);
             }
         }
 
@@ -394,6 +407,30 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private RobberWorker _robberWorker;
+        [JsonIgnore]
+        public RobberWorker RobberWorker
+        {
+            get => _robberWorker;
+            set
+            {
+                _robberWorker = value;
+                RaisePropertyChanged(() => RobberWorker);
+            }
+        }
+
+        private AutoAdv _autoAdv;
+        [JsonIgnore]
+        public AutoAdv AutoAdv
+        {
+            get => _autoAdv;
+            set
+            {
+                _autoAdv = value;
+                RaisePropertyChanged(() => AutoAdv);
+            }
+        }
+
         private MailClient _mailClient;
         [JsonIgnore]
         public MailClient MailClient
@@ -406,14 +443,49 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private bool _installCurrentTask;
+        [JsonIgnore]
+        public bool InstallCurrentTask
+        {
+            get => _installCurrentTask;
+            set
+            {
+                _installCurrentTask = value;
+                RaisePropertyChanged(() => InstallCurrentTask);
+            }
+        }
+
+        private OldTaskListWorker _oldTaskListWorker;
+        [JsonIgnore]
+        public OldTaskListWorker OldTaskListWorker
+        {
+            get => _oldTaskListWorker;
+            set
+            {
+                _oldTaskListWorker = value;
+                RaisePropertyChanged(() => OldTaskListWorker);
+            }
+        }
+
+        
+
         #endregion
 
-
+        public DelegateCommand RegCmd { get; }
 
         public Account()
         {
-            Player          = new Player(this);
-            FastBuildWorker = new FastBuildWorker(this);
+            RegCmd            = new DelegateCommand(OnReg);
+            Player            = new Player(this);
+            FastBuildWorker   = new FastBuildWorker(this);
+            AutoAdv           = new AutoAdv(this);
+            RobberWorker      = new RobberWorker(this);
+            OldTaskListWorker = new OldTaskListWorker(this);
+        }
+
+        private void OnReg()
+        {
+            Driver.Registration();
         }
 
         public void Start()
@@ -460,8 +532,8 @@ namespace TravianHelper.TravianEntities
                 Application.Current.Dispatcher.Invoke(() => {
                                                           Running = true;
                                                       });
-
-                while (Running == true)
+                var counter = 0;
+                while (Running == true && counter < 5)
                 {
                     try
                     {
@@ -477,6 +549,7 @@ namespace TravianHelper.TravianEntities
                             if (RegComplete)
                             {
                                 UpdateAll();
+                                OldTaskListWorker.Init();
                                 Application.Current.Dispatcher.Invoke(() => { Loaded = true; });
                                 break;
                             }
@@ -485,7 +558,7 @@ namespace TravianHelper.TravianEntities
                     }
                     catch (Exception e)
                     {
-
+                        counter++;
                     }
                     Thread.Sleep(1000);
                 }
@@ -500,6 +573,9 @@ namespace TravianHelper.TravianEntities
             {
                 Running                 = false;
                 FastBuildWorker.Working = false;
+                AutoAdv.Working         = false;
+                RobberWorker.Working    = false;
+
                 Driver.Dispose();
                 Driver  = null;
                 Running = null;

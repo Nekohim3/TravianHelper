@@ -15,14 +15,48 @@
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Foreground" Value="#ccc"/>
             <Setter Property="Background" Value="#333"/>
-        </Style>
-        <Style TargetType="ListView">
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Foreground" Value="#ccc"/>
-            <Setter Property="Background" Value="#222"/>
-            <Setter Property="BorderBrush" Value="#777"/>
-        </Style>
-        <Style TargetType="ListViewItem">
+            </Style>
+            <Style TargetType="ListView" x:Key="ListViewStyle">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Foreground" Value="#ccc"/>
+                <Setter Property="Background" Value="#222"/>
+                <Setter Property="BorderBrush" Value="#777"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListView">
+                            <Border BorderThickness="1" x:Name="LVBorder" Background="#222" BorderBrush="#955">
+                                <ScrollViewer VerticalScrollBarVisibility="Disabled">
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="LVBorder" Property="BorderBrush" Value="#555"></Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="ListViewItem" x:Key="ListViewItemStyle">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListViewItem">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="1" Width="10" Height="10" Fill="Red"/>
+                                <TextBlock Grid.Column="2" Text="{Binding }" Margin="3,0,0,0"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="ListViewItem">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
