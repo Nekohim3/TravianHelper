@@ -471,6 +471,7 @@ namespace TravianHelper.TravianEntities
 
         #endregion
 
+        [JsonIgnore]
         public DelegateCommand RegCmd { get; }
 
         public Account()
@@ -548,7 +549,9 @@ namespace TravianHelper.TravianEntities
 
                             if (RegComplete)
                             {
-                                UpdateAll();
+                                UpdateAll(); 
+                                Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "nextVillage()")?.Click();
+                                Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "prevVillage()")?.Click();
                                 OldTaskListWorker.Init();
                                 Application.Current.Dispatcher.Invoke(() => { Loaded = true; });
                                 break;

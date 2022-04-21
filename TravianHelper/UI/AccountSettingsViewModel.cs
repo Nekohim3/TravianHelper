@@ -306,9 +306,9 @@ namespace TravianHelper.UI
 
         private void OnSave()
         {
-            if (Name.Length < 5 || Name.Length > 8)
+            if (Name.Length < 5 || Name.Length > 9)
             {
-                MessageBox.Show("В имени аккаунта допускается от 5 до 8 символов");
+                MessageBox.Show("В имени аккаунта допускается от 5 до 9 символов");
                 return;
             }
             CurrentAccount.ProxyId  = SelectedProxy?.Id > 0 ? SelectedProxy?.Id : null;

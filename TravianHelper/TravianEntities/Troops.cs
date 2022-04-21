@@ -13,6 +13,7 @@ namespace TravianHelper.TravianEntities
         public bool IsMineMerchantTroop => Units.Count == 11 && Units.All(x => x.Count == 0);
         public bool IsIncomingTroop     => Units.Count == 0;
         public bool IsIncomingAttack    => Units.Count == 11 && Units.All(x => x.Count == -1);
+        public bool Home                { get; set; }
 
         public Troops(dynamic d, long time)
         {

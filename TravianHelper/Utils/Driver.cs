@@ -323,7 +323,7 @@ namespace TravianHelper.Utils
             {
                 try
                 {
-                    MClient.Register($"{Account.Name}gj@{domain}", Account.Password).GetAwaiter().GetResult();
+                    MClient.Register($"{Account.Email}", Account.Password).GetAwaiter().GetResult();
                     break;
                 }
                 catch (Exception e)
@@ -339,7 +339,7 @@ namespace TravianHelper.Utils
                 return;
             }
 
-            Login($"{Account.Name}gj@{domain}", Account.Password);
+            Login($"{Account.Email}", Account.Password);
             Thread.Sleep(5000);
             ChooseTribe(2);
             Thread.Sleep(3000);

@@ -46,7 +46,7 @@ namespace TravianHelper.TravianEntities
                 foreach (var x in d.queues["4"])
                     QueueList.Add(new Queue(4, x.buildingType, x.locationId, x.finished));
             if (d.queues["5"].Count != 0)
-                QueueList.Add(new Queue(1, d.queues["5"][0].buildingType, d.queues["5"][0].locationId, d.queues["5"][0].finished));
+                QueueList.Add(new Queue(5, d.queues["5"][0].buildingType, d.queues["5"][0].locationId, d.queues["5"][0].finished));
 
             UpdateTime      = DateTime.Now;
             UpdateTimeStamp = time;

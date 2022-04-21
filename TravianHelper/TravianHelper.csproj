@@ -299,6 +299,7 @@
     <Compile Include="UI\TabManager.cs" />
     <Compile Include="UI\WindowStyle.cs" />
     <Compile Include="Utils\AutoAdv.cs" />
+    <Compile Include="Utils\AutoFarmerTest.cs" />
     <Compile Include="Utils\Commands\ActivateCmd.cs" />
     <Compile Include="Utils\Commands\BaseCommand.cs" />
     <Compile Include="Utils\Commands\BuildingUpgradeCmd.cs" />
