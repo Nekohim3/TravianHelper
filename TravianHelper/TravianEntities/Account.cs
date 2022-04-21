@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Practices.Prism.Commands;
 using Newtonsoft.Json;
 using OpenQA.Selenium;
@@ -443,18 +444,6 @@ namespace TravianHelper.TravianEntities
             }
         }
 
-        private bool _installCurrentTask;
-        [JsonIgnore]
-        public bool InstallCurrentTask
-        {
-            get => _installCurrentTask;
-            set
-            {
-                _installCurrentTask = value;
-                RaisePropertyChanged(() => InstallCurrentTask);
-            }
-        }
-
         private OldTaskListWorker _oldTaskListWorker;
         [JsonIgnore]
         public OldTaskListWorker OldTaskListWorker
@@ -551,7 +540,7 @@ namespace TravianHelper.TravianEntities
                             {
                                 UpdateAll(); 
                                 Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "nextVillage()")?.Click();
-                                Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "prevVillage()")?.Click();
+                                Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "previousVillage()")?.Click();
                                 OldTaskListWorker.Init();
                                 Application.Current.Dispatcher.Invoke(() => { Loaded = true; });
                                 break;
@@ -571,14 +560,15 @@ namespace TravianHelper.TravianEntities
         public void Stop()
         {
             if(!Running.HasValue) return;
-            Logger.Info($"[{Name}]: Account stop");
+            Logger.Info($"[{Name}]: Account stop"); 
+            Running                   = false;
+            FastBuildWorker.Working   = false;
+            AutoAdv.Working           = false;
+            RobberWorker.Working      = false;
+            OldTaskListWorker.Working = false;
+            while (!FastBuildWorker.NotBlockWait || !AutoAdv.NotBlockWait || !RobberWorker.NotBlockWait || !OldTaskListWorker.NotBlockWait) Application.Current.Dispatcher.Invoke(() => { }, DispatcherPriority.Background);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                Running                 = false;
-                FastBuildWorker.Working = false;
-                AutoAdv.Working         = false;
-                RobberWorker.Working    = false;
-
                 Driver.Dispose();
                 Driver  = null;
                 Running = null;

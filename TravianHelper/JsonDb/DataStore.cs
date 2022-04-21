@@ -465,6 +465,8 @@ namespace TravianHelper.JsonDb
             {
                 try
                 {
+                    while(IsFileLocked(new FileInfo(path)))
+                        Thread.Sleep(10);
                     json = File.ReadAllText(path);
                     break;
                 }
@@ -492,6 +494,8 @@ namespace TravianHelper.JsonDb
             {
                 try
                 {
+                    while (IsFileLocked(new FileInfo(path)))
+                        Thread.Sleep(10);
                     File.WriteAllText(path, _encryptJson(content));
                     return true;
                 }
@@ -507,6 +511,27 @@ namespace TravianHelper.JsonDb
                     return false;
                 }
             }
+        }
+        protected bool IsFileLocked(FileInfo file)
+        {
+            try
+            {
+                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+
+            //file is not locked
+            return false;
         }
 
         private class CommitAction

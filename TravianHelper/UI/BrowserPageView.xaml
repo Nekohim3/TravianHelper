@@ -10,6 +10,7 @@
       Title="BrowserPageView">
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:BoolToReverseConverter x:Key="BoolToReverseConverter"/>
         <converters:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
         <converters:NullableBoolToVisibilityConverter x:Key="NullableBoolToVisibilityConverter"/>
         <converters:NullableBoolToVisibilityReverseConverter x:Key="NullableBoolToVisibilityReverseConverter"/>
@@ -24,10 +25,21 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding Account.Driver.Host}"/>
-        <Grid Grid.Row="0" Grid.Column="0" Visibility="Collapsed">
-            <ListView ItemsSource="{Binding Account.OldTaskListWorker.TaskList}" SelectedItem="{Binding Account.OldTaskListWorker.SelectedTask}" Width="200" Style="{StaticResource ListViewStyle}"
-                      ItemContainerStyle="{StaticResource ListViewItemStyle}">
-            </ListView>
+        <Grid Grid.Row="0" Grid.Column="0" Visibility="{Binding Account.OldTaskListWorker.ShowTaskList, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ListView Margin="0,-1,0,0" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding Account.OldTaskListWorker.TaskList}" SelectedItem="{Binding Account.OldTaskListWorker.SelectedTask}" Width="150" Style="{StaticResource ListViewStyle}"
+                      ItemContainerStyle="{StaticResource ListViewItemStyle}"/>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <CheckBox Grid.Row="0" Content="Work" Margin="3,0,3,0" IsChecked="{Binding Account.OldTaskListWorker.Working}" IsEnabled="{Binding Account.OldTaskListWorker.NotBlockWait}"/>
+                <CheckBox Grid.Row="1" Content="Set current task" IsEnabled="{Binding Account.OldTaskListWorker.Working, Converter={StaticResource BoolToReverseConverter}}" IsChecked="{Binding Account.OldTaskListWorker.InstallCurrentTask}" Margin="3,0,3,0"/>
+            </Grid>
 
         </Grid>
         <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1">
@@ -46,6 +58,9 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" IsEnabled="{Binding Account.Running}">
                 <Button Width="50" Margin="3" Content="Register" Command="{Binding Account.RegCmd}" Visibility="{Binding Account.RegComplete, Converter={StaticResource BoolToVisibilityReverseConverter}}" IsEnabled="{Binding Account.Driver.NonReg}"/>
+            </Grid>
+            <Grid Grid.Column="0" Visibility="{Binding Account.Loaded, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Button Width="25" Margin="3" Content="{Binding Account.OldTaskListWorker.ShowButtonText}" Command="{Binding Account.OldTaskListWorker.ShowTaskListCmd}" Visibility="{Binding Account.RegComplete, Converter={StaticResource BoolToVisibilityConverter}}"/>
             </Grid>
             <Grid Grid.Column="10" IsEnabled="{Binding Account.Loaded}">
                 <Grid.ColumnDefinitions>

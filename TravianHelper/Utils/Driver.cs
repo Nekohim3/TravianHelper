@@ -316,10 +316,8 @@ namespace TravianHelper.Utils
         public void RegThFunc()
         {
             MClient = new MailClient();
-            var domain = MClient.GetFirstAvailableDomainName().GetAwaiter().GetResult();
-            Thread.Sleep(5000);
             var counter = 0;
-            while (counter <= 5)
+            while (counter <= 3)
             {
                 try
                 {
@@ -333,9 +331,9 @@ namespace TravianHelper.Utils
                 }
             }
 
-            if (counter > 5)
+            if (counter > 3)
             {
-                MessageBox.Show("Error mail reg");
+                MessageBox.Show("Мыло не нравится");
                 return;
             }
 

@@ -83,7 +83,7 @@
                                                             <Setter Property="Template">
                                                                 <Setter.Value>
                                                                     <ControlTemplate TargetType="ListViewItem">
-                                                                        <Grid Height="26" Margin="5,0,5,0" VerticalAlignment="Center">
+                                                                        <Grid Height="26" Margin="5,0,5,0" VerticalAlignment="Center" Background="#01000000">
                                                                             <Grid.InputBindings>
                                                                                 <MouseBinding Gesture="MiddleClick" Command="{Binding CloseCmd}"/>
                                                                             </Grid.InputBindings>

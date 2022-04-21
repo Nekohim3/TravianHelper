@@ -32,6 +32,10 @@ namespace TravianHelper
         protected override void OnExit(ExitEventArgs e)
         {
             //g.Shutdown();
+            //foreach (var x in g.TabManager.TabList)
+            //{
+            //    x.Account.Stop();
+            //}
             base.OnExit(e);
         }
 

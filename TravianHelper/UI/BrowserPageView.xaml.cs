@@ -25,5 +25,11 @@ namespace TravianHelper.UI
             InitializeComponent();
             
         }
+
+        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count != 0)
+                ((ListView)sender).ScrollIntoView(e.AddedItems[0]);
+        }
     }
 }

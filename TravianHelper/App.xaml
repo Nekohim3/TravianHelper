@@ -49,9 +49,27 @@
                                     <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="1" Width="10" Height="10" Fill="Red"/>
+                                <Border x:Name="BorderForSelect" Background="#55777777" Grid.ColumnSpan="3" Visibility="Collapsed" Margin="-5,0,-5,0"/>
+                                <Ellipse x:Name="StateCircle" Grid.Column="1" Width="10" Height="10"/>
                                 <TextBlock Grid.Column="2" Text="{Binding }" Margin="3,0,0,0"/>
                             </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="true">
+                                    <Setter TargetName="BorderForSelect" Property="Visibility" Value="Visible"/>
+                                </Trigger>
+                                <DataTrigger Binding="{Binding State}" Value="Finished">
+                                    <Setter TargetName="StateCircle" Property="Fill" Value="#22cc22"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding State}" Value="InProgress">
+                                    <Setter TargetName="StateCircle" Property="Fill" Value="#00ffff"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding State}" Value="Error">
+                                    <Setter TargetName="StateCircle" Property="Fill" Value="#ff3333"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding State}" Value="Queue">
+                                    <Setter TargetName="StateCircle" Property="Fill" Value="#777"/>
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>

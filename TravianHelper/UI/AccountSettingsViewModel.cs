@@ -80,7 +80,7 @@ namespace TravianHelper.UI
                 if (!CustomMail)
                 {
                     var r = new Random(_name.Sum(x => x));
-                    Mail = $"{_name}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}@{g.Domain}".ToLower();
+                    Mail = $"{(_name.Length > 4 ? _name.Substring(0, 4) : _name)}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}@{g.Domain}".ToLower();
                 }
             }
         }
@@ -306,9 +306,9 @@ namespace TravianHelper.UI
 
         private void OnSave()
         {
-            if (Name.Length < 5 || Name.Length > 9)
+            if (Name.Length < 5 || Name.Length > 8)
             {
-                MessageBox.Show("В имени аккаунта допускается от 5 до 9 символов");
+                MessageBox.Show("В имени аккаунта допускается от 5 до 8 символов");
                 return;
             }
             CurrentAccount.ProxyId  = SelectedProxy?.Id > 0 ? SelectedProxy?.Id : null;

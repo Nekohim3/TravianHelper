@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using TravianHelper.StaticData;
 using TravianHelper.TravianEntities;
@@ -15,6 +16,30 @@ namespace TravianHelper.Utils
 {
     public class OldTaskListWorker : NotificationObject
     {
+        private string _showButtonText;
+
+        public string ShowButtonText
+        {
+            get => _showButtonText;
+            set
+            {
+                _showButtonText = value;
+                RaisePropertyChanged(() => ShowButtonText);
+            }
+        }
+        private bool _showTaskList;
+
+        public bool ShowTaskList
+        {
+            get => _showTaskList;
+            set
+            {
+                _showTaskList  = value;
+                ShowButtonText = _showTaskList ? "<<" : ">>";
+                RaisePropertyChanged(() => ShowTaskList);
+            }
+        }
+
         private bool _working;
 
         public bool Working
@@ -79,9 +104,9 @@ namespace TravianHelper.Utils
             {
                 _selectedTask = value;
                 RaisePropertyChanged(() => SelectedTask);
-                if (Account.InstallCurrentTask)
+                if (InstallCurrentTask)
                 {
-                    Account.InstallCurrentTask = false;
+                    InstallCurrentTask = false;
                     Account.CurrentTaskId = TaskList.IndexOf(_selectedTask);
                     Account.Save();
                     Init();
@@ -89,19 +114,35 @@ namespace TravianHelper.Utils
             }
         }
 
+        private bool _installCurrentTask;
+        public bool InstallCurrentTask
+        {
+            get => _installCurrentTask;
+            set
+            {
+                _installCurrentTask = value;
+                RaisePropertyChanged(() => InstallCurrentTask);
+            }
+        }
+
         private Thread _workThread;
+
+        public DelegateCommand ShowTaskListCmd { get; }
 
         public OldTaskListWorker(Account acc)
         {
-            Account      = acc;
+            Account         = acc;
+            ShowTaskListCmd = new DelegateCommand(OnShowTaskList);
+            NotBlockWait    = true;
         }
 
         public void Init()
         {
-            Application.Current.Dispatcher.Invoke(() => { TaskList.Clear(); });
+            
+            Application.Current.Dispatcher.Invoke(() => { NotBlockWait = false; TaskList.Clear(); });
             if (!File.Exists($"{g.UserDataPath}\\TaskList.txt"))
             {
-                File.WriteAllText($"{g.UserDataPath}\\TaskList.txt", "BuildingUpgrade:24:10/Построить склад\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:0:1/\r\nBuildingUpgrade:26:17/\r\nFinishNow:0:1/\r\nBuildingUpgrade:28:18/\r\nFinishNow:0:1/\r\nBuildingUpgrade:23:8/\r\nFinishNow:0:5/\r\nBuildingUpgrade:20:10/\r\nFinishNow:0:5/\r\nBuildingUpgrade:35:11/\r\nFinishNow:0:5/\r\nBuildingUpgrade:38:13/\r\nFinishNow:0:5/\r\nBuildingUpgrade:39:17/\r\nFinishNow:0:5/\r\nBuildingUpgrade:31:22/\r\nFinishNow:0:5/\r\nBuildingUpgrade:24:10/\r\nFinishNow:0:1/\r\nBuildingUpgrade:24:10/\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nWait:10/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingUpgrade:29:19/\r\nFinishNow:0:1/\r\nBuildingUpgrade:29:19/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingUpgrade:34:18/\r\nFinishNow:0:5/\r\nRecruitUnits:29:19:11:5/\r\nCollectReward:/\r\nRecruitUnits:29:19:11:20/\r\nCollectReward:/\r\nBuildingUpgrade:21:23/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingUpgrade:8:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:9:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:12:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:13:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:15:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:2:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:8:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:9:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:12:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:13:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:15:4/\r\nFinishNow:0:2/\r\nCollectReward:/\r\nBuildingUpgrade:2:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:8:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:9:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:12:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:13:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:15:4/\r\nFinishNow:0:2/\r\nCollectReward:/\r\nBuildingUpgrade:27:15/\r\nFinishNow:0:1/\r\nBuildingUpgrade:27:15/\r\nWait:700/\r\nTrade:/\r\nHeroAttribute:0:0:1/\r\nHeroAttribute:0:0:0/\r\nCollectReward:/\r\nHeroAttribute:0:4:0/\r\nCollectReward:/\r\nBuildingUpgrade:24:10/\r\nFinishNow:0:1/\r\nBuildingUpgrade:24:10/\r\nFinishNow:1:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:1:1/\r\nCollectReward:/\r\nBuildingUpgrade:24:10/\r\nFinishNow:1:1/\r\nBuildingUpgrade:34:25/\r\nWait:390/\r\nCollectReward:/\r\nBuildingUpgrade:34:25/\r\nWait:480/\r\nCollectReward:/\r\nNpcT:0/\r\nBuildingUpgrade:24:10/\r\nFinishNow:1:1/\r\nCollectReward:/\r\nBuildingUpgrade:34:25/\r\nWait:580/\r\nBuildingUpgrade:34:25/\r\nWait:760/\r\nBuildingUpgrade:34:25/\r\nWait:1270/\r\nCollectReward:/\r\nNpcT:1/\r\nRecruitUnits:34:25:20:1/\r\nNpcT:1/\r\nRecruitUnits:34:25:20:1/\r\nNpcT:1/\r\nRecruitUnits:34:25:20:1/\r\nCollectReward:/\r\nNpcT:2/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingDestroy:34/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:38:22/\r\nWait:5400/Снос резы\r\nBuildingUpgrade:34:25/\r\nWait:720/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nCollectReward:/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:37:21/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingDestroy:21/\r\nWait:1/\r\nBuildingUpgrade:21:23/\r\nWait:1/\r\nBuildingDestroy:26/\r\nFinishNow:0:5/\r\nBuildingUpgrade:26:17/\r\nFinishNow:0:5/\r\nBuildingDestroy:28/\r\nFinishNow:0:5/\r\nBuildingUpgrade:28:18/\r\nFinishNow:0:5/\r\nBuildingDestroy:29/\r\nFinishNow:0:5/\r\nBuildingUpgrade:29:19/\r\nFinishNow:0:5/\r\nBuildingDestroy:37/\r\nFinishNow:0:5/\r\nBuildingUpgrade:37:21/\r\nFinishNow:0:5/\r\nBuildingUpgrade:40:24/\r\nFinishNow:0:1/\r\nBuildingDestroy:38/\r\nFinishNow:1:5/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:5/\r\nBuildingDestroy:33/\r\nFinishNow:0:5/\r\nBuildingUpgrade:33:32/\r\nFinishNow:0:5/\r\nCollectReward:/\r\nBuildingUpgrade:25:11/\r\nFinishNow:1:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:1:1/\r\nBuildingDestroy:27/\r\nFinishNow:1:5/\r\nBuildingUpgrade:27:15/\r\nFinishNow:0:5/\r\nNpcT:3/");
+                File.WriteAllText($"{g.UserDataPath}\\TaskList.txt", "BuildingUpgrade:24:10/Построить склад\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:0:1/\r\nBuildingUpgrade:26:17/\r\nFinishNow:0:1/\r\nBuildingUpgrade:28:18/\r\nFinishNow:0:1/\r\nBuildingUpgrade:23:8/\r\nFinishNow:0:5/\r\nBuildingUpgrade:20:10/\r\nFinishNow:0:5/\r\nBuildingUpgrade:35:11/\r\nFinishNow:0:5/\r\nBuildingUpgrade:38:13/\r\nFinishNow:0:5/\r\nBuildingUpgrade:39:17/\r\nFinishNow:0:5/\r\nBuildingUpgrade:31:22/\r\nFinishNow:0:5/\r\nBuildingUpgrade:24:10/\r\nFinishNow:0:1/\r\nBuildingUpgrade:24:10/\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:0:1/\r\nBuildingUpgrade:25:11/\r\nWait:10/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingUpgrade:29:19/\r\nFinishNow:0:1/\r\nBuildingUpgrade:29:19/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingUpgrade:34:18/\r\nFinishNow:0:5/\r\nRecruitUnits:29:19:11:5/\r\nCollectReward:/\r\nRecruitUnits:29:19:11:20/\r\nCollectReward:/\r\nBuildingUpgrade:21:23/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingUpgrade:8:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:9:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:12:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:13:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:15:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:2:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:8:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:9:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:12:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:13:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:15:4/\r\nFinishNow:0:2/\r\nCollectReward:/\r\nBuildingUpgrade:2:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:8:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:9:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:12:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:13:4/\r\nFinishNow:0:2/\r\nBuildingUpgrade:15:4/\r\nFinishNow:0:2/\r\nCollectReward:/\r\nBuildingUpgrade:27:15/\r\nFinishNow:0:1/\r\nBuildingUpgrade:27:15/\r\nWait:700/\r\nTrade:/\r\nHeroAttribute:0:0:1/\r\nHeroAttribute:0:0:0/\r\nCollectReward:/\r\nBuildingUpgrade:24:10/\r\nFinishNow:0:1/\r\nBuildingUpgrade:24:10/\r\nFinishNow:1:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:1:1/\r\nCollectReward:/\r\nBuildingUpgrade:24:10/\r\nFinishNow:1:1/\r\nBuildingUpgrade:34:25/\r\nWait:390/\r\nCollectReward:/\r\nBuildingUpgrade:34:25/\r\nWait:480/\r\nCollectReward:/\r\nNpcT:0/\r\nBuildingUpgrade:24:10/\r\nFinishNow:1:1/\r\nCollectReward:/\r\nBuildingUpgrade:34:25/\r\nWait:580/\r\nBuildingUpgrade:34:25/\r\nWait:760/\r\nBuildingUpgrade:34:25/\r\nWait:1270/\r\nCollectReward:/\r\nNpcT:1/\r\nRecruitUnits:34:25:20:1/\r\nNpcT:1/\r\nRecruitUnits:34:25:20:1/\r\nNpcT:1/\r\nRecruitUnits:34:25:20:1/\r\nCollectReward:/\r\nNpcT:2/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingUpgrade:27:15/\r\nFinishNow:1:1/\r\nBuildingDestroy:34/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:38:22/\r\nWait:5400/Снос резы\r\nBuildingUpgrade:34:25/\r\nWait:720/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nCollectReward:/\r\nBuildingUpgrade:38:22/\r\nFinishNow:1:1/\r\nBuildingUpgrade:37:21/\r\nFinishNow:0:1/\r\nCollectReward:/\r\nBuildingDestroy:21/\r\nWait:1/\r\nBuildingUpgrade:21:23/\r\nWait:1/\r\nBuildingDestroy:26/\r\nFinishNow:0:5/\r\nBuildingUpgrade:26:17/\r\nFinishNow:0:5/\r\nBuildingDestroy:28/\r\nFinishNow:0:5/\r\nBuildingUpgrade:28:18/\r\nFinishNow:0:5/\r\nBuildingDestroy:29/\r\nFinishNow:0:5/\r\nBuildingUpgrade:29:19/\r\nFinishNow:0:5/\r\nBuildingDestroy:37/\r\nFinishNow:0:5/\r\nBuildingUpgrade:37:21/\r\nFinishNow:0:5/\r\nBuildingUpgrade:40:24/\r\nFinishNow:0:1/\r\nBuildingDestroy:38/\r\nFinishNow:1:5/\r\nBuildingUpgrade:38:22/\r\nFinishNow:0:5/\r\nBuildingDestroy:33/\r\nFinishNow:0:5/\r\nBuildingUpgrade:33:32/\r\nFinishNow:0:5/\r\nCollectReward:/\r\nBuildingUpgrade:25:11/\r\nFinishNow:1:1/\r\nBuildingUpgrade:25:11/\r\nFinishNow:1:1/\r\nBuildingDestroy:27/\r\nFinishNow:1:5/\r\nBuildingUpgrade:27:15/\r\nFinishNow:0:5/\r\nNpcT:3/");
             }
             using (var fs = new FileStream($"{g.UserDataPath}\\TaskList.txt", FileMode.Open, FileAccess.Read))
             using (var sr = new StreamReader(fs))
@@ -129,11 +170,17 @@ namespace TravianHelper.Utils
 
                 Application.Current.Dispatcher.Invoke(() => { NotBlockWait = true; });
             }
+
+            ShowTaskList      = ShowTaskList ? true : Account.CurrentTaskId > 0 && Account.CurrentTaskId < TaskList.Count;
+        }
+
+        private void OnShowTaskList()
+        {
+            ShowTaskList = !ShowTaskList;
         }
 
         private void Run()
         {
-            if (_workThread != null) return;
             _workThread = new Thread(ThreadFunc);
             _workThread.Start();
             //Account.UseFastBuilding = false;
@@ -157,15 +204,15 @@ namespace TravianHelper.Utils
                 var res = SelectedTask.Exec();
                 if (res != "")
                 {
-                    return;
+                    Working = false;
                 }
                 else
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                                                          {
-                                                              Account.CurrentTaskId++;
-                                                          });
-                    Account.Save();
+                    if (Working)
+                    {
+                        Application.Current.Dispatcher.Invoke(() => { Account.CurrentTaskId++; });
+                        Account.Save();
+                    }
                 }
             }
 
@@ -435,7 +482,9 @@ namespace TravianHelper.Utils
                     }
                     Thread.Sleep(500);
                 }
-                Account.Player.UpdateQuestList();
+
+                if (!Worker.Working) return "";
+                    Account.Player.UpdateQuestList();
                 foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
                 {
                     Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);

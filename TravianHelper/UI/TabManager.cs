@@ -68,9 +68,9 @@ namespace TravianHelper.UI
         {
             if (!tab.IsAccount) return;
             var ind = TabList.IndexOf(tab);
+            tab.Account.Stop();
             TabList.Remove(tab);
             SelectedTab = ind == 0 ? TabList[0] : TabList[ind - 1];
-            tab.Account.Stop();
             RaisePropertyChanged(() => AnyRunning);
             RaisePropertyChanged(() => AllStopped);
         }
