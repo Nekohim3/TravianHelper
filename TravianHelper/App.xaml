@@ -51,7 +51,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Border x:Name="BorderForSelect" Background="#55777777" Grid.ColumnSpan="3" Visibility="Collapsed" Margin="-5,0,-5,0"/>
                                 <Ellipse x:Name="StateCircle" Grid.Column="1" Width="10" Height="10"/>
-                                <TextBlock Grid.Column="2" Text="{Binding }" Margin="3,0,0,0"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Comment}" Margin="3,0,0,0"/>
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsSelected" Value="true">

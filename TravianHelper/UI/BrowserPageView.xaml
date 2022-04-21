@@ -30,7 +30,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <ListView Margin="0,-1,0,0" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding Account.OldTaskListWorker.TaskList}" SelectedItem="{Binding Account.OldTaskListWorker.SelectedTask}" Width="150" Style="{StaticResource ListViewStyle}"
+            <ListView x:Name="ListViewTask" Margin="0,-1,0,0" SelectionChanged="Selector_OnSelectionChanged" ItemsSource="{Binding Account.OldTaskListWorker.TaskList}" SelectedItem="{Binding Account.OldTaskListWorker.SelectedTask}" Width="150" Style="{StaticResource ListViewStyle}"
                       ItemContainerStyle="{StaticResource ListViewItemStyle}"/>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>

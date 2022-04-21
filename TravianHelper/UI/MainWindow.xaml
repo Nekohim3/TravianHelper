@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TravianHelper" WindowStartupLocation="CenterScreen"
         xmlns:converters="clr-namespace:TravianHelper.Converters"
         xmlns:ui="clr-namespace:TravianHelper.UI"
-        mc:Ignorable="d" d:DataContext="{d:DesignInstance ui:MainWindowViewModel}"
+        mc:Ignorable="d" d:DataContext="{d:DesignInstance ui:MainWindowViewModel}" Closing="MainWindow_OnClosing"
         Title="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab.TabName}" Height="1000" Width="1600" Background="#222" MinWidth="1280" MinHeight="1000" WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize"
         Style="{StaticResource VS2012WindowStyle}">
     <Grid Margin="0,0,0,0" Grid.IsSharedSizeScope="True">

@@ -104,7 +104,8 @@
                                                                                 <ColumnDefinition Width="*"/>
                                                                                 <ColumnDefinition Width="Auto"/>
                                                                             </Grid.ColumnDefinitions>
-                                                                            <Border Grid.ColumnSpan="2" x:Name="BorderForSelect" Background="#55777777"  Visibility="Collapsed" Margin="-5"/>
+                                                                            <Border Grid.ColumnSpan="3" x:Name="BorderForSelect" Background="#55777777"  Visibility="Collapsed" Margin="-5"/>
+                                                                            <Ellipse x:Name="StatusDot" Grid.Column="0" Width="10" Height="10" Margin="0,0,3,0" Visibility="Collapsed"/>
                                                                             <TextBlock Grid.Column="1" Text="{Binding TabName}" Width="80" VerticalAlignment="Center">
                                                                                 <TextBlock.Style>
                                                                                     <Style TargetType="TextBlock">
@@ -154,6 +155,18 @@
                                                                             <Trigger Property="IsSelected" Value="true">
                                                                                 <Setter TargetName="BorderForSelect" Property="Visibility" Value="Visible"/>
                                                                             </Trigger>
+                                                                            <DataTrigger Binding="{Binding IsAccount}" Value="True">
+                                                                                <Setter TargetName="StatusDot" Property="Visibility" Value="Visible"/>
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding Account.OldTaskListWorker.State}" Value="Error">
+                                                                                <Setter TargetName="StatusDot" Property="Fill" Value="Red"/>
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding Account.OldTaskListWorker.State}" Value="InProgress">
+                                                                                <Setter TargetName="StatusDot" Property="Fill" Value="LimeGreen"/>
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding Account.OldTaskListWorker.State}" Value="Queue">
+                                                                                <Setter TargetName="StatusDot" Property="Visibility" Value="Collapsed"/>
+                                                                            </DataTrigger>
                                                                         </ControlTemplate.Triggers>
                                                                     </ControlTemplate>
                                                                 </Setter.Value>

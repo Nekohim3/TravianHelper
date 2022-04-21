@@ -352,12 +352,24 @@ namespace TravianHelper.TravianEntities
                 RaisePropertyChanged(() => SendHero);
             }
         }
-        
+
         #endregion
 
         #endregion
 
         #region Ignored Properties
+        
+        private bool _closing;
+        [JsonIgnore]
+        public bool Closing
+        {
+            get => _closing;
+            set
+            {
+                _closing = value;
+                RaisePropertyChanged(() => Closing);
+            }
+        }
 
         private bool? _running;
         [JsonIgnore]
@@ -560,6 +572,8 @@ namespace TravianHelper.TravianEntities
         public void Stop()
         {
             if(!Running.HasValue) return;
+            if(Closing) return;
+            Closing = true;
             Logger.Info($"[{Name}]: Account stop"); 
             Running                   = false;
             FastBuildWorker.Working   = false;
@@ -573,6 +587,7 @@ namespace TravianHelper.TravianEntities
                 Driver  = null;
                 Running = null;
             });
+            Closing = false;
         }
 
 

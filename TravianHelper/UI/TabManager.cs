@@ -56,8 +56,23 @@ namespace TravianHelper.UI
 
         public void OpenTab(Account acc, bool sw = false)
         {
-            TabList.Insert(TabList.Count - 1, new Tab(acc));
-            if(sw)
+            var ids = TabList.Where(x => x.IsAccount).Select(x => x.Account.Id).ToList();
+            for (var i = 0; i <= ids.Count; i++)
+            {
+                if (i < ids.Count)
+                {
+                    if (acc.Id < ids[i])
+                    {
+                        TabList.Insert(i, new Tab(acc));
+                        break;
+                    }
+                }
+                else
+                {
+                    TabList.Insert(TabList.Count - 1, new Tab(acc));
+                }
+            }
+            if (sw)
                 SelectedTab = TabList.FirstOrDefault(x => x.Account == acc);
             acc.Start();
             RaisePropertyChanged(() => AnyRunning);
@@ -67,6 +82,7 @@ namespace TravianHelper.UI
         public void CloseTab(Tab tab)
         {
             if (!tab.IsAccount) return;
+            if (tab.Account.Closing) return;
             var ind = TabList.IndexOf(tab);
             tab.Account.Stop();
             TabList.Remove(tab);

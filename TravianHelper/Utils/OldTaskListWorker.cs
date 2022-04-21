@@ -7,15 +7,29 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using TravianHelper.StaticData;
 using TravianHelper.TravianEntities;
+using TravianHelper.UI;
 
 namespace TravianHelper.Utils
 {
     public class OldTaskListWorker : NotificationObject
     {
+        private TaskState _state;
+
+        public TaskState State
+        {
+            get => _state;
+            set
+            {
+                _state = value;
+                RaisePropertyChanged(() => State);
+            }
+        }
+
         private string _showButtonText;
 
         public string ShowButtonText
@@ -120,6 +134,9 @@ namespace TravianHelper.Utils
             get => _installCurrentTask;
             set
             {
+                //Working             = false;
+                //NotBlockWait        = true;
+                //State               = TaskState.Queue;
                 _installCurrentTask = value;
                 RaisePropertyChanged(() => InstallCurrentTask);
             }
@@ -134,6 +151,7 @@ namespace TravianHelper.Utils
             Account         = acc;
             ShowTaskListCmd = new DelegateCommand(OnShowTaskList);
             NotBlockWait    = true;
+            State           = TaskState.Queue;
         }
 
         public void Init()
@@ -158,8 +176,12 @@ namespace TravianHelper.Utils
             {
                 if (Account.CurrentTaskId < TaskList.Count)
                 {
-                    SelectedTask = TaskList[Account.CurrentTaskId];
-                    Application.Current.Dispatcher.Invoke(() => { SelectedTask.State = TaskState.Queue; });
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        SelectedTask                                             = TaskList.FirstOrDefault();
+                        SelectedTask                                             = TaskList[Account.CurrentTaskId];
+                                                              SelectedTask.State = TaskState.Queue;
+                                                          });
                 }
 
                 for (var i = 0; i < TaskList.Count && i < Account.CurrentTaskId; i++)
@@ -183,27 +205,31 @@ namespace TravianHelper.Utils
         {
             _workThread = new Thread(ThreadFunc);
             _workThread.Start();
-            //Account.UseFastBuilding = false;
-            //Account.UserAutoAdv = true;
-            //Account.UseRobber = true;
-        }
-
-        private void Stop()
-        {
-            if (_workThread == null) return;
-            _workThread.Abort();
-            _workThread = null;
+            State = TaskState.InProgress;
         }
 
         private void ThreadFunc()
         {
             while (Working)
             {
-                if (Account.CurrentTaskId >= TaskList.Count) return;
-                SelectedTask = TaskList[Account.CurrentTaskId];
+                if (Account.CurrentTaskId >= TaskList.Count)
+                {
+                    State   = TaskState.Queue;
+                    Working = false;
+                    return;
+                }
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SelectedTask = TaskList.FirstOrDefault();
+                    SelectedTask = TaskList[Account.CurrentTaskId];
+                });
                 var res = SelectedTask.Exec();
                 if (res != "")
                 {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        State = TaskState.Error;
+                    });
                     Working = false;
                 }
                 else
@@ -219,6 +245,8 @@ namespace TravianHelper.Utils
             Application.Current.Dispatcher.Invoke(() =>
                                                   {
                                                       NotBlockWait = true;
+                                                      if(State != TaskState.Error)
+                                                        State        = TaskState.Queue;
                                                   });
         }
     }
@@ -273,7 +301,7 @@ namespace TravianHelper.Utils
 
         public override string ToString()
         {
-            return Action;
+            return Comment;
         }
 
         public string Exec()
@@ -355,7 +383,7 @@ namespace TravianHelper.Utils
                             return "err";
                         }
                 Application.Current.Dispatcher.Invoke(() => {
-                                                          State = TaskState.Finished;
+                                                          State = Worker.Working ? TaskState.Finished : TaskState.Queue;
                                                       });
                 return "";
             }
@@ -576,7 +604,7 @@ namespace TravianHelper.Utils
                         Thread.Sleep(500);
                         if (!Worker.Working)
                         {
-                            return false;
+                            return true;
                         }
                     }
                     vil.Update();
@@ -602,7 +630,7 @@ namespace TravianHelper.Utils
                         Thread.Sleep(500);
                         if (!Worker.Working)
                         {
-                            return false;
+                            return true;
                         }
                     }
                     vil.Update();
