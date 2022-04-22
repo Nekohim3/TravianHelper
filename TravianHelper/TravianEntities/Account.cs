@@ -514,6 +514,15 @@ namespace TravianHelper.TravianEntities
             ThreadPool.QueueUserWorkItem(s =>
             {
                 Driver.Init(this);
+                if (Driver.Chrome.WindowHandles.Count == 2)
+                {
+                    Driver.Chrome.SwitchTo().Window(Driver.Chrome.WindowHandles.First()); if (Driver.Chrome.Url.Contains("whats-new"))
+                    {
+                        Driver.Chrome.Close();
+                        Driver.Chrome.SwitchTo().Window(Driver.Chrome.WindowHandles.First());
+                    }
+                }
+               
                 try
                 {
                     if (RegComplete || string.IsNullOrEmpty(RefLink))
@@ -534,6 +543,7 @@ namespace TravianHelper.TravianEntities
                 Application.Current.Dispatcher.Invoke(() => {
                                                           Running = true;
                                                       });
+                
                 var counter = 0;
                 while (Running == true && counter < 5)
                 {

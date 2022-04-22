@@ -326,6 +326,15 @@ namespace TravianHelper.Utils
                 }
                 catch (Exception e)
                 {
+                    try
+                    {
+                        MClient.Login(Account.Email, Account.Password).GetAwaiter().GetResult();
+                        break;
+                    }
+                    catch (Exception exception)
+                    {
+
+                    }
                     counter++;
                     Thread.Sleep(5000);
                 }
