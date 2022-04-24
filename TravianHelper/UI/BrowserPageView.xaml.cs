@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,8 +29,19 @@ namespace TravianHelper.UI
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count != 0)
-                ((ListView)sender).ScrollIntoView(e.AddedItems[0]);
+            //if (e.AddedItems.Count != 0)
+            //    ((ListView)sender).ScrollIntoView(e.AddedItems[0]);
+            //VirtualizingStackPanel vsp =
+            //    (VirtualizingStackPanel)typeof(ItemsControl).InvokeMember("_itemsHost",
+            //                                                              BindingFlags.Instance | BindingFlags.GetField | BindingFlags.NonPublic, null,
+            //                                                              ListViewTask, null);
+
+            //double scrollHeight = vsp.ScrollOwner.ScrollableHeight;
+
+            //// itemIndex_ is index of the item which we want to show in the middle of the view
+            //double offset = scrollHeight * ListViewTask. / ListViewTask.Items.Count;
+
+            //vsp.SetVerticalOffset(offset);
         }
     }
 }

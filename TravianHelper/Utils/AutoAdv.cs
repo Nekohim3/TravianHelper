@@ -82,7 +82,7 @@ namespace TravianHelper.Utils
                     Account.Player.Hero.UpdateItems();
                     if (Account.Player.Hero.FreePoints != 0)
                     {
-                        var data = Account.Driver.PostJo(RPG.HeroAttribute(Account.Driver.GetSession(), 0, 0, 0, Account.Player.Hero.FreePoints, 0));
+                        var data = Account.Driver.Post(RPG.HeroAttribute(Account.Driver.GetSession(), 0, 0, 0, Account.Player.Hero.FreePoints, 0), out var error);
                     }
 
                     if (Account.SellGoods)
@@ -112,7 +112,7 @@ namespace TravianHelper.Utils
 
                         if (Account.Player.Hero.Health >= Account.MinHpForAdv)
                         {
-                            var data = Account.Driver.PostJo(RPG.SendHeroAdv(Account.Driver.GetSession()));
+                            var data = Account.Driver.Post(RPG.SendHeroAdv(Account.Driver.GetSession()), out var error);
                         }
                     }
 

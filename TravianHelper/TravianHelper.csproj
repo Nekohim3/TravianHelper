@@ -321,6 +321,7 @@
     <Compile Include="Utils\MapSolver.cs" />
     <Compile Include="Utils\OldTaskListWorker.cs" />
     <Compile Include="Utils\RegistrationWorker.cs" />
+    <Compile Include="Utils\ResWorker.cs" />
     <Compile Include="Utils\RobberWorker.cs" />
     <Compile Include="Utils\RPG.cs" />
     <Compile Include="Utils\TravTask.cs" />

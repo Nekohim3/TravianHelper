@@ -38,45 +38,38 @@ namespace TravianHelper.Utils.Commands
         public CollectRewardCmd(Account acc, int vid, int qid) : base(acc)
         {
             QuestId = qid;
-            Vid     = vid;
+            Vid = vid;
             Display = $"CollectReward:{qid}";
         }
 
-        public override bool Exec(int counterCount = 0)
+        public override string Exec(int counterCount = 10)
         {
             var errorMsg = $"[{Account.NameWithNote}]: CollectRewardCmd ({QuestId})";
+            var errors   = "";
             var counter  = 0;
             while (counter <= counterCount)
             {
                 try
                 {
-                    if (QuestId == 0)
+                    if (Account.Player.UpdateQuestList())
                     {
-                        Account.Player.UpdateQuestList();
                         foreach (var x in Account.Player.QuestList.Where(x => x.IsCompleted))
                             Account.Driver.CollectReward(Account.Player.VillageList[Vid].Id, x.Id);
+                        return "Done";
                     }
                     else
                     {
-                        if (!Account.Driver.CollectReward(Account.Player.VillageList[Vid].Id, QuestId))
-                        {
-                            counter++;
-                            Logger.Error(errorMsg);
-                            Thread.Sleep(1000);
-                            continue;
-                        }
+                        errors += "Error while get quests;";
                     }
-
-                    return true;
                 }
                 catch (Exception e)
                 {
                     Logger.Error(e, errorMsg);
                 }
+
                 counter++;
             }
-            MessageBox.Show(errorMsg);
-            return false;
+            return $"{errorMsg}: {errors}";
         }
     }
 }

@@ -79,8 +79,23 @@ namespace TravianHelper.Utils
                     vil.UpdateStationaryTroops();
                     vil.UpdateMovingTroops();
                     Account.Player.Hero.Update();
-                    if ((vil.MovingTroopList.Count == 0 || vil.MovingTroopList.Count == 1) &&
-                        vil.StationaryTroopList.Count != 0 && vil.StationaryTroopList.FirstOrDefault(x => x.Units.Count(c => c.Id != 11) != 0)?.Units.Sum(c => c.Count) > 5)
+                    var send                                 = false;
+                    if (vil.MovingTroopList.Count == 0) send = true;
+                    else
+                    {
+                        var lst = new List<int>();
+                        foreach (var x in vil.MovingTroopList)
+                        {
+                            foreach (var c in x.Units.Where(c => c.Id != 11 && c.Count != 0))
+                            {
+                                lst.Add(c.Id);
+                            }
+                        }
+
+                        if (lst.Count == 0)
+                            send = true;
+                    }
+                    if(send)
                     {
                         var cellList   = Account.Driver.GetCache_MapDetails(vil.Id);
                         var robberList = new List<int>();

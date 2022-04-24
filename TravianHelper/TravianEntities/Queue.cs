@@ -24,20 +24,20 @@ namespace TravianHelper.TravianEntities
 
         private List<FreeSlot> _freeSlotLIst = new List<FreeSlot>();
 
-        public List<FreeSlot> FreeSlotLIst
+        public List<FreeSlot> FreeSlotList
         {
             get => _freeSlotLIst;
             set
             {
                 _freeSlotLIst = value;
-                RaisePropertyChanged(() => FreeSlotLIst);
+                RaisePropertyChanged(() => FreeSlotList);
             }
         }
 
         public VillageQueue(dynamic d, dynamic time)
         {
             QueueList.Clear();
-            FreeSlotLIst.Clear();
+            FreeSlotList.Clear();
             if (d.queues["1"].Count != 0)
                 QueueList.Add(new Queue(1, d.queues["1"][0].buildingType, d.queues["1"][0].locationId, d.queues["1"][0].finished));
             if (d.queues["2"].Count != 0)

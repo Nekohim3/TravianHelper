@@ -66,14 +66,15 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Grid.Column="4" Margin="3" Content="Fast build" IsChecked="{Binding Account.FastBuildWorker.Working}" IsEnabled="{Binding Account.FastBuildWorker.NotBlockWait}"/>
+                <CheckBox Grid.Column="3" Margin="3" Content="Res upgrade" IsChecked="{Binding Account.ResWorker.Working}" IsEnabled="{Binding Account.ResWorker.NotBlockWait}"/>
                 <CheckBox Grid.Column="5" Margin="3" Content="Auto adv" IsChecked="{Binding Account.AutoAdv.Working}" IsEnabled="{Binding Account.AutoAdv.NotBlockWait}"/>
                 <CheckBox Grid.Column="6" Margin="3" Content="Auto robber" IsChecked="{Binding Account.RobberWorker.Working}" IsEnabled="{Binding Account.RobberWorker.NotBlockWait}"/>
                 <Button Width="50" Margin="3" Grid.Column="7" Content="Settings" Command="{Binding SettingsCmd}"/>

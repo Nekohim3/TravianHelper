@@ -243,6 +243,11 @@ namespace TravianHelper.TravianEntities
             Logger.Info($"[{Account.Name}:{Name}]: BuildingQueue update SUCC");
         }
 
+        public void UpdateBuildingListAndQueueAndVoucher()
+        {
+            Account.Driver.GetCache(new List<string>(){$"Collection:Building:{Id}", $"BuildingQueue:{Id}", $"Voucher:{Account.PlayerId}" });
+        }
+
         public void UpdateMovingTroops(dynamic data = null, long time = -1)
         {
             Logger.Info($"[{Account.Name}:{Name}]: MovingTroops update start");
@@ -255,7 +260,7 @@ namespace TravianHelper.TravianEntities
 
             MovingTroopList.Clear();
             foreach (var x in data.data.cache)
-                if (x.data.units.Count != 0)
+                if (x.data.units != null && x.data.units.Count != 0)
                 {
                     var t = new Troops(x.data.units, time);
                     if (!t.IsMineMerchantTroop && !t.IsIncomingTroop)

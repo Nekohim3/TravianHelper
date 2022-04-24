@@ -432,6 +432,18 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private ResWorker _resWorker;
+        [JsonIgnore]
+        public ResWorker ResWorker
+        {
+            get => _resWorker;
+            set
+            {
+                _resWorker = value;
+                RaisePropertyChanged(() => ResWorker);
+            }
+        }
+
         private AutoAdv _autoAdv;
         [JsonIgnore]
         public AutoAdv AutoAdv
@@ -483,6 +495,7 @@ namespace TravianHelper.TravianEntities
             AutoAdv           = new AutoAdv(this);
             RobberWorker      = new RobberWorker(this);
             OldTaskListWorker = new OldTaskListWorker(this);
+            ResWorker         = new ResWorker(this);
         }
 
         private void OnReg()
@@ -590,7 +603,8 @@ namespace TravianHelper.TravianEntities
             AutoAdv.Working           = false;
             RobberWorker.Working      = false;
             OldTaskListWorker.Working = false;
-            while (!FastBuildWorker.NotBlockWait || !AutoAdv.NotBlockWait || !RobberWorker.NotBlockWait || !OldTaskListWorker.NotBlockWait) Application.Current.Dispatcher.Invoke(() => { }, DispatcherPriority.Background);
+            ResWorker.Working         = false;
+            while (!FastBuildWorker.NotBlockWait || !AutoAdv.NotBlockWait || !RobberWorker.NotBlockWait || !OldTaskListWorker.NotBlockWait || !ResWorker.NotBlockWait) Application.Current.Dispatcher.Invoke(() => { }, DispatcherPriority.Background);
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Driver.Dispose();
@@ -658,6 +672,13 @@ namespace TravianHelper.TravianEntities
                             village.UpdateBuildingList(x, time);
                     }
                 }
+
+                var voucherData = Driver.GetDataArrayByName(data.cache, "Voucher:");
+                if (voucherData != null)
+                    foreach (var x in voucherData)
+                    {
+                        Player.HasFinishNowFree = x.data.hasVouchers.finishNow.ToString() == "1";
+                    }
 
                 var buildingData = Driver.GetDataArrayByName(data.cache, "Building:");
                 if (buildingData != null)

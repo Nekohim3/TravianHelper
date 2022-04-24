@@ -51,6 +51,6 @@ namespace TravianHelper.Utils.Commands
             
         }
 
-        public abstract bool Exec(int counterCount = 0);
+        public abstract string Exec(int counterCount = 10);
     }
 }

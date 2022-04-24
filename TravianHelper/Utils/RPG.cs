@@ -234,13 +234,23 @@ namespace TravianHelper.Utils
 
         public static JObject GetCache_VillageList(string session) =>
             new JObject(
-                        new JProperty("action", "get"),
+                        new JProperty("action",     "get"),
                         new JProperty("controller", "cache"),
-                        new JProperty("session", session),
+                        new JProperty("session",    session),
                         new JProperty("params",
                                       new JObject(
                                                   new JProperty("names",
-                                                                new JArray("Collection:Village:own")))));
+                                                                new JArray("Collection:Village:own"))))); 
+        
+        public static JObject GetCache_Voucher(string session, int playerId) =>
+            new JObject(
+                        new JProperty("action",     "get"),
+                        new JProperty("controller", "cache"),
+                        new JProperty("session",    session),
+                        new JProperty("params",
+                                      new JObject(
+                                                  new JProperty("names",
+                                                                new JArray($"Voucher:{playerId}")))));
 
         public static JObject GetCache_All(string session) =>
             new JObject(

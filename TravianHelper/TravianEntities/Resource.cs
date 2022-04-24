@@ -84,8 +84,7 @@ namespace TravianHelper.TravianEntities
         }
 
         public bool IsGreaterOrEq(Resource res) => Wood >= res.Wood && Clay >= res.Clay && Iron >= res.Iron && Crop >= res.Crop;
-
-        public bool IsLess(Resource res) => !IsGreaterOrEq(res);
+        public bool IsLess(Resource        res) => Wood < res.Wood && Clay < res.Clay && Iron < res.Iron && Crop < res.Crop;
 
         public Resource AddProduction(Resource production, int min = 5)
         {

@@ -194,77 +194,153 @@ namespace TravianHelper.Utils
             return dynamicDecodedSessionJson.id;
         }
 
-        public dynamic PostJo(JObject json, ResponseType type = ResponseType.Cache, int counterCount = 3)
+        //public dynamic PostJo(JObject json, ResponseType type = ResponseType.Cache, int counterCount = 3)
+        //{
+        //    var counter = 0;
+        //    while (counter < counterCount)
+        //    {
+        //        try
+        //        {
+        //            while ((DateTime.Now - _lastRespDate).TotalMilliseconds < 300)
+        //                Thread.Sleep(10);
+
+        //            var req = new RestRequest("/api/", Method.Post);
+        //            req.AddParameter("c", (string)(json as dynamic).controller.ToString(), ParameterType.QueryString);
+        //            req.AddParameter("a", (string)(json as dynamic).action.ToString(), ParameterType.QueryString);
+        //            req.AddParameter("t", GetTimeStamp(), ParameterType.QueryString);
+        //            var data = Rem(json.ToString());
+        //            var buffer = Encoding.UTF8.GetBytes(data);
+        //            req.AddHeader("Accept",          "application/json, text/plain, */*");
+        //            req.AddHeader("Accept-Encoding", "gzip, deflate, br");
+        //            req.AddHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
+        //            req.AddHeader("ContentType",     "application/json;charset=UTF-8");
+        //            req.AddHeader("Host",            $"{Account.Server.Server}.{Account.Server.Domain}");
+        //            req.AddHeader("Referer",         $"https://{Account.Server.Server}.{Account.Server.Domain}/");
+        //            req.AddHeader("Origin",          $"https://{Account.Server.Server}.{Account.Server.Domain}");
+        //            req.AddHeader("Content-Type",    "application/json");
+        //            var cookies = Chrome.Manage().Cookies.AllCookies;
+
+        //            RestOptions.CookieContainer = new CookieContainer();
+        //            foreach (var cookie in cookies)
+        //                RestOptions.CookieContainer?.Add(new Cookie(cookie.Name, cookie.Value, cookie.Path, cookie.Domain));
+        //            req.AddBody(data, "application/json");
+
+        //            var res = RestClient.ExecuteAsync(req).GetAwaiter().GetResult();
+        //            _lastRespDate = DateTime.Now;
+        //            if (res?.Content == null)
+        //            {
+        //                counter++;
+        //                Logger.Info($"Post1 error {counter}");
+        //                Thread.Sleep(1000);
+        //                continue;
+        //            }
+        //            Logger.Data(res.Content);
+        //            try
+        //            {
+        //                var jo = JObject.Parse(res.Content) as dynamic;
+        //                if (type == ResponseType.Response && jo.response != null)
+        //                    return jo;
+        //                if (type == ResponseType.Cache && jo.cache != null && jo.Count != 0) 
+        //                    return jo;
+
+        //                counter++;
+        //                Logger.Info($"Post2 error {counter}");
+        //                Thread.Sleep(1000);
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                counter++;
+        //                Logger.Info($"Post3 error {counter}");
+        //                Thread.Sleep(1000);
+        //            }
+
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Logger.Info(e.ToString());
+        //            counter++;
+        //        }
+        //    }
+
+        //    return null;
+        //}
+
+        public dynamic Post(JObject json, out string error, ResponseType type = ResponseType.Cache)
         {
-            var counter = 0;
-            while (counter < counterCount)
+            try
             {
+                while ((DateTime.Now - _lastRespDate).TotalMilliseconds < 1000)
+                    Thread.Sleep(10);
+
+                var req = new RestRequest("/api/", Method.Post);
+                req.AddParameter("c", (string) (json as dynamic).controller.ToString(), ParameterType.QueryString);
+                req.AddParameter("a", (string) (json as dynamic).action.ToString(),     ParameterType.QueryString);
+                req.AddParameter("t", GetTimeStamp(),                                   ParameterType.QueryString);
+                var data   = Rem(json.ToString());
+                req.AddHeader("Accept",          "application/json, text/plain, */*");
+                req.AddHeader("Accept-Encoding", "gzip, deflate, br");
+                req.AddHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
+                req.AddHeader("ContentType",     "application/json;charset=UTF-8");
+                req.AddHeader("Host",            $"{Account.Server.Server}.{Account.Server.Domain}");
+                req.AddHeader("Referer",         $"https://{Account.Server.Server}.{Account.Server.Domain}/");
+                req.AddHeader("Origin",          $"https://{Account.Server.Server}.{Account.Server.Domain}");
+                req.AddHeader("Content-Type",    "application/json");
+                var cookies = Chrome.Manage().Cookies.AllCookies;
+
+                RestOptions.CookieContainer = new CookieContainer();
+                foreach (var cookie in cookies)
+                    RestOptions.CookieContainer?.Add(new Cookie(cookie.Name, cookie.Value, cookie.Path, cookie.Domain));
+                req.AddBody(data, "application/json");
+
+                var res = RestClient.ExecuteAsync(req).GetAwaiter().GetResult();
+                _lastRespDate = DateTime.Now;
+                if (res?.Content == null)
+                {
+                    error = "NullContent";
+                    return null;
+                }
+
+                Logger.Data(res.Content);
                 try
                 {
-                    while ((DateTime.Now - _lastRespDate).TotalMilliseconds < 300)
-                        Thread.Sleep(10);
-
-                    var req = new RestRequest("/api/", Method.Post);
-                    req.AddParameter("c", (string)(json as dynamic).controller.ToString(), ParameterType.QueryString);
-                    req.AddParameter("a", (string)(json as dynamic).action.ToString(), ParameterType.QueryString);
-                    req.AddParameter("t", GetTimeStamp(), ParameterType.QueryString);
-                    var data = Rem(json.ToString());
-                    var buffer = Encoding.UTF8.GetBytes(data);
-                    req.AddHeader("Accept",          "application/json, text/plain, */*");
-                    req.AddHeader("Accept-Encoding", "gzip, deflate, br");
-                    req.AddHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
-                    req.AddHeader("ContentType",     "application/json;charset=UTF-8");
-                    req.AddHeader("Host",            $"{Account.Server.Server}.{Account.Server.Domain}");
-                    req.AddHeader("Referer",         $"https://{Account.Server.Server}.{Account.Server.Domain}/");
-                    req.AddHeader("Origin",          $"https://{Account.Server.Server}.{Account.Server.Domain}");
-                    req.AddHeader("Content-Type",    "application/json");
-                    var cookies = Chrome.Manage().Cookies.AllCookies;
-
-                    RestOptions.CookieContainer = new CookieContainer();
-                    foreach (var cookie in cookies)
-                        RestOptions.CookieContainer?.Add(new Cookie(cookie.Name, cookie.Value, cookie.Path, cookie.Domain));
-                    req.AddBody(data, "application/json");
-
-                    var res = RestClient.ExecuteAsync(req).GetAwaiter().GetResult();
-                    _lastRespDate = DateTime.Now;
-                    if (res?.Content == null)
+                    var jo = JObject.Parse(res.Content) as dynamic;
+                    if (jo.error != null || jo.response != null && jo.response.Count != 0 && jo.response.errors != null && jo.response.errors.Count != null)
                     {
-                        counter++;
-                        Logger.Info($"Post1 error {counter}");
-                        Thread.Sleep(1000);
-                        continue;
-                    }
-                    Logger.Data(res.Content);
-                    try
-                    {
-                        var jo = JObject.Parse(res.Content) as dynamic;
-                        if (type == ResponseType.Response && jo.response != null)
-                            return jo;
-                        if (type == ResponseType.Cache && jo.cache != null && jo.Count != 0) 
-                            return jo;
-
-                        counter++;
-                        Logger.Info($"Post2 error {counter}");
-                        Thread.Sleep(1000);
-                    }
-                    catch (Exception e)
-                    {
-                        counter++;
-                        Logger.Info($"Post3 error {counter}");
-                        Thread.Sleep(1000);
+                        error = "Error";
+                        return null;
                     }
 
+                    if (type == ResponseType.Response && jo.response != null)
+                    {
+                        error = "";
+                        return jo;
+                    }
+
+                    if (type == ResponseType.Cache && jo.cache != null && jo.cache.Count != 0)
+                    {
+                        error = "";
+                        return jo;
+                    }
+                    
+                    Logger.Info($"Post2 error");
+                    error = "Post2";
+                    return null;
                 }
                 catch (Exception e)
                 {
-                    Logger.Info(e.ToString());
-                    counter++;
+                    Logger.Error(e, $"Post3 error");
+                    error = "Post3";
+                    return null;
                 }
+
             }
-
-            return null;
+            catch (Exception e)
+            {
+                Logger.Error(e, $"Post4 error");
+                error = "Post4";
+                return null;
+            }
         }
-
 
         public string Rem(string str) => str.Replace("\r", "").Replace("\n", "").Replace(" ", "");
         private string GetTimeStamp() => ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds).ToString();
@@ -350,9 +426,9 @@ namespace TravianHelper.Utils
             Thread.Sleep(5000);
             ChooseTribe(2);
             Thread.Sleep(3000);
-            PostJo(JObject.Parse(
+            Post(JObject.Parse(
                                  "{\"controller\":\"player\",\"action\":\"changeSettings\",\"params\":{\"newSettings\":{\"premiumConfirmation\":3,\"lang\":\"ru\",\"onlineStatusFilter\":2,\"extendedSimulator\":false,\"musicVolume\":0,\"soundVolume\":0,\"uiSoundVolume\":50,\"muteAll\":true,\"timeZone\":\"3.0\",\"timeFormat\":0,\"attacksFilter\":2,\"mapFilter\":123,\"enableTabNotifications\":true,\"disableAnimations\":true,\"enableHelpNotifications\":true,\"enableWelcomeScreen\":true,\"notpadsVisible\":false}},\"session\":\"" +
-                                 GetSession() + "\"}"));
+                                 GetSession() + "\"}"), out var error);
             DialogAction(1, 1, "setName", Account.Name);
             var msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
             while (msgArr.Length == 0)
@@ -458,10 +534,14 @@ namespace TravianHelper.Utils
             while (newList.Count == 0)
             {
                 newList.Clear();
-                var data = PostJo(RPG.GetCache_MapDetails(GetSession(), vid));
-                foreach (var q in data.cache)
-                    if (q.data.npcInfo != null)
-                        newList.Add(Convert.ToInt32(q.name.ToString().Split(':')[1]));
+                var data = Post(RPG.GetCache_MapDetails(GetSession(), vid), out error);
+                if (string.IsNullOrEmpty(error))
+                {
+                    foreach (var q in data.cache)
+                        if (q.data.npcInfo != null)
+                            newList.Add(Convert.ToInt32(q.name.ToString().Split(':')[1]));
+
+                }
 
                 counter1++;
                 if (counter1 > 10)
@@ -584,10 +664,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: BuildingUpgrade ({villageId}, {locationId}, {buildingType})");
             try
             {
-                var data = PostJo(RPG.BuildingUpgrade(GetSession(), villageId, locationId, buildingType));
-                if (data == null)
+                var data = Post(RPG.BuildingUpgrade(GetSession(), villageId, locationId, buildingType), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: BuildingUpgrade ({villageId}, {locationId}, {buildingType}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: BuildingUpgrade ({villageId}, {locationId}, {buildingType}) Update FAILED {error}");
                     return false;
                 }
 
@@ -607,10 +687,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: BuildingDestroy ({villageId}, {locationId})");
             try
             {
-                var data = PostJo(RPG.BuildingDestroy(GetSession(), villageId, locationId));
-                if (data == null)
+                var data = Post(RPG.BuildingDestroy(GetSession(), villageId, locationId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: BuildingDestroy ({villageId}, {locationId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: BuildingDestroy ({villageId}, {locationId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -630,10 +710,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: NpcTrade ({villageId}, {res})");
             try
             {
-                var data = PostJo(RPG.NpcTrade(GetSession(), villageId, res.Wood, res.Clay, res.Iron, res.Crop));
-                if (data == null)
+                var data = Post(RPG.NpcTrade(GetSession(), villageId, res.Wood, res.Clay, res.Iron, res.Crop), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: NpcTrade ({villageId}, {res}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: NpcTrade ({villageId}, {res}) Update FAILED {error}");
                     return false;
                 }
 
@@ -653,10 +733,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: FinishNow ({villageId}, {queueType}, {price})");
             try
             {
-                var data = PostJo(RPG.FinishBuild(GetSession(), villageId, price, queueType));
-                if (data == null)
+                var data = Post(RPG.FinishBuild(GetSession(), villageId, price, queueType), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: FinishNow ({villageId}, {queueType}, {price}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: FinishNow ({villageId}, {queueType}, {price}) Update FAILED {error}");
                     return false;
                 }
                 
@@ -677,10 +757,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: SendTroops ({villageId}, {destVid}, {movType}, {redeployHero}, {spyMission}, {t1}, {t2}, {t3}, {t4}, {t5}, {t6}, {t7}, {t8}, {t9}, {t10}, {t11})");
             try
             {
-                var data = PostJo(RPG.SendTroops(GetSession(), villageId, destVid, movType, redeployHero, spyMission, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11));
-                if (data == null)
+                var data = Post(RPG.SendTroops(GetSession(), villageId, destVid, movType, redeployHero, spyMission, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: SendTroops ({villageId}, {destVid}, {movType}, {redeployHero}, {spyMission}, {t1}, {t2}, {t3}, {t4}, {t5}, {t6}, {t7}, {t8}, {t9}, {t10}, {t11}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: SendTroops ({villageId}, {destVid}, {movType}, {redeployHero}, {spyMission}, {t1}, {t2}, {t3}, {t4}, {t5}, {t6}, {t7}, {t8}, {t9}, {t10}, {t11}) Update FAILED {error}");
                     return false;
                 }
 
@@ -700,10 +780,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: RecruitUnits ({villageId}, {locationId}, {buildingType}, {unitId}, {count})");
             try
             {
-                var data = PostJo(RPG.RecruitUnits(GetSession(), villageId, locationId, buildingType, unitId, count));
-                if (data == null)
+                var data = Post(RPG.RecruitUnits(GetSession(), villageId, locationId, buildingType, unitId, count), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: RecruitUnits ({villageId}, {locationId}, {buildingType}, {unitId}, {count}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: RecruitUnits ({villageId}, {locationId}, {buildingType}, {unitId}, {count}) Update FAILED {error}");
                     return false;
                 }
 
@@ -723,10 +803,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: ChooseTribe {tribeId}");
             try
             {
-                var data = PostJo(RPG.ChooseTribe(GetSession(), tribeId)); 
-                if (data == null)
+                var data = Post(RPG.ChooseTribe(GetSession(), tribeId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: ChooseTribe {tribeId} Update FAILED");
+                    Logger.Info($"[{Account.Name}]: ChooseTribe {tribeId} Update FAILED {error}");
                     return false;
                 }
             }
@@ -744,10 +824,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: DialogAction ({qid}, {did}, {cmd}, {input})");
             try
             {
-                var data = PostJo(RPG.DialogAction(GetSession(), qid, did, cmd, input));
-                if (data == null)
+                var data = Post(RPG.DialogAction(GetSession(), qid, did, cmd, input), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: DialogAction ({qid}, {did}, {cmd}, {input}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: DialogAction ({qid}, {did}, {cmd}, {input}) Update FAILED {error}");
                     return false;
                 }
             }
@@ -765,10 +845,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: UseHeroItem ({amount}, {id}, {villageId})");
             try
             {
-                var data = PostJo(RPG.UseHeroItem(GetSession(), amount, id, villageId));
-                if (data == null)
+                var data = Post(RPG.UseHeroItem(GetSession(), amount, id, villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: UseHeroItem ({amount}, {id}, {villageId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: UseHeroItem ({amount}, {id}, {villageId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -788,10 +868,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: CollectReward ({villageId}, {questId})");
             try
             {
-                var data = PostJo(RPG.CollectReward(GetSession(), villageId, questId));
-                if (data == null)
+                var data = Post(RPG.CollectReward(GetSession(), villageId, questId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: CollectReward ({villageId}, {questId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: CollectReward ({villageId}, {questId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -811,10 +891,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: UpdateVillageName ({villageId}, {villageName})");
             try
             {
-                var data = PostJo(RPG.SetVillageName(GetSession(), villageId, villageName));
-                if (data == null)
+                var data = Post(RPG.SetVillageName(GetSession(), villageId, villageName), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: UpdateVillageName ({villageId}, {villageName}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: UpdateVillageName ({villageId}, {villageName}) Update FAILED {error}");
                     return false;
                 }
 
@@ -834,7 +914,7 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: SolvePuzzle");
             try
             {
-                PostJo(RPG.SolvePuzzle(GetSession(), moves));
+                Post(RPG.SolvePuzzle(GetSession(), moves), out var error);
             }
             catch (Exception e)
             {
@@ -847,7 +927,7 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetPuzzle");
             try
             {
-                return PostJo(RPG.GetPuzzle(GetSession()), ResponseType.Response);
+                return Post(RPG.GetPuzzle(GetSession()), out var error, ResponseType.Response);
             }
             catch (Exception e)
             {
@@ -865,10 +945,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache ({string.Join(";", lst)})");
             try
             {
-                var data = PostJo(RPG.GetCache(GetSession(), lst));
-                if (data == null)
+                var data = Post(RPG.GetCache(GetSession(), lst), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache ({string.Join(";", lst)}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache ({string.Join(";", lst)}) Update FAILED {error}");
                     return false;
                 }
 
@@ -888,10 +968,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_All");
             try
             {
-                var data = PostJo(RPG.GetCache_All(GetSession()));
-                if (data == null)
+                var data = Post(RPG.GetCache_All(GetSession()), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_All Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_All Update FAILED {error}");
                     return false;
                 }
 
@@ -911,10 +991,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_VillageList");
             try
             {
-                var data = PostJo(RPG.GetCache_VillageList(GetSession()));
-                if (data == null)
+                var data = Post(RPG.GetCache_VillageList(GetSession()), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_VillageList Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_VillageList Update FAILED {error}");
                     return false;
                 }
 
@@ -929,15 +1009,38 @@ namespace TravianHelper.Utils
             return true;
         }
 
+        public bool GetCache_Voucher(int playerId)
+        {
+            Logger.Info($"[{Account.Name}]: GetCache_Voucher");
+            try
+            {
+                var data = Post(RPG.GetCache_Voucher(GetSession(), playerId), out var error);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Logger.Info($"[{Account.Name}]: GetCache_Voucher Update FAILED {error}");
+                    return false;
+                }
+
+                Account.Update(data, (long)data.time);
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"[{Account.Name}]: GetCache_Voucher Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
+                return false;
+            }
+
+            return true;
+        }
+
         public bool GetCache_CollectionHeroItemOwn()
         {
             Logger.Info($"[{Account.Name}]: GetCache_CollectionHeroItemOwn");
             try
             {
-                var data = PostJo(RPG.GetCache_CollectionHeroItemOwn(GetSession()));
-                if (data == null)
+                var data = Post(RPG.GetCache_CollectionHeroItemOwn(GetSession()), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_CollectionHeroItemOwn Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_CollectionHeroItemOwn Update FAILED {error}");
                     return false;
                 }
 
@@ -957,10 +1060,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_Quest");
             try
             {
-                var data = PostJo(RPG.GetCache_Quest(GetSession()));
-                if (data == null)
+                var data = Post(RPG.GetCache_Quest(GetSession()), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_Quest Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_Quest Update FAILED {error}");
                     return false;
                 }
 
@@ -980,10 +1083,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_Player ({playerId})");
             try
             {
-                var data = PostJo(RPG.GetCache_Player(GetSession(), playerId));
-                if (data == null)
+                var data = Post(RPG.GetCache_Player(GetSession(), playerId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_Player ({playerId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_Player ({playerId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -1003,10 +1106,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_Hero ({playerId})");
             try
             {
-                var data = PostJo(RPG.GetCache_Hero(GetSession(), playerId));
-                if (data == null)
+                var data = Post(RPG.GetCache_Hero(GetSession(), playerId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_Hero ({playerId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_Hero ({playerId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -1026,10 +1129,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_BuildingQueue ({villageId})");
             try
             {
-                var data = PostJo(RPG.GetCache_BuildingQueue(GetSession(), villageId));
-                if (data == null)
+                var data = Post(RPG.GetCache_BuildingQueue(GetSession(), villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_BuildingQueue ({villageId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_BuildingQueue ({villageId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -1049,10 +1152,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_BuildingCollection ({villageId})");
             try
             {
-                var data = PostJo(RPG.GetCache_BuildingCollection(GetSession(), villageId));
-                if (data == null)
+                var data = Post(RPG.GetCache_BuildingCollection(GetSession(), villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_BuildingCollection ({villageId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_BuildingCollection ({villageId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -1072,10 +1175,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_MovingTroopsCollection ({villageId})");
             try
             {
-                var data = PostJo(RPG.GetCache_MovingTroopsCollection(GetSession(), villageId));
-                if (data == null)
+                var data = Post(RPG.GetCache_MovingTroopsCollection(GetSession(), villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_MovingTroopsCollection ({villageId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_MovingTroopsCollection ({villageId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -1095,10 +1198,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_StationaryTroopsCollection ({villageId})");
             try
             {
-                var data = PostJo(RPG.GetCache_StationaryTroopsCollection(GetSession(), villageId));
-                if (data == null)
+                var data = Post(RPG.GetCache_StationaryTroopsCollection(GetSession(), villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_StationaryTroopsCollection ({villageId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_StationaryTroopsCollection ({villageId}) Update FAILED {error}");
                     return false;
                 }
 
@@ -1118,10 +1221,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_MapDetails ({villageId})");
             try
             {
-                var data = PostJo(RPG.GetCache_MapDetails(GetSession(), villageId));
-                if (data == null)
+                var data = Post(RPG.GetCache_MapDetails(GetSession(), villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_MapDetails ({villageId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_MapDetails ({villageId}) Update FAILED {error}");
                     return null;
                 }
 
@@ -1141,10 +1244,10 @@ namespace TravianHelper.Utils
             Logger.Info($"[{Account.Name}]: GetCache_Building ({buildingId})");
             try
             {
-                var data = PostJo(RPG.GetCache_Building(GetSession(), buildingId));
-                if (data == null)
+                var data = Post(RPG.GetCache_Building(GetSession(), buildingId), out var error);
+                if (!string.IsNullOrEmpty(error))
                 {
-                    Logger.Info($"[{Account.Name}]: GetCache_Building ({buildingId}) Update FAILED");
+                    Logger.Info($"[{Account.Name}]: GetCache_Building ({buildingId}) Update FAILED {error}");
                     return false;
                 }
 

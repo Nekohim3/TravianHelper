@@ -70,6 +70,18 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private int _levelNext;
+
+        public int LevelNext
+        {
+            get => _levelNext;
+            set
+            {
+                _levelNext = value;
+                RaisePropertyChanged(() => LevelNext);
+            }
+        }
+
         private int _maxLevel;
 
         public int MaxLevel
@@ -82,6 +94,8 @@ namespace TravianHelper.TravianEntities
                 RaisePropertyChanged(() => IsMaxLevel);
             }
         }
+
+        public bool IsUpgraded => Level + 2 == LevelNext;
 
         public bool IsMaxLevel => Level == MaxLevel;
 
@@ -170,6 +184,7 @@ namespace TravianHelper.TravianEntities
             BuildingType = Convert.ToInt32(data.data.buildingType);
             Location     = Convert.ToInt32(data.data.locationId);
             Level        = Convert.ToInt32(data.data.lvl);
+            LevelNext    = Convert.ToInt32(data.data.lvlNext);
             IsRuin       = data.data.rubble != null;
             MaxLevel     = data.data.lvlMax;
             UpgradeCost = new Resource(

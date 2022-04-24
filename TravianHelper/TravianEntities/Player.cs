@@ -70,6 +70,18 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private bool _hasFinishNowFree;
+
+        public bool HasFinishNowFree
+        {
+            get => _hasFinishNowFree;
+            set
+            {
+                _hasFinishNowFree = value;
+                RaisePropertyChanged(() => HasFinishNowFree);
+            }
+        }
+
         private Account _account;
 
         public Account Account
@@ -146,14 +158,13 @@ namespace TravianHelper.TravianEntities
             Logger.Info($"[{Account.Name}]: Player update SUCC");
         }
 
-        public void UpdateQuestList(dynamic data = null, long time = -1)
+        public bool UpdateQuestList(dynamic data = null, long time = -1)
         {
             Logger.Info($"[{Account.Name}]: QuestList update start");
             if (data == null && time == -1)
             {
                 Logger.Info($"[{Account.Name}]: QuestList update load data");
-                Account.Driver.GetCache_Quest();
-                return;
+                return Account.Driver.GetCache_Quest();
             }
 
             QuestList.Clear();
@@ -161,6 +172,7 @@ namespace TravianHelper.TravianEntities
                 QuestList.Add(new Quest(x.data.id, x.data.finalStep, x.data.finishedSteps, x.data.progress, x.data.status, time));
 
             Logger.Info($"[{Account.Name}]: QuestList update SUCC");
+            return true;
         }
 
         public void UpdateVillageList(dynamic data = null, long time = -1)
@@ -185,8 +197,10 @@ namespace TravianHelper.TravianEntities
 
             foreach (var x in VillageList.ToList().Where(x => !idVillageLst.Contains(x.Id)))
                 VillageList.Remove(x);
-
+            VillageList = VillageList.OrderBy(x => x.Name).ToList();
             Logger.Info($"[{Account.Name}]: VillageList update SUCC");
         }
+
+
     }
 }

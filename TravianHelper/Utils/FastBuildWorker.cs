@@ -155,7 +155,6 @@ namespace TravianHelper.Utils
                                     {
                                         Account.Driver.FinishNow(x.Id, 1, 0);
                                         Thread.Sleep(500);
-                                        _lastMultiCheck = DateTime.Now;
                                     }
 
                                 if (q2 != null)
@@ -163,7 +162,6 @@ namespace TravianHelper.Utils
                                     {
                                         Account.Driver.FinishNow(x.Id, 2, 0);
                                         Thread.Sleep(500);
-                                        _lastMultiCheck = DateTime.Now;
                                     }
 
                                 if (q5 != null)
@@ -171,8 +169,8 @@ namespace TravianHelper.Utils
                                     {
                                         Account.Driver.FinishNow(x.Id, 5, 0);
                                         Thread.Sleep(500);
-                                        _lastMultiCheck = DateTime.Now;
                                     }
+                                _lastMultiCheck = DateTime.Now;
                             }
                         }
                     }
