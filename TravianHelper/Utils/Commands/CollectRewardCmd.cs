@@ -38,8 +38,41 @@ namespace TravianHelper.Utils.Commands
         public CollectRewardCmd(Account acc, int vid, int qid) : base(acc)
         {
             QuestId = qid;
-            Vid = vid;
+            Vid     = vid;
             Display = $"CollectReward:{qid}";
+        }
+
+        public CollectRewardCmd(Account acc) : base(acc)
+        {
+
+        }
+
+        public bool Init(string cmd)
+        {
+            try
+            {
+                var paramArr = cmd.Split(';');
+                var cmdArgs  = paramArr[0].Split(':');
+                var comment  = paramArr.Length >= 2 ? paramArr[1] : "";
+                if (cmdArgs[0] == "CR")
+                {
+                    Vid     = Convert.ToInt32(cmdArgs[1]);
+                    if (cmdArgs.Length >= 3)
+                        QuestId = Convert.ToInt32(cmdArgs[2]);
+                    Display = $"CollectReward{(QuestId == 0 ? "" : $":{QuestId}")}";
+                    return true;
+                }
+                else
+                {
+                    Logger.Error($"BuildingUpgradeCmd Error parse wrong type");
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, $"BuildingUpgradeCmd Error parse");
+                return false;
+            }
         }
 
         public override string Exec(int counterCount = 10)
@@ -51,16 +84,40 @@ namespace TravianHelper.Utils.Commands
             {
                 try
                 {
-                    if (Account.Player.UpdateQuestList())
+                    if (Account.Player.VillageList.Count > Vid)
                     {
-                        foreach (var x in Account.Player.QuestList.Where(x => x.IsCompleted))
-                            Account.Driver.CollectReward(Account.Player.VillageList[Vid].Id, x.Id);
-                        return "Done";
+                        if (Account.Player.UpdateQuestList())
+                        {
+                            if (QuestId == 0)
+                            {
+                                foreach (var x in Account.Player.QuestList.Where(x => x.IsCompleted))
+                                    Account.Driver.CollectReward(Account.Player.VillageList[Vid].Id, x.Id);
+                                return "Done";
+                            }
+                            else
+                            {
+                                if (Account.Player.QuestList.Count(x => x.Id == QuestId) == 0)
+                                {
+                                    errors  += "Quest not found;";
+                                    counter += 3;
+                                }
+                                else
+                                {
+                                    Account.Driver.CollectReward(Account.Player.VillageList[Vid].Id, QuestId);
+                                    return "Done";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            errors += "Error while get quests;";
+                        }
                     }
                     else
                     {
-                        errors += "Error while get quests;";
+                        Account.Player.UpdateVillageList();
                     }
+
                 }
                 catch (Exception e)
                 {

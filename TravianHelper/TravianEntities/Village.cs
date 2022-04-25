@@ -243,9 +243,9 @@ namespace TravianHelper.TravianEntities
             Logger.Info($"[{Account.Name}:{Name}]: BuildingQueue update SUCC");
         }
 
-        public void UpdateBuildingListAndQueueAndVoucher()
+        public void UpdateVillageAndBuildingListAndQueueAndVoucher(int vid)
         {
-            Account.Driver.GetCache(new List<string>(){$"Collection:Building:{Id}", $"BuildingQueue:{Id}", $"Voucher:{Account.PlayerId}" });
+            Account.Driver.GetCache(new List<string>(){$"Village:{vid}", $"Collection:Building:{Id}", $"BuildingQueue:{Id}", $"Voucher:{Account.PlayerId}" });
         }
 
         public void UpdateMovingTroops(dynamic data = null, long time = -1)

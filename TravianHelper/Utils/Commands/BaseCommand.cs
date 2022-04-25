@@ -46,9 +46,21 @@ namespace TravianHelper.Utils.Commands
             }
         }
 
+        private bool _loaded;
+
+        public bool Loaded
+        {
+            get => _loaded;
+            set
+            {
+                _loaded = value;
+                RaisePropertyChanged(() => Loaded);
+            }
+        }
+
         protected BaseCommand(Account acc)
         {
-            
+            Account = acc;
         }
 
         public abstract string Exec(int counterCount = 10);

@@ -302,6 +302,7 @@
     <Compile Include="Utils\AutoFarmerTest.cs" />
     <Compile Include="Utils\Commands\ActivateCmd.cs" />
     <Compile Include="Utils\Commands\BaseCommand.cs" />
+    <Compile Include="Utils\Commands\BuildingCollectRuin.cs" />
     <Compile Include="Utils\Commands\BuildingUpgradeCmd.cs" />
     <Compile Include="Utils\Commands\ChooseTribeCmd.cs" />
     <Compile Include="Utils\Commands\CollectRewardCmd.cs" />
