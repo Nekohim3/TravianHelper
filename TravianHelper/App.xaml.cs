@@ -21,8 +21,8 @@ namespace TravianHelper
             g.Init();
             base.OnStartup(e);
             Logger.Init();
-            AppDomain.CurrentDomain.UnhandledException       += CurrentDomain_UnhandledException;
-            Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
+            //AppDomain.CurrentDomain.UnhandledException       += CurrentDomain_UnhandledException;
+            //Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
             var f  = new MainWindow();
             var vm = new MainWindowViewModel();
             f.DataContext         = vm;

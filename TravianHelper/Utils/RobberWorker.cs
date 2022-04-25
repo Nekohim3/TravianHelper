@@ -109,6 +109,7 @@ namespace TravianHelper.Utils
                             {
                                 if (!Account.SendHero || Account.SendHero && !Account.Player.Hero.IsMoving)
                                 {
+                                    vil.UpdateStationaryTroops();
                                     var destVid = robberList.First();
                                     Account.Driver.SendTroops(vil.Id, destVid, 3, false, "resources",
                                                               vil.StationaryTroopList[0].Units.Count(x => x.Id == 1) == 0 ? 0 : vil.StationaryTroopList[0].Units.First(x => x.Id == 1).Count,

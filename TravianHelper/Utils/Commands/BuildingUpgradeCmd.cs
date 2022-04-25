@@ -147,7 +147,7 @@ namespace TravianHelper.Utils.Commands
                                 }
                                 else
                                 {
-                                    //не улучшается (не прошел пакет)
+                                    //не улучшается (надо улучшить или не прошел пакет)
                                     Account.Driver.BuildingUpgrade(vil.Id, Location, BuildingType);
                                 }
                             }

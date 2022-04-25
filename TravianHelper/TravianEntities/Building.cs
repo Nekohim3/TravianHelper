@@ -186,7 +186,7 @@ namespace TravianHelper.TravianEntities
             Level        = Convert.ToInt32(data.data.lvl);
             LevelNext    = Convert.ToInt32(data.data.lvlNext);
             IsRuin       = data.data.rubble != null;
-            MaxLevel     = data.data.lvlMax;
+            MaxLevel     = Convert.ToInt32(data.data.lvlMax);
             UpgradeCost = new Resource(
                                        data.data.upgradeCosts["1"],
                                        data.data.upgradeCosts["2"],
