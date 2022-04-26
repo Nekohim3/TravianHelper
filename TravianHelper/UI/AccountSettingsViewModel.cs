@@ -344,7 +344,7 @@ namespace TravianHelper.UI
                 CurrentAccount.MinHpForAdv   = 15;
                 CurrentAccount.AutoResurrect = false;
 
-                CurrentAccount.SendSettlers  = true;
+                CurrentAccount.SendSettlers  = false;
                 CurrentAccount.SendHero      = false;
                 
                 g.Db.GetCollection<Account>().Insert(CurrentAccount);

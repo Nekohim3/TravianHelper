@@ -104,10 +104,11 @@ namespace TravianHelper.Utils
             Options.AddExcludedArgument("enable-automation");
             Options.AddArgument("--disable-infobars");
             Options.AddFingerPrintDefenderExt(Account.Name);
+            Options.PageLoadStrategy = PageLoadStrategy.Eager;
 
             Options.AddArgument($"user-data-dir={g.UserDataPath}\\{Account.Name}");
 
-            Chrome = new ChromeDriver(Service, Options);
+            Chrome                   = new ChromeDriver(Service, Options);
 
             DriverPid = Service.ProcessId;
             var chromeProcess = Process.GetProcessById(DriverPid).GetChildren().First(x => x.ProcessName != "conhost");
