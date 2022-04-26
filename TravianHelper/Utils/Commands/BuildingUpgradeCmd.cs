@@ -210,11 +210,9 @@ namespace TravianHelper.Utils.Commands
                             }
                             else
                             {
-                                errors += "Building not found;";
-                                if (counter >= 2)
-                                {
-                                    return $"{errorMsg}: {errors}";
-                                }
+                                var r = new Random();
+                                Location = r.Next(vil.BuildingList.Where(x => x.BuildingType == 0).Min(x => x.Location), vil.BuildingList.Where(x => x.BuildingType == 0).Max(x => x.Location));
+                                Account.Driver.BuildingUpgrade(vil.Id, Location, BuildingType);
                             }
                         }
                         else
