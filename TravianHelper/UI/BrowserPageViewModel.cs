@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Practices.Prism.Commands;
@@ -78,7 +79,31 @@ namespace TravianHelper.UI
                     MessageBox.Show("Ошибка парсинга комманды");
                 }
             }
+
+            if (cmdType == "ST")
+            {
+                STCmd = new SendTroopsCmd(Account);
+                if (STCmd.Init(Command))
+                {
+                    ThreadPool.QueueUserWorkItem(s =>
+                                                 {
+                                                     var reply = STCmd.Exec();
+                                                     MessageBox.Show(reply);
+                                                 });
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка парсинга комманды");
+                }
+            }
+
+            if (Command == "STOP")
+            {
+                if(STCmd != null)
+                    STCmd.Working = false;
+            }
         }
+        public SendTroopsCmd STCmd { get; set; }
 
         private void OnSettings()
         {

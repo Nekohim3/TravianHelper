@@ -16,12 +16,12 @@ namespace TravianHelper.TravianEntities
         public bool Home                { get; set; }
         public bool HasNonHeroUnits     => Units.Count(x => x.Id != 11 && x.Count != 0) != 0;
 
-        public Troops(dynamic d, long time)
+        public Troops(dynamic d, long time, bool home = false)
         {
             Units = new List<Units>();
             foreach (var x in d)
                 Units.Add(new Units(x.Name, x.Value));
-
+            Home            = home;
             UpdateTime      = DateTime.Now;
             UpdateTimeStamp = time;
         }

@@ -538,39 +538,51 @@ namespace TravianHelper.Utils
             {
                 vil.Update();
                 vil.UpdateBuildingList();
-                if (vil.BuildingList.First(x => x.Location == locationId).BuildingType != 0)
+                var b = vil.BuildingList.FirstOrDefault(x => x.Location == locationId);
+                if (b != null)
                 {
-                    while (!vil.Storage.IsGreaterOrEq(vil.BuildingList.First(x => x.Location == locationId).UpgradeCost))
+                    if (vil.BuildingList.First(x => x.Location == locationId).BuildingType != 0)
                     {
-                        Thread.Sleep(5000);
-                        if (!Worker.Working)
+                        while (!vil.Storage.IsGreaterOrEq(vil.BuildingList.First(x => x.Location == locationId).UpgradeCost))
                         {
-                            return false;
+                            Thread.Sleep(5000);
+                            if (!Worker.Working)
+                            {
+                                return false;
+                            }
+
+                            Account.Player.UpdateQuestList();
+                            foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                            {
+                                Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
+                            }
+
+                            vil.Update();
                         }
-                        Account.Player.UpdateQuestList();
-                        foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                    }
+                    else
+                    {
+                        while (!vil.Storage.IsGreaterOrEq(BuildingsData.GetById(buildingType).BuildRes))
                         {
-                            Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
+                            Thread.Sleep(5000);
+                            if (!Worker.Working)
+                            {
+                                return false;
+                            }
+
+                            Account.Player.UpdateQuestList();
+                            foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                            {
+                                Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
+                            }
+
+                            vil.Update();
                         }
-                        vil.Update();
                     }
                 }
                 else
                 {
-                    while (!vil.Storage.IsGreaterOrEq(BuildingsData.GetById(buildingType).BuildRes))
-                    {
-                        Thread.Sleep(5000);
-                        if (!Worker.Working)
-                        {
-                            return false;
-                        }
-                        Account.Player.UpdateQuestList();
-                        foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
-                        {
-                            Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
-                        }
-                        vil.Update();
-                    }
+                    return false;
                 }
             }
 

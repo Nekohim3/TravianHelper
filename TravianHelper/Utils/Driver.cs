@@ -392,199 +392,377 @@ namespace TravianHelper.Utils
         }
         public void RegThFunc()
         {
-            MClient = new MailClient();
-            var counter = 0;
-            while (counter <= 3)
+            try
             {
-                try
-                {
-                    MClient.Register($"{Account.Email}", Account.Password).GetAwaiter().GetResult();
-                    break;
-                }
-                catch (Exception e)
+
+                MClient = new MailClient();
+                var counter = 0;
+                while (counter <= 3)
                 {
                     try
                     {
-                        MClient.Login(Account.Email, Account.Password).GetAwaiter().GetResult();
+                        MClient.Register($"{Account.Email}", Account.Password).GetAwaiter().GetResult();
                         break;
                     }
-                    catch (Exception exception)
+                    catch (Exception e)
                     {
+                        try
+                        {
+                            MClient.Login(Account.Email, Account.Password).GetAwaiter().GetResult();
+                            break;
+                        }
+                        catch (Exception exception)
+                        {
 
+                        }
+
+                        counter++;
+                        Thread.Sleep(5000);
                     }
-                    counter++;
-                    Thread.Sleep(5000);
                 }
-            }
 
-            if (counter > 3)
-            {
-                MessageBox.Show("Мыло не нравится");
-                return;
-            }
+                if (counter > 3)
+                {
+                    MessageBox.Show("Мыло не нравится");
+                    return;
+                }
 
-            Login($"{Account.Email}", Account.Password);
-            Thread.Sleep(5000);
-            ChooseTribe(2);
-            Thread.Sleep(3000);
-            Post(JObject.Parse(
-                                 "{\"controller\":\"player\",\"action\":\"changeSettings\",\"params\":{\"newSettings\":{\"premiumConfirmation\":3,\"lang\":\"ru\",\"onlineStatusFilter\":2,\"extendedSimulator\":false,\"musicVolume\":0,\"soundVolume\":0,\"uiSoundVolume\":50,\"muteAll\":true,\"timeZone\":\"3.0\",\"timeFormat\":0,\"attacksFilter\":2,\"mapFilter\":123,\"enableTabNotifications\":true,\"disableAnimations\":true,\"enableHelpNotifications\":true,\"enableWelcomeScreen\":true,\"notpadsVisible\":false}},\"session\":\"" +
-                                 GetSession() + "\"}"), out var error);
-            DialogAction(1, 1, "setName", Account.Name);
-            var msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
-            while (msgArr.Length == 0)
-            {
+                Login($"{Account.Email}", Account.Password);
                 Thread.Sleep(5000);
-                msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
-            }
-
-            Thread.Sleep(5000);
-
-            var msg = "";
-            counter = 0;
-            while (counter <= 5)
-            {
-                try
+                ChooseTribe(2);
+                Thread.Sleep(3000);
+                Post(JObject.Parse(
+                                   "{\"controller\":\"player\",\"action\":\"changeSettings\",\"params\":{\"newSettings\":{\"premiumConfirmation\":3,\"lang\":\"ru\",\"onlineStatusFilter\":2,\"extendedSimulator\":false,\"musicVolume\":0,\"soundVolume\":0,\"uiSoundVolume\":50,\"muteAll\":true,\"timeZone\":\"3.0\",\"timeFormat\":0,\"attacksFilter\":2,\"mapFilter\":123,\"enableTabNotifications\":true,\"disableAnimations\":true,\"enableHelpNotifications\":true,\"enableWelcomeScreen\":true,\"notpadsVisible\":false}},\"session\":\"" +
+                                   GetSession() + "\"}"), out var error);
+                DialogAction(1, 1, "setName", Account.Name);
+                var msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
+                while (msgArr.Length == 0)
                 {
-                    msg = MClient.GetMessageSource(msgArr.FirstOrDefault(x => x.Subject.ToLower().Contains("travian kingdoms")).Id).GetAwaiter().GetResult().Data;
-                    break;
-                }
-                catch (Exception e)
-                {
-                    counter++;
                     Thread.Sleep(5000);
+                    msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
                 }
-            }
 
-            if (counter > 5)
-            {
-                MessageBox.Show("Error mail reg");
-                return;
-            }
+                Thread.Sleep(5000);
+
+                var msg = "";
+                counter = 0;
+                while (counter <= 5)
+                {
+                    try
+                    {
+                        msg = MClient.GetMessageSource(msgArr.FirstOrDefault(x => x.Subject.ToLower().Contains("travian kingdoms")).Id).GetAwaiter().GetResult().Data;
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        counter++;
+                        Thread.Sleep(5000);
+                    }
+                }
+
+                if (counter > 5)
+                {
+                    MessageBox.Show("Error mail reg");
+                    return;
+                }
 
 
-            var str = DecodeQuotedPrintables(msg);
+                var str = DecodeQuotedPrintables(msg);
 
-            var link = str.Substring(str.IndexOf($"http://www.kingdoms.com/{Account.Server.Region}/#action=activation;token="), 90 + Account.Server.Region.Length);
-            JsExec.ExecuteScript("window.open()");
-            Chrome.SwitchTo().Window(Chrome.WindowHandles.Last());
-            Chrome.Navigate().GoToUrl(link);
-            Thread.Sleep(5000);
-            Activate();
-            Thread.Sleep(5000);
-            Chrome.Close();
-            Chrome.SwitchTo().Window(Chrome.WindowHandles.First());
-            Thread.Sleep(5000);
-            DialogAction(1, 1, "activate");
-            Thread.Sleep(1500);
-            Account.Player.Update();
-            Account.Player.UpdateVillageList();
-            var vid = Account.Player.VillageList.First().Id;
-            SendTroops(vid, 536920065, 3, false, "resources", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-            Thread.Sleep(10000);
-            DialogAction(1, 2, "backToVillage");
-            Thread.Sleep(1500);
-            BuildingUpgrade(vid, 33, 22);
-            Thread.Sleep(6000);
-            BuildingUpgrade(vid, 29, 19);
-            Thread.Sleep(1500);
-            RecruitUnits(vid, 29, 19, "12", 3);//////////////////////////
-            Thread.Sleep(1500);
-            DialogAction(30, 1, "attack");
-            Thread.Sleep(10000);
-            DialogAction(34, 1, "activate");
-            Thread.Sleep(1500);
-            DialogAction(34, 1, "face");
-            Thread.Sleep(1500);
-            DialogAction(35, 1, "activate");
-            Thread.Sleep(1500);
-            BuildingUpgrade(vid, 2, 4);
-            Thread.Sleep(6000);
-            DialogAction(203, 1, "activate");
-            Thread.Sleep(1500);
-            DialogAction(203, 1, "become_governor");
-            Thread.Sleep(1500);
-            DialogAction(204, 1, "activate");
-            Thread.Sleep(3000);
-            new MapSolver().Solve(Account);
-            Thread.Sleep(2000);
-            DialogAction(302, 1, "activate");
-            Thread.Sleep(5000);
-            var counter1 = 0;
-            while (Account.Player.VillageList.Count != 1 || Account.Player.VillageList[0].Id < 0)
-            {
+                var link = str.Substring(str.IndexOf($"http://www.kingdoms.com/{Account.Server.Region}/#action=activation;token="), 90 + Account.Server.Region.Length);
+                JsExec.ExecuteScript("window.open()");
+                Chrome.SwitchTo().Window(Chrome.WindowHandles.Last());
+                Chrome.Navigate().GoToUrl(link);
+                Thread.Sleep(5000);
+                Activate();
+                Thread.Sleep(5000);
+                Chrome.Close();
+                Chrome.SwitchTo().Window(Chrome.WindowHandles.First());
+                Thread.Sleep(5000);
+                DialogAction(1, 1, "activate");
+                Thread.Sleep(1500);
                 Account.Player.Update();
                 Account.Player.UpdateVillageList();
-
-                counter1++;
-                if (counter1 > 10)
+                var vid = Account.Player.VillageList.First().Id;
+                SendTroops(vid, 536920065, 3, false, "resources", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+                Thread.Sleep(10000); var body = Chrome.FindElement(By.XPath(".//body"));
+                Act.MoveToElement(body, 200, 50);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(1, 2, "backToVillage");
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                BuildingUpgrade(vid, 33, 22);
+                Thread.Sleep(6000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                BuildingUpgrade(vid, 29, 19);
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                RecruitUnits(vid, 29, 19, "12", 3); //////////////////////////
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(30, 1, "attack");
+                Thread.Sleep(10000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(34, 1, "activate");
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(34, 1, "face");
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(35, 1, "activate");
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                BuildingUpgrade(vid, 2, 4);
+                Thread.Sleep(6000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(203, 1, "activate");
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(203, 1, "become_governor");
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(204, 1, "activate");
+                Thread.Sleep(3000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                new MapSolver().Solve(Account);
+                Thread.Sleep(2000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(302, 1, "activate");
+                Thread.Sleep(5000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                var counter1 = 0;
+                while (Account.Player.VillageList.Count != 1 || Account.Player.VillageList[0].Id < 0)
                 {
-                    Account.Name = "REG ERROR";
-                    Account.Save();
-                    return;
+                    Account.Player.Update();
+                    Account.Player.UpdateVillageList();
+
+                    counter1++;
+                    if (counter1 > 10)
+                    {
+                        Account.Name = "REG ERROR";
+                        Account.Save();
+                        return;
+                    }
+
+                    Thread.Sleep(5000);
                 }
 
+                vid = Account.Player.VillageList.First().Id;
+
+                var newList = new List<int>();
+                var destv   = -1;
+                counter1 = 0;
+                while (newList.Count == 0)
+                {
+                    newList.Clear();
+                    var data = Post(RPG.GetCache_MapDetails(GetSession(), vid), out error);
+                    if (string.IsNullOrEmpty(error))
+                    {
+                        foreach (var q in data.cache)
+                            if (q.data.npcInfo != null)
+                                newList.Add(Convert.ToInt32(q.name.ToString().Split(':')[1]));
+
+                    }
+
+                    counter1++;
+                    if (counter1 > 10)
+                    {
+                        Account.Name = "REG ERROR";
+                        Account.Save();
+                        return;
+                    }
+
+                    Thread.Sleep(5000);
+                }
+
+                var d1 = Math.Abs(vid - newList[0]);
+                var d2 = Math.Abs(vid - newList[1]);
+                destv = d1 >= d2 ? newList[0] : newList[1];
+
+                if (destv == -1) return;
+                SendTroops(vid, destv, 3, false, "resources", 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+                Thread.Sleep(20000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(303, 1, "activate");
+                Thread.Sleep(2000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Account.Player.Hero.Update();
+                Account.Player.Hero.UpdateItems();
+                UseHeroItem(1, Account.Player.Hero.Items.First(x => x.ItemType == 120).Id, vid);
+                Thread.Sleep(10000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(399, 1, "activate");
+                Thread.Sleep(3000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                DialogAction(399, 1, "finish");
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                CollectReward(vid, 205);
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                UpdateVillageName(vid, Account.Name);
+                Thread.Sleep(1500);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                CollectReward(vid, 202);
+                Thread.Sleep(3000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Chrome.Navigate().Refresh();
                 Thread.Sleep(5000);
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Act.Click();
+                Thread.Sleep(100);
+                Account.RegComplete = true;
+                Account.Save();
+                Account.UpdateAll();
+                Account.OldTaskListWorker.Init();
+                NonReg = true;
             }
-
-            vid = Account.Player.VillageList.First().Id;
-
-            var newList = new List<int>();
-            var destv = -1;
-            counter1 = 0;
-            while (newList.Count == 0)
+            catch (Exception e)
             {
-                newList.Clear();
-                var data = Post(RPG.GetCache_MapDetails(GetSession(), vid), out error);
-                if (string.IsNullOrEmpty(error))
-                {
-                    foreach (var q in data.cache)
-                        if (q.data.npcInfo != null)
-                            newList.Add(Convert.ToInt32(q.name.ToString().Split(':')[1]));
-
-                }
-
-                counter1++;
-                if (counter1 > 10)
-                {
-                    Account.Name = "REG ERROR";
-                    Account.Save();
-                    return;
-                }
-
-                Thread.Sleep(5000);
+                MessageBox.Show("Ошибка реги. Минус акк.");
             }
-
-            var d1 = Math.Abs(vid - newList[0]);
-            var d2 = Math.Abs(vid - newList[1]);
-            destv = d1 >= d2 ? newList[0] : newList[1];
-
-            if (destv == -1) return;
-            SendTroops(vid, destv, 3, false, "resources", 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-            Thread.Sleep(20000);
-            DialogAction(303, 1, "activate");
-            Thread.Sleep(2000);
-            Account.Player.Hero.Update();
-            Account.Player.Hero.UpdateItems();
-            UseHeroItem(1, Account.Player.Hero.Items.First(x => x.ItemType == 120).Id, vid);
-            Thread.Sleep(10000);
-            DialogAction(399, 1, "activate");
-            Thread.Sleep(3000);
-            DialogAction(399, 1, "finish");
-            Thread.Sleep(1500);
-            CollectReward(vid, 205);
-            Thread.Sleep(1500);
-            UpdateVillageName(vid, Account.Name);
-            Thread.Sleep(1500);
-            CollectReward(vid, 202);
-            Thread.Sleep(3000);
-            Chrome.Navigate().Refresh();
-            Thread.Sleep(5000);
-            Account.RegComplete = true;
-            Account.Save();
-            Account.UpdateAll();
-            Account.OldTaskListWorker.Init();
-            NonReg = true;
         }
 
         public string DecodeQuotedPrintables(string input, string charSet = "")

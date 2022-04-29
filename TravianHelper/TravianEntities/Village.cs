@@ -284,7 +284,7 @@ namespace TravianHelper.TravianEntities
             foreach (var x in data.data.cache)
                 if (x.data.units.Count != 0)
                 {
-                    var t = new Troops(x.data.units, time);
+                    var t = new Troops(x.data.units, time, x.data.status != null && x.data.status == "home");
                     if (!t.IsMineMerchantTroop && !t.IsIncomingTroop)
                         StationaryTroopList.Add(t);
                 }
