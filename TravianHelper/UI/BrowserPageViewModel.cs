@@ -102,6 +102,11 @@ namespace TravianHelper.UI
                 if(STCmd != null)
                     STCmd.Working = false;
             }
+
+            if (Command == "UpdateUnitQueue")
+            {
+                Account.Player.VillageList.FirstOrDefault().UpdateUnitQueue();
+            }
         }
         public SendTroopsCmd STCmd { get; set; }
 

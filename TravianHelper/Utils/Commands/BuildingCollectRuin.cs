@@ -9,7 +9,7 @@ using TravianHelper.TravianEntities;
 
 namespace TravianHelper.Utils.Commands
 {
-    public class BuildingCollectRuin : BaseCommand
+    public class BuildingCollectRuinCmd : BaseCommand
     {
         private int _buildingType;
 
@@ -59,16 +59,16 @@ namespace TravianHelper.Utils.Commands
             }
         }
 
-        public BuildingCollectRuin(Account acc, int vid, int buildingType, int location, bool finish) : base(acc)
+        public BuildingCollectRuinCmd(Account acc, int vid, int buildingType, int location, bool finish, string comment) : base(acc)
         {
             Vid = vid;
             BuildingType = buildingType;
             Location = location;
             Finish = finish;
-            Display = $"BuildingCollectRuin:{(buildingType == 0 ? buildingType.ToString() : BuildingsData.GetById(buildingType).Name)}:{location}:{(finish ? $":fin" : "")}";
+            Display = string.IsNullOrEmpty(comment) ? $"BuildingCollectRuin:{(buildingType == 0 ? buildingType.ToString() : BuildingsData.GetById(buildingType).Name)}:{location}:{(finish ? $":fin" : "")}" : comment;
         }
 
-        public BuildingCollectRuin(Account acc) : base(acc)
+        public BuildingCollectRuinCmd(Account acc) : base(acc)
         {
 
         }
@@ -80,12 +80,12 @@ namespace TravianHelper.Utils.Commands
                 var paramArr = cmd.Split(';');
                 var cmdArgs = paramArr[0].Split(':');
                 var comment = paramArr.Length >= 2 ? paramArr[1] : "";
-                if (cmdArgs[0] == "BU")
+                if (cmdArgs[0] == "BC")
                 {
                     Vid = Convert.ToInt32(cmdArgs[1]);
                     BuildingType = Convert.ToInt32(cmdArgs[2]);
                     Location = Convert.ToInt32(cmdArgs[3]);
-                    Finish = cmdArgs.Length == 6 && Convert.ToInt32(cmdArgs[5]) == 1;
+                    Finish = cmdArgs.Length == 5 && Convert.ToInt32(cmdArgs[4]) == 1;
                     Display = !string.IsNullOrEmpty(comment)
                                   ? comment
                                   : $"BuildingCollectRuin:{(BuildingType == 0 ? BuildingType.ToString() : BuildingsData.GetById(BuildingType).Name)}:{Location}:{(Finish ? $":fin" : "")}";
@@ -131,14 +131,31 @@ namespace TravianHelper.Utils.Commands
                         if (building == null)
                         {
                             errors += "Building not found;";
-                            if (counter >= 2)
+                            if (counter >= 3)
                             {
-                                return $"{errorMsg}: {errors}";
+                                return $"Done";//ну не найдены руины ну и хуй с ними
                             }
                         }
                         else
                         {
-                            throw new Exception("Надо сделать");
+                            Account.Driver.BuildingUpgrade(vil.Id, building.Location, BuildingType);
+                            //throw new Exception("Надо сделать");
+                        }
+
+                        if (Finish) //Voucher
+                        {
+                            vil.UpdateBuildingQueue();
+                            if (vil.Queue.QueueList.Count(x => x.QueueId == 5 && (x.FinishTime - vil.Queue.UpdateTimeStamp) > 299) != 0)
+                            {
+                                if (Account.Player.HasFinishNowFree)
+                                {
+                                    Account.Driver.FinishNow(vil.Id, 5, -1);
+                                }
+                                else
+                                {
+                                    Account.Driver.FinishNow(vil.Id, 5, 1);
+                                }
+                            }
                         }
                     }
                     else

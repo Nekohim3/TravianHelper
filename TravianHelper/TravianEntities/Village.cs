@@ -142,6 +142,18 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private UnitQueue _unitQueue;
+
+        public UnitQueue UnitQueue
+        {
+            get => _unitQueue;
+            set
+            {
+                _unitQueue = value;
+                RaisePropertyChanged(() => UnitQueue);
+            }
+        }
+
         private Account _account;
 
         public Account Account
@@ -241,6 +253,20 @@ namespace TravianHelper.TravianEntities
 
             Queue = new VillageQueue(data.data, time);
             Logger.Info($"[{Account.Name}:{Name}]: BuildingQueue update SUCC");
+        }
+
+        public void UpdateUnitQueue(dynamic data = null, long time = -1)
+        {
+            Logger.Info($"[{Account.Name}:{Name}]: UpdateUnitQueue update start");
+            if (data == null && time == -1)
+            {
+                Logger.Info($"[{Account.Name}:{Name}]: UpdateUnitQueue update load data");
+                Account.Driver.GetCache_UnitQueue(Id);
+                return;
+            }
+
+            UnitQueue = new UnitQueue(data.data, time);
+            Logger.Info($"[{Account.Name}:{Name}]: UpdateUnitQueue update SUCC");
         }
 
         public void UpdateVillageAndBuildingListAndQueueAndVoucher(int vid)

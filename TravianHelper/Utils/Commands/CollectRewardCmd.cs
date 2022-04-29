@@ -35,11 +35,11 @@ namespace TravianHelper.Utils.Commands
             }
         }
 
-        public CollectRewardCmd(Account acc, int vid, int qid) : base(acc)
+        public CollectRewardCmd(Account acc, int vid, int qid, string comment) : base(acc)
         {
             QuestId = qid;
             Vid     = vid;
-            Display = $"CollectReward:{qid}";
+            Display = string.IsNullOrEmpty(comment) ? $"CollectReward{(QuestId == 0 ? "" : $":{QuestId}")}" : comment;
         }
 
         public CollectRewardCmd(Account acc) : base(acc)
@@ -59,18 +59,18 @@ namespace TravianHelper.Utils.Commands
                     Vid     = Convert.ToInt32(cmdArgs[1]);
                     if (cmdArgs.Length >= 3)
                         QuestId = Convert.ToInt32(cmdArgs[2]);
-                    Display = $"CollectReward{(QuestId == 0 ? "" : $":{QuestId}")}";
+                    Display = string.IsNullOrEmpty(comment) ? $"CollectReward{(QuestId == 0 ? "" : $":{QuestId}")}" : comment;
                     return true;
                 }
                 else
                 {
-                    Logger.Error($"BuildingUpgradeCmd Error parse wrong type");
+                    Logger.Error($"CollectRewardCmd Error parse wrong type");
                     return false;
                 }
             }
             catch (Exception e)
             {
-                Logger.Error(e, $"BuildingUpgradeCmd Error parse");
+                Logger.Error(e, $"CollectRewardCmd Error parse");
                 return false;
             }
         }

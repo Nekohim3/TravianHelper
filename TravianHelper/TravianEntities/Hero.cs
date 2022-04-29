@@ -83,6 +83,18 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private int _resBonusType;
+
+        public int ResBonusType
+        {
+            get => _resBonusType;
+            set
+            {
+                _resBonusType = value;
+                RaisePropertyChanged(() => ResBonusType);
+            }
+        }
+
         private Account _account;
 
         public Account Account
@@ -125,12 +137,13 @@ namespace TravianHelper.TravianEntities
                 return;
             }
 
-            AdvPoints  = data.data.adventurePoints;
-            FreePoints = data.data.freePoints;
-            Health     = Convert.ToInt32(Convert.ToDouble(data.data.health));
-            IsMoving   = data.data.isMoving;
-            AtkPoints  = data.data.fightStrengthPoints;
-            ResPoints  = data.data.resBonusPoints;
+            AdvPoints    = Convert.ToInt32(data.data.adventurePoints);
+            FreePoints   = Convert.ToInt32(data.data.freePoints);
+            Health       = Convert.ToInt32(Convert.ToDouble(data.data.health));
+            IsMoving     = data.data.isMoving;
+            AtkPoints    = Convert.ToInt32(data.data.fightStrengthPoints);
+            ResPoints    = Convert.ToInt32(data.data.resBonusPoints);
+            ResBonusType = Convert.ToInt32(data.data.resBonusType);
 
             UpdateTime      = DateTime.Now;
             UpdateTimeStamp = time;

@@ -33,26 +33,26 @@ namespace TravianHelper.Utils.Commands
         public DateTime SendTime { get; set; }
         public bool     Working  { get; set; }
 
-        public SendTroopsCmd(Account acc, int svid, int dvid, int mt, bool rh, string sm, int c1, int c2, int c3, int c4, int c5, int c6, int c7, int c8, int c9, int c10, int c11, bool reg = false) : base(acc)
+        public SendTroopsCmd(Account acc, int svid, int dvid, int mt, bool rh, string sm, int c1, int c2, int c3, int c4, int c5, int c6, int c7, int c8, int c9, int c10, int c11, string comment, bool reg = false) : base(acc)
         {
-            SourceVilId = svid;
-            DestVilId = dvid;
-            MoveType = mt;
+            SourceVilId  = svid;
+            DestVilId    = dvid;
+            MoveType     = mt;
             RedeployHero = rh;
-            SpyMission = sm;
-            C1 = c1;
-            C2 = c2;
-            C3 = c3;
-            C4 = c4;
-            C5 = c5;
-            C6 = c6;
-            C7 = c7;
-            C8 = c8;
-            C9 = c9;
-            C10 = c10;
-            C11 = c11;
-            Reg = reg;
-            Display = $"SendTroops";
+            SpyMission   = sm;
+            C1           = c1;
+            C2           = c2;
+            C3           = c3;
+            C4           = c4;
+            C5           = c5;
+            C6           = c6;
+            C7           = c7;
+            C8           = c8;
+            C9           = c9;
+            C10          = c10;
+            C11          = c11;
+            Reg          = reg;
+            Display      = string.IsNullOrEmpty(comment) ? $"SendTroops" : comment;
         }
 
         public SendTroopsCmd(Account acc): base (acc)
@@ -83,13 +83,11 @@ namespace TravianHelper.Utils.Commands
                     C7           = Convert.ToInt32(cmdArgs[12]);
                     C8           = Convert.ToInt32(cmdArgs[13]);
                     C9           = Convert.ToInt32(cmdArgs[14]);
-                    C10           = Convert.ToInt32(cmdArgs[15]);
-                    C11           = Convert.ToInt32(cmdArgs[16]);
-                    SendTime = DateTime.Parse($"{cmdArgs[17]}:{cmdArgs[18]}:{cmdArgs[19]}");
-                    //Display = !string.IsNullOrEmpty(comment)
-                    //              ? comment
-                    //              : $"BuildingUpgrade:{(BuildingType == 0 ? BuildingType.ToString() : BuildingsData.GetById(BuildingType).Name)}:{Location}:>{ToLvl}{(Finish ? $":fin" : "")}";
-                    Loaded = true;
+                    C10          = Convert.ToInt32(cmdArgs[15]);
+                    C11          = Convert.ToInt32(cmdArgs[16]);
+                    SendTime     = DateTime.Parse($"{cmdArgs[17]}:{cmdArgs[18]}:{cmdArgs[19]}");
+                    Display      = string.IsNullOrEmpty(comment) ? $"SendTroops" : comment;
+                    Loaded       = true;
                     return true;
                 }
                 else

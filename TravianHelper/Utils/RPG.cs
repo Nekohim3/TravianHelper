@@ -275,13 +275,23 @@ namespace TravianHelper.Utils
 
         public static JObject GetCache_BuildingQueue(string session, int villageId) =>
             new JObject(
-                        new JProperty("action", "get"),
+                        new JProperty("action",     "get"),
                         new JProperty("controller", "cache"),
-                        new JProperty("session", session),
+                        new JProperty("session",    session),
                         new JProperty("params",
                                       new JObject(
                                                   new JProperty("names",
                                                                 new JArray($"BuildingQueue:{villageId}")))));
+
+        public static JObject GetCache_UnitQueue(string session, int villageId) =>
+            new JObject(
+                        new JProperty("action",     "get"),
+                        new JProperty("controller", "cache"),
+                        new JProperty("session",    session),
+                        new JProperty("params",
+                                      new JObject(
+                                                  new JProperty("names",
+                                                                new JArray($"UnitQueue:{villageId}")))));
 
         public static JObject GetCache_BuildingCollection(string session, int villageId) =>
             new JObject(

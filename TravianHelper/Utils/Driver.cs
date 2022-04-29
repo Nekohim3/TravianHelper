@@ -390,6 +390,18 @@ namespace TravianHelper.Utils
             _regTh = new Thread(RegThFunc);
             _regTh.Start();
         }
+
+        public void RegClick(IWebElement body)
+        {
+            Act.MoveToElement(body, 200, 50);
+            Thread.Sleep(100);
+            Act.Click();
+            Thread.Sleep(100);
+            Act.Click();
+            Thread.Sleep(100);
+            Act.Click();
+            Thread.Sleep(100);
+        }
         public void RegThFunc()
         {
             try
@@ -485,141 +497,51 @@ namespace TravianHelper.Utils
                 Account.Player.UpdateVillageList();
                 var vid = Account.Player.VillageList.First().Id;
                 SendTroops(vid, 536920065, 3, false, "resources", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-                Thread.Sleep(10000); var body = Chrome.FindElement(By.XPath(".//body"));
-                Act.MoveToElement(body, 200, 50);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                Thread.Sleep(10000); 
+                var body = Chrome.FindElement(By.XPath(".//body"));
+                RegClick(body);
                 DialogAction(1, 2, "backToVillage");
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 BuildingUpgrade(vid, 33, 22);
                 Thread.Sleep(6000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 BuildingUpgrade(vid, 29, 19);
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 RecruitUnits(vid, 29, 19, "12", 3); //////////////////////////
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(30, 1, "attack");
                 Thread.Sleep(10000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(34, 1, "activate");
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(34, 1, "face");
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(35, 1, "activate");
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 BuildingUpgrade(vid, 2, 4);
                 Thread.Sleep(6000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(203, 1, "activate");
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(203, 1, "become_governor");
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(204, 1, "activate");
                 Thread.Sleep(3000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 new MapSolver().Solve(Account);
                 Thread.Sleep(2000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(302, 1, "activate");
                 Thread.Sleep(5000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 var counter1 = 0;
                 while (Account.Player.VillageList.Count != 1 || Account.Player.VillageList[0].Id < 0)
                 {
@@ -672,87 +594,33 @@ namespace TravianHelper.Utils
                 if (destv == -1) return;
                 SendTroops(vid, destv, 3, false, "resources", 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 1);
                 Thread.Sleep(20000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(303, 1, "activate");
                 Thread.Sleep(2000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 Account.Player.Hero.Update();
                 Account.Player.Hero.UpdateItems();
                 UseHeroItem(1, Account.Player.Hero.Items.First(x => x.ItemType == 120).Id, vid);
                 Thread.Sleep(10000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(399, 1, "activate");
                 Thread.Sleep(3000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 DialogAction(399, 1, "finish");
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 CollectReward(vid, 205);
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 UpdateVillageName(vid, Account.Name);
                 Thread.Sleep(1500);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 CollectReward(vid, 202);
                 Thread.Sleep(3000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 Chrome.Navigate().Refresh();
                 Thread.Sleep(5000);
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
-                Act.Click();
-                Thread.Sleep(100);
+                RegClick(body);
                 Account.RegComplete = true;
                 Account.Save();
                 Account.UpdateAll();
@@ -1320,6 +1188,29 @@ namespace TravianHelper.Utils
             catch (Exception e)
             {
                 Logger.Info($"[{Account.Name}]: GetCache_BuildingQueue ({villageId}) Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool GetCache_UnitQueue(int villageId)
+        {
+            Logger.Info($"[{Account.Name}]: GetCache_UnitQueue ({villageId})");
+            try
+            {
+                var data = Post(RPG.GetCache_UnitQueue(GetSession(), villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Logger.Info($"[{Account.Name}]: GetCache_UnitQueue ({villageId}) Update FAILED {error}");
+                    return false;
+                }
+
+                Account.Update(data, (long)data.time);
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"[{Account.Name}]: GetCache_UnitQueue ({villageId}) Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
                 return false;
             }
 

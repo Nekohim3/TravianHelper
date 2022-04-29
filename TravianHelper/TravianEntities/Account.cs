@@ -704,11 +704,25 @@ namespace TravianHelper.TravianEntities
                 {
                     foreach (var x in buildingQueueData)
                     {
-                        var vid = Convert.ToInt32(x.data.villageId);
+                        var vid     = Convert.ToInt32(x.data.villageId);
                         var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
                         if (village != null)
                         {
                             village.UpdateBuildingQueue(x, time);
+                        }
+                    }
+                }
+
+                var unitQueueData = Driver.GetDataArrayByName(data.cache, "UnitQueue:<>");
+                if (unitQueueData != null)
+                {
+                    foreach (var x in unitQueueData)
+                    {
+                        var vid     = Convert.ToInt32(x.data.villageId);
+                        var village = Player.VillageList.FirstOrDefault(c => c.Id == vid);
+                        if (village != null)
+                        {
+                            village.UpdateUnitQueue(x, time);
                         }
                     }
                 }

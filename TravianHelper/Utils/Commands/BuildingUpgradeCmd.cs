@@ -83,14 +83,14 @@ namespace TravianHelper.Utils.Commands
             }
         }
 
-        public BuildingUpgradeCmd(Account acc, int vid, int buildingType, int location, int toLvl, bool finish) : base(acc)
+        public BuildingUpgradeCmd(Account acc, int vid, int buildingType, int location, int toLvl, bool finish, string comment) : base(acc)
         {
             Vid          = vid;
             BuildingType = buildingType;
             Location     = location;
             Finish       = finish;
             ToLvl        = toLvl;
-            Display      = $"BuildingUpgrade:{(buildingType == 0 ? buildingType.ToString() : BuildingsData.GetById(buildingType).Name)}:{location}:>{toLvl}{(finish ? $":fin" : "")}";
+            Display = string.IsNullOrEmpty(comment) ? $"BuildingUpgrade:{(buildingType == 0 ? buildingType.ToString() : BuildingsData.GetById(buildingType).Name)}:{location}:>{toLvl}{(finish ? $":fin" : "")}" : comment;
         }
 
         public BuildingUpgradeCmd(Account acc) : base(acc)
@@ -255,10 +255,10 @@ namespace TravianHelper.Utils.Commands
                             }
                         }
 
-                        vil.UpdateBuildingQueue();
 
                         if (Finish) //Voucher
                         {
+                            vil.UpdateBuildingQueue();
                             if (vil.Queue.QueueList.Count(x => x.QueueId == (BuildingType > 4 ? 1 : 2) && (x.FinishTime - vil.Queue.UpdateTimeStamp) > 299) != 0)
                             {
                                 if (Account.Player.HasFinishNowFree)
