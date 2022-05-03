@@ -84,7 +84,7 @@ namespace TravianHelper.Utils
                         if (vil.Queue.QueueList.Count == 0)
                         {
                             vil.UpdateBuildingList();
-                            var buildings = vil.BuildingList.Where(x => x.BuildingType == 1 || x.BuildingType == 2 || x.BuildingType == 3 || x.BuildingType == 4 && x.Level < 7).OrderBy(x => x.UpgradeCost.MultiRes).ToList();//поля
+                            var buildings = vil.BuildingList.Where(x => x.BuildingType == 1 || x.BuildingType == 2 || x.BuildingType == 3 || x.BuildingType == 4 && x.Level < 3).OrderBy(x => x.UpgradeCost.MultiRes).ToList();//поля
                             buildings = buildings.Where(x => x.UpgradeCost.IsLess(vil.Storage)).ToList();
                             if (buildings.Count != 0)
                             {

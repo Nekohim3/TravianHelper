@@ -325,7 +325,11 @@
     <Compile Include="Utils\Driver.cs" />
     <Compile Include="Utils\FastBuildWorker.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\MapParser.cs" />
     <Compile Include="Utils\MapSolver.cs" />
+    <Compile Include="Utils\MapView.xaml.cs">
+      <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\OldTaskListWorker.cs" />
     <Compile Include="Utils\RegistrationWorker.cs" />
     <Compile Include="Utils\ResWorker.cs" />
@@ -361,6 +365,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\WindowStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Utils\MapView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

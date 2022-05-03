@@ -31,17 +31,19 @@ namespace TravianHelper.UI
         {
             //if (e.AddedItems.Count != 0)
             //    ((ListView)sender).ScrollIntoView(e.AddedItems[0]);
-            //VirtualizingStackPanel vsp =
-            //    (VirtualizingStackPanel)typeof(ItemsControl).InvokeMember("_itemsHost",
-            //                                                              BindingFlags.Instance | BindingFlags.GetField | BindingFlags.NonPublic, null,
-            //                                                              ListViewTask, null);
+            if (ListViewTask.SelectedItem == null) return;
+            VirtualizingStackPanel vsp =
+                (VirtualizingStackPanel)typeof(ItemsControl).InvokeMember("_itemsHost",
+                                                                          BindingFlags.Instance | BindingFlags.GetField | BindingFlags.NonPublic, null,
+                                                                          ListViewTask, null);
+            if(vsp == null) return;
 
-            //double scrollHeight = vsp.ScrollOwner.ScrollableHeight;
+            double scrollHeight = vsp.ScrollOwner.ScrollableHeight;
+            
+            // itemIndex_ is index of the item which we want to show in the middle of the view
+            double offset = scrollHeight * ListViewTask.SelectedIndex / ListViewTask.Items.Count;
 
-            //// itemIndex_ is index of the item which we want to show in the middle of the view
-            //double offset = scrollHeight * ListViewTask. / ListViewTask.Items.Count;
-
-            //vsp.SetVerticalOffset(offset);
+            vsp.SetVerticalOffset(offset);
         }
     }
 }

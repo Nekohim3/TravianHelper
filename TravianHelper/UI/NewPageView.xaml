@@ -37,6 +37,8 @@
                         <Separator Background="#955" Margin="0,0,0,3" />
                         <Button Content="Run switch" Command="{Binding RunAndSwitchCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
                         <Button Content="Run" Command="{Binding RunCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
+                        <Button Content="Run next" Command="{Binding RunNextCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
+                        <Button Content="Start all down" Command="{Binding StartDown}" Margin="3,0,3,3" Width="80" Height="20"/>
                     </StackPanel>
                     <DataGrid Grid.Row="1" ItemsSource="{Binding AccountList}" SelectedItem="{Binding SelectedAccount}" VerticalAlignment="Stretch">
                         <DataGrid.Columns>
@@ -57,6 +59,7 @@
                             <DataGridTextColumn Width="auto" MinWidth="150" Header="Server" Binding="{Binding Server}"/>
                             <DataGridTextColumn Width="auto" MinWidth="150" Header="Proxy" Binding="{Binding Proxy}"/>
                             <DataGridTextColumn Width="50" MinWidth="50" Header="!Trial" Binding="{Binding RegComplete}"/>
+                            <DataGridTextColumn Width="50" MinWidth="50" Header="TW" Binding="{Binding TwoVils}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <!---->

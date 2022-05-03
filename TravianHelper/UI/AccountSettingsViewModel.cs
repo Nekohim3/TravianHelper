@@ -206,7 +206,9 @@ namespace TravianHelper.UI
         public DelegateCommand SaveCmd { get; }
         public DelegateCommand CancelCmd { get; }
 
-        public DelegateCommand RunCmd { get; }
+        public DelegateCommand RunCmd          { get; }
+        public DelegateCommand RunNextCmd      { get; }
+        public DelegateCommand StartDown      { get; }
         public DelegateCommand RunAndSwitchCmd { get; }
 
         public AccountSettingsViewModel(Action update)
@@ -219,6 +221,8 @@ namespace TravianHelper.UI
             CancelCmd = new DelegateCommand(OnCancel);
             RunCmd = new DelegateCommand(OnRun, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
             RunAndSwitchCmd = new DelegateCommand(OnRunAndSwitch, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            RunNextCmd = new DelegateCommand(OnRunNext, () => AccountList.Count > 0);
+            StartDown = new DelegateCommand(OnStartDown, () => AccountList.Count > 0);
 
             Init();
         }
@@ -230,6 +234,8 @@ namespace TravianHelper.UI
             DeleteCmd.RaiseCanExecuteChanged();
             RunCmd.RaiseCanExecuteChanged();
             RunAndSwitchCmd.RaiseCanExecuteChanged();
+            RunNextCmd.RaiseCanExecuteChanged();
+            StartDown.RaiseCanExecuteChanged();
         }
 
         public void Init()
@@ -261,10 +267,65 @@ namespace TravianHelper.UI
             RaiseCanExecChanged();
         }
 
+        private void OnRunNext()
+        {
+            if (SelectedAccount == null)
+                SelectedAccount = AccountList.FirstOrDefault();
+            else
+            {
+                var ind = AccountList.IndexOf(SelectedAccount);
+                if (ind + 1 < AccountList.Count)
+                    SelectedAccount = AccountList[ind + 1];
+                else return;
+            }
+
+            if ((!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true) && !SelectedAccount.TwoVils)
+            {
+                OnRun();
+            }
+        }
+        private void OnStartDown()
+        {
+            if(SelectedAccount == null) return;
+
+            var ind = AccountList.IndexOf(SelectedAccount);
+            for (var i = ind; i < AccountList.Count; i++)
+            {
+                var tab = g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == AccountList[i].Id);
+                if (tab != null && tab.Account.Running == true && tab.Account.RegComplete)
+                {
+                    tab.Account.OldTaskListWorker.ShowTaskList = true;
+                    tab.Account.OldTaskListWorker.Working      = true;
+                }
+            }
+
+        }
+
         private void OnRunAndSwitch()
         {
             g.TabManager.OpenTab(SelectedAccount, true);
             RaiseCanExecChanged();
+        }
+        public string GenerateName(int len)
+        {
+            Random   r          = new Random();
+            string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
+            string[] vowels     = { "a", "e", "i", "o", "u", "ae", "y" };
+            string   Name       = "";
+            Name += consonants[r.Next(consonants.Length)].ToUpper();
+            Name += vowels[r.Next(vowels.Length)];
+            int b = 2; //b tells how many times a new letter has been added. It's 2 right now because the first two letters are already in the name.
+            while (b < len)
+            {
+                Name += consonants[r.Next(consonants.Length)];
+                b++;
+                Name += vowels[r.Next(vowels.Length)];
+                b++;
+            }
+
+            return Name;
+
+
         }
 
         private void OnAdd()
@@ -272,11 +333,13 @@ namespace TravianHelper.UI
             IsEditMode     = true;
             CurrentAccount = new Account();
             CustomMail     = false;
-            Name           = "";
             Mail           = "";
+            Name           = GenerateName(new Random().Next(5, 12));
 
             CurrentAccount.Password = AccountList.LastOrDefault()?.Password;
             CurrentAccount.RefLink  = AccountList.LastOrDefault()?.RefLink;
+            SelectedServer          = ServerList.FirstOrDefault(x => x.Id == AccountList.LastOrDefault()?.ServerId);
+            SelectedProxy          = ProxyList.FirstOrDefault(x => x.Id == AccountList.LastOrDefault()?.ProxyId);
         }
 
         private void OnEdit()
@@ -306,9 +369,9 @@ namespace TravianHelper.UI
 
         private void OnSave()
         {
-            if (Name.Length < 5 || Name.Length > 8)
+            if (Name.Length < 5)
             {
-                MessageBox.Show("В имени аккаунта допускается от 5 до 8 символов");
+                MessageBox.Show("В имени аккаунта допускается от 5 символов");
                 return;
             }
             CurrentAccount.ProxyId  = SelectedProxy?.Id > 0 ? SelectedProxy?.Id : null;

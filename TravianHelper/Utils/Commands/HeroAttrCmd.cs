@@ -110,7 +110,7 @@ namespace TravianHelper.Utils.Commands
                     oldf  = Account.Player.Hero.AtkPoints;
                     oldr  = Account.Player.Hero.ResPoints;
                     oldrt = Account.Player.Hero.ResBonusType;
-                    if (oldrt == -1 || oldr == 1 || oldf == -1)
+                    if (oldrt == -1 || oldr == -1 || oldf == -1)
                     {
                         errors += "Error hero attrs";
                     }

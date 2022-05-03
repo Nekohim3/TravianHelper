@@ -209,9 +209,15 @@ namespace TravianHelper.Utils
 
         private void Run()
         {
-            _workThread = new Thread(ThreadFunc);
+            var sel = SelectedTask;
+            SelectedTask = TaskList.FirstOrDefault();
+            SelectedTask = sel;
+            _workThread  = new Thread(ThreadFunc);
             _workThread.Start();
-            State = TaskState.InProgress;
+            State                           = TaskState.InProgress;
+            Account.FastBuildWorker.Working = false;
+            Account.AutoAdv.Working         = true;
+            Account.RobberWorker.Working    = true;
         }
 
         private void ThreadFunc()
@@ -222,9 +228,11 @@ namespace TravianHelper.Utils
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                                                           {
-                                                              State        = TaskState.Queue;
-                                                              Working      = false;
-                                                              NotBlockWait = true;
+                                                              State           = TaskState.Queue;
+                                                              Working         = false;
+                                                              NotBlockWait    = true;
+                                                              Account.TwoVils = true;
+                                                              Account.Save();
                                                           });
                     return;
                 }
@@ -338,13 +346,25 @@ namespace TravianHelper.Utils
                 return "";
             }
 
+            if (a[0] == "Celeb")
+            {
+                Application.Current.Dispatcher.Invoke(() => { State = TaskState.InProgress; });
+                if (!Account.Driver.Celeb(Account.Player.VillageList.FirstOrDefault().Id))
+                    if (!Account.Driver.Celeb(Account.Player.VillageList.FirstOrDefault().Id))
+                        if (!Account.Driver.Celeb(Account.Player.VillageList.FirstOrDefault().Id))
+                        {
+                            Application.Current.Dispatcher.Invoke(() => { State = TaskState.Error; });
+                            return "err";
+                        }
+
+                Application.Current.Dispatcher.Invoke(() => { State = TaskState.Finished; });
+                return "";
+            }
+
             if (a[0] == "CollectReward")
             {
                 Application.Current.Dispatcher.Invoke(() => { State = TaskState.InProgress; });
                 if (Account.Player.UpdateQuestList())
-                    foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
-                        Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
-                else if (Account.Player.UpdateQuestList())
                     foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
                         Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
                 else if (Account.Player.UpdateQuestList())
@@ -502,30 +522,94 @@ namespace TravianHelper.Utils
 
             if (a[0] == "Wait")
             {
-                Application.Current.Dispatcher.Invoke(() => {
-                                                          State = TaskState.InProgress;
-                                                      });
-                for (var i = 0; i < Convert.ToInt32(a[1]) * 2; i++)
+                Application.Current.Dispatcher.Invoke(() => { State = TaskState.InProgress; });
+                if (!int.TryParse(a[1], out var q))
                 {
-                    if (!Worker.Working)
+                    try
                     {
-                        Application.Current.Dispatcher.Invoke(() => {
-                                                                  State = TaskState.Queue;
-                                                              });
-                        return "";
+
+                        while (true)
+                        {
+                            Account.Player.VillageList.FirstOrDefault().UpdateBuildingList();
+                            var vil = Account.Player.VillageList.FirstOrDefault();
+                            if (a[1] == "mb5")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 15 && x.Level == 5) != null)
+                                    break;
+                            }
+                            else if (a[1] == "r1")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 25 && x.Level == 1) != null)
+                                    break;
+                            }
+                            else if (a[1] == "r2")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 25 && x.Level == 2) != null)
+                                    break;
+                            }
+                            else if (a[1] == "r3")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 25 && x.Level == 3) != null)
+                                    break;
+                            }
+                            else if (a[1] == "r4")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 25 && x.Level == 4) != null)
+                                    break;
+                            }
+                            else if (a[1] == "r5")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 25 && x.Level == 5) != null)
+                                    break;
+                            }
+                            else if (a[1] == "r0")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 25 && x.Level == 0 && x.IsRuin) != null)
+                                    break;
+                            }
+                            else if (a[1] == "r-1")
+                            {
+                                if (vil.BuildingList.FirstOrDefault(x => x.BuildingType == 25) == null)
+                                    break;
+                            }
+
+                            if (!Worker.Working)
+                            {
+                                Application.Current.Dispatcher.Invoke(() => { State = TaskState.Queue; });
+                                return "";
+                            }
+
+                            Thread.Sleep(3000);
+                        }
                     }
-                    Thread.Sleep(500);
+                    catch (Exception e)
+                    {
+                        Logger.Error(e, $"[{Account.Name}]: Error wait");
+                        return "Error";
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < Convert.ToInt32(a[1]) * 2; i++)
+                    {
+                        if (!Worker.Working)
+                        {
+                            Application.Current.Dispatcher.Invoke(() => { State = TaskState.Queue; });
+                            return "";
+                        }
+
+                        Thread.Sleep(500);
+                    }
                 }
 
                 if (!Worker.Working) return "";
-                    Account.Player.UpdateQuestList();
+                Account.Player.UpdateQuestList();
                 foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
                 {
                     Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
                 }
-                Application.Current.Dispatcher.Invoke(() => {
-                                                          State = TaskState.Finished;
-                                                      });
+
+                Application.Current.Dispatcher.Invoke(() => { State = TaskState.Finished; });
             }
 
             return "";
@@ -533,60 +617,58 @@ namespace TravianHelper.Utils
 
         private bool BuildingUpgrade(int locationId, int buildingType, bool check = false)
         {
+            if(check) Thread.Sleep(1000);
             var vil = Account.Player.VillageList.First();
-            if (check)
+            vil.Update();
+            vil.UpdateBuildingList();
+            var b = vil.BuildingList.FirstOrDefault(x => x.Location == locationId);
+            if (b != null)
             {
-                vil.Update();
-                vil.UpdateBuildingList();
-                var b = vil.BuildingList.FirstOrDefault(x => x.Location == locationId);
-                if (b != null)
+                if (vil.BuildingList.First(x => x.Location == locationId).BuildingType != 0)
                 {
-                    if (vil.BuildingList.First(x => x.Location == locationId).BuildingType != 0)
+                    while (!vil.Storage.IsGreaterOrEq(vil.BuildingList.First(x => x.Location == locationId).UpgradeCost))
                     {
-                        while (!vil.Storage.IsGreaterOrEq(vil.BuildingList.First(x => x.Location == locationId).UpgradeCost))
+                        Thread.Sleep(5000);
+                        if (!Worker.Working)
                         {
-                            Thread.Sleep(5000);
-                            if (!Worker.Working)
-                            {
-                                return false;
-                            }
-
-                            Account.Player.UpdateQuestList();
-                            foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
-                            {
-                                Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
-                            }
-
-                            vil.Update();
+                            return false;
                         }
-                    }
-                    else
-                    {
-                        while (!vil.Storage.IsGreaterOrEq(BuildingsData.GetById(buildingType).BuildRes))
+
+                        Account.Player.UpdateQuestList();
+                        foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
                         {
-                            Thread.Sleep(5000);
-                            if (!Worker.Working)
-                            {
-                                return false;
-                            }
-
-                            Account.Player.UpdateQuestList();
-                            foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
-                            {
-                                Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
-                            }
-
-                            vil.Update();
+                            Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
                         }
+
+                        vil.Update();
                     }
                 }
                 else
                 {
-                    return false;
+                    while (!vil.Storage.IsGreaterOrEq(BuildingsData.GetById(buildingType).BuildRes))
+                    {
+                        Thread.Sleep(5000);
+                        if (!Worker.Working)
+                        {
+                            return false;
+                        }
+
+                        Account.Player.UpdateQuestList();
+                        foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                        {
+                            Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
+                        }
+
+                        vil.Update();
+                    }
                 }
+                return Account.Driver.BuildingUpgrade(vil.Id, locationId, buildingType);
+            }
+            else
+            {
+                return Account.Driver.BuildingUpgrade(vil.Id, locationId, buildingType);
             }
 
-            return Account.Driver.BuildingUpgrade(vil.Id, locationId, buildingType);
         }
 
         private bool CollectReward(int questId)
@@ -677,9 +759,9 @@ namespace TravianHelper.Utils
             if (updateItems)
             {
                 Account.Player.Hero.UpdateItems();
-                Account.Player.VillageList.First().UpdateBuildingQueue();
             }
 
+            Account.Player.VillageList.First().UpdateBuildingQueue();
             var p = 0;
             var q = Account.Player.VillageList.First().Queue;
             if (q.QueueList.Count(x => x.QueueId == 1) != 0)
@@ -687,13 +769,14 @@ namespace TravianHelper.Utils
                 var qq = q.QueueList.First(x => x.QueueId == 1);
                 if (price == 0)
                 {
-                    if (qq.FinishTime - q.UpdateTimeStamp < 298)
+                    if (qq.FinishTime - q.UpdateTimeStamp < 299)
                     {
                         var aa = Account.Driver.FinishNow(Account.Player.VillageList.FirstOrDefault().Id, 1, Account.Player.Hero.HasBuildItem ? -1 : 1);
                         if (!aa)
                         {
                             var qwe = 123;
                             Logger.Error($"{Account.NameWithNote}: FinishNow 0 Error 1");
+                            Thread.Sleep(1000);
                         }
                         return aa;
                     }
@@ -705,6 +788,7 @@ namespace TravianHelper.Utils
                     {
                         var qwe = 123;
                         Logger.Error($"{Account.NameWithNote}: FinishNow 1 Error 1");
+                        Thread.Sleep(1000);
                     }
                     return aa;
                 }
@@ -714,13 +798,14 @@ namespace TravianHelper.Utils
                 var qq = q.QueueList.First(x => x.QueueId == 2);
                 if (price == 0)
                 {
-                    if (qq.FinishTime - q.UpdateTimeStamp < 298)
+                    if (qq.FinishTime - q.UpdateTimeStamp < 299)
                     {
                         var aa = Account.Driver.FinishNow(Account.Player.VillageList.FirstOrDefault().Id, 2, Account.Player.Hero.HasBuildItem ? -1 : 1);
                         if (!aa)
                         {
                             var qwe = 123;
                             Logger.Error($"{Account.NameWithNote}: FinishNow 0 Error 2");
+                            Thread.Sleep(1000);
                         }
                         return aa;
                     }
@@ -732,6 +817,7 @@ namespace TravianHelper.Utils
                     {
                         var qwe = 123;
                         Logger.Error($"{Account.NameWithNote}: FinishNow 1 Error 2");
+                        Thread.Sleep(1000);
                     }
                     return aa;
                 }
@@ -741,13 +827,14 @@ namespace TravianHelper.Utils
                 var qq = q.QueueList.First(x => x.QueueId == 5);
                 if (price == 0)
                 {
-                    if (qq.FinishTime - q.UpdateTimeStamp < 298)
+                    if (qq.FinishTime - q.UpdateTimeStamp < 299)
                     {
                         var aa = Account.Driver.FinishNow(Account.Player.VillageList.FirstOrDefault().Id, 5, Account.Player.Hero.HasBuildItem ? -1 : 1);
                         if (!aa)
                         {
                             var qwe = 123;
                             Logger.Error($"{Account.NameWithNote}: FinishNow 0 Error 5");
+                            Thread.Sleep(1000);
                         }
                         return aa;
                     }
@@ -759,6 +846,7 @@ namespace TravianHelper.Utils
                     {
                         var qwe = 123;
                         Logger.Error($"{Account.NameWithNote}: FinishNow 1 Error 5");
+                        Thread.Sleep(1000);
                     }
 
                     return aa;

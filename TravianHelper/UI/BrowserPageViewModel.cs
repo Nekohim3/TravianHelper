@@ -9,6 +9,7 @@ using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using TravianHelper.SeleniumHost;
 using TravianHelper.TravianEntities;
+using TravianHelper.Utils;
 using TravianHelper.Utils.Commands;
 
 namespace TravianHelper.UI
@@ -106,6 +107,17 @@ namespace TravianHelper.UI
             if (Command == "UpdateUnitQueue")
             {
                 Account.Player.VillageList.FirstOrDefault().UpdateUnitQueue();
+            }
+
+            if (Command == "ParseMap")
+            {
+                Account.MParser.Parse();
+            }
+
+            if (Command == "ShowMap")
+            {
+                var f = new MapView();
+                f.Show();
             }
         }
         public SendTroopsCmd STCmd { get; set; }

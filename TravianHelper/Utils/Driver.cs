@@ -270,7 +270,7 @@ namespace TravianHelper.Utils
         {
             try
             {
-                while ((DateTime.Now - _lastRespDate).TotalMilliseconds < 1000)
+                while ((DateTime.Now - _lastRespDate).TotalMilliseconds < 300)
                     Thread.Sleep(10);
 
                 var req = new RestRequest("/api/", Method.Post);
@@ -301,7 +301,7 @@ namespace TravianHelper.Utils
                     return null;
                 }
 
-                Logger.Data(res.Content);
+                Logger.Data($"[{Account.NameWithNote}]: {res.Content}");
                 try
                 {
                     var jo = JObject.Parse(res.Content) as dynamic;
@@ -409,7 +409,7 @@ namespace TravianHelper.Utils
 
                 MClient = new MailClient();
                 var counter = 0;
-                while (counter <= 3)
+                while (counter <= 20)
                 {
                     try
                     {
@@ -433,7 +433,7 @@ namespace TravianHelper.Utils
                     }
                 }
 
-                if (counter > 3)
+                if (counter > 20)
                 {
                     MessageBox.Show("Мыло не нравится");
                     return;
@@ -458,7 +458,7 @@ namespace TravianHelper.Utils
 
                 var msg = "";
                 counter = 0;
-                while (counter <= 5)
+                while (counter <= 20)
                 {
                     try
                     {
@@ -472,7 +472,7 @@ namespace TravianHelper.Utils
                     }
                 }
 
-                if (counter > 5)
+                if (counter > 20)
                 {
                     MessageBox.Show("Error mail reg");
                     return;
@@ -620,7 +620,7 @@ namespace TravianHelper.Utils
                 RegClick(body);
                 Chrome.Navigate().Refresh();
                 Thread.Sleep(5000);
-                RegClick(body);
+                //RegClick(body);
                 Account.RegComplete = true;
                 Account.Save();
                 Account.UpdateAll();
@@ -629,7 +629,7 @@ namespace TravianHelper.Utils
             }
             catch (Exception e)
             {
-                MessageBox.Show("Ошибка реги. Минус акк.");
+                MessageBox.Show($"[{Account.NameWithNote}]:Ошибка реги. Минус акк.");
             }
         }
 
@@ -717,8 +717,8 @@ namespace TravianHelper.Utils
                     Logger.Info($"[{Account.Name}]: BuildingUpgrade ({villageId}, {locationId}, {buildingType}) Update FAILED {error}");
                     return false;
                 }
-
-                Account.Update(data, (long)data.time);
+                
+                Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -775,6 +775,29 @@ namespace TravianHelper.Utils
             return true;
         }
 
+        public bool Celeb(int villageId)
+        {
+            Logger.Info($"[{Account.Name}]: Celeb ({villageId})");
+            try
+            {
+                var data = Post(RPG.Celeb(GetSession(), villageId), out var error);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Logger.Info($"[{Account.Name}]: Celeb ({villageId}) Update FAILED {error}");
+                    return false;
+                }
+
+                Account.Update(data, (long)data.time);
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"[{Account.Name}]: Celeb ({villageId}) Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
+                return false;
+            }
+
+            return true;
+        }
+
         public bool FinishNow(int villageId, int queueType, int price)
         {
             Logger.Info($"[{Account.Name}]: FinishNow ({villageId}, {queueType}, {price})");
@@ -788,7 +811,7 @@ namespace TravianHelper.Utils
                 }
                 
 
-                Account.Update(data, (long)data.time);
+                Account.Update(data);
             }
             catch (Exception e)
             {

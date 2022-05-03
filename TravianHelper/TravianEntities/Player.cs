@@ -198,6 +198,12 @@ namespace TravianHelper.TravianEntities
             foreach (var x in VillageList.ToList().Where(x => !idVillageLst.Contains(x.Id)))
                 VillageList.Remove(x);
             VillageList = VillageList.OrderBy(x => x.Name).ToList();
+            if (VillageList.Count > 1 && !Account.TwoVils)
+            {
+                Account.TwoVils = true;
+                Account.Save();
+            }
+
             Logger.Info($"[{Account.Name}]: VillageList update SUCC");
         }
 

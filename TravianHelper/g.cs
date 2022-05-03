@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 using Microsoft.Practices.Prism;
 using Microsoft.Practices.Prism.ViewModel;
 using Newtonsoft.Json;
@@ -22,6 +23,7 @@ namespace TravianHelper
         public static MainWindowViewModel MainViewModel { get; set; }
         public static TabManager          TabManager    { get; set; }
         public static string              Domain        { get; set; }
+        public static object              Lock = new object();
         public static void Init()
         {
             UserDataPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);

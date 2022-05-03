@@ -94,7 +94,7 @@
                                                                                             <Setter Property="Width" Value="20"/>
                                                                                         </DataTrigger>
                                                                                         <DataTrigger Binding="{Binding IsAccount}" Value="True">
-                                                                                            <Setter Property="Width" Value="100"/>
+                                                                                            <Setter Property="Width" Value="50"/>
                                                                                         </DataTrigger>
                                                                                     </Style.Triggers>
                                                                                 </Style>
@@ -121,7 +121,7 @@
                                                                                     </Style>
                                                                                 </TextBlock.Style>
                                                                             </TextBlock>
-                                                                            <Grid Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="15" Height="15" Margin="-15,0,0,0" x:Name="GridCross">
+                                                                            <!--<Grid Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="15" Height="15" Margin="-15,0,0,0" x:Name="GridCross">
                                                                                 <Grid.InputBindings>
                                                                                     <MouseBinding Gesture="LeftClick" Command="{Binding CloseCmd}"/>
                                                                                 </Grid.InputBindings>
@@ -148,7 +148,7 @@
                                                                                     <Line X1="1" Y1="1" X2="10" Y2="10" Stroke="#ff777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
                                                                                     <Line X1="1" Y1="10" X2="10" Y2="1" Stroke="#ff777777" RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"/>
                                                                                 </Grid>
-                                                                            </Grid>
+                                                                            </Grid>-->
 
                                                                         </Grid>
                                                                         <ControlTemplate.Triggers>

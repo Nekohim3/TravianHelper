@@ -465,9 +465,14 @@ namespace TravianHelper.JsonDb
             {
                 try
                 {
-                    while(IsFileLocked(new FileInfo(path)))
-                        Thread.Sleep(10);
-                    json = File.ReadAllText(path);
+                    lock (g.Lock)
+                    {
+
+                        //while (IsFileLocked(new FileInfo(path)))
+                        //    Thread.Sleep(10);
+                        json = File.ReadAllText(path);
+                    }
+
                     break;
                 }
                 catch (FileNotFoundException)
@@ -494,9 +499,13 @@ namespace TravianHelper.JsonDb
             {
                 try
                 {
-                    while (IsFileLocked(new FileInfo(path)))
-                        Thread.Sleep(10);
-                    File.WriteAllText(path, _encryptJson(content));
+                    //while (IsFileLocked(new FileInfo(path)))
+                    //    Thread.Sleep(10);
+                    lock (g.Lock)
+                    {
+                        File.WriteAllText(path, _encryptJson(content));
+                    }
+
                     return true;
                 }
                 catch (IOException e) when (e.Message.Contains("because it is being used by another process"))

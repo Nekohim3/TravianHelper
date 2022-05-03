@@ -184,6 +184,19 @@ namespace TravianHelper.Utils
                 }
             });
 
+        public static JObject Celeb(string session, int villageId) =>
+            JObject.FromObject(new
+                               {
+                                   action     = "startCelebration",
+                                   controller = "building",
+                                   session,
+                                   @params = new
+                                             {
+                                                 villageId,
+                                                 type = 1
+                                             }
+                               });
+
         public static JObject SendTroops(string session, int villageId, int destVillageId, int movementType, bool redeployHero,
                                          string spyMission, int t1, int t2, int t3, int t4, int t5, int t6, int t7, int t8, int t9,
                                          int t10, int t11) =>

@@ -84,6 +84,18 @@ namespace TravianHelper.TravianEntities
             }
         }
 
+        private bool _twoVils;
+
+        public bool TwoVils
+        {
+            get => _twoVils;
+            set
+            {
+                _twoVils = value;
+                RaisePropertyChanged(() => TwoVils);
+            }
+        }
+
         private bool _regComplete;
 
         public bool RegComplete
@@ -358,7 +370,19 @@ namespace TravianHelper.TravianEntities
         #endregion
 
         #region Ignored Properties
-        
+
+        private MapParser _mParser;
+        [JsonIgnore]
+        public MapParser MParser
+        {
+            get => _mParser;
+            set
+            {
+                _mParser = value;
+                RaisePropertyChanged(() => MParser);
+            }
+        }
+
         private bool _closing;
         [JsonIgnore]
         public bool Closing
@@ -496,6 +520,7 @@ namespace TravianHelper.TravianEntities
             RobberWorker      = new RobberWorker(this);
             OldTaskListWorker = new OldTaskListWorker(this);
             ResWorker         = new ResWorker(this);
+            MParser           = new MapParser(this);
         }
 
         private void OnReg()
