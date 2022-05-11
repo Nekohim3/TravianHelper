@@ -55,6 +55,8 @@ namespace TravianHelper.Utils
             }
         }
 
+        public int VilInd { get; set; }
+
         private Thread _workThread;
 
         public ResWorker(Account acc)
@@ -76,7 +78,7 @@ namespace TravianHelper.Utils
                 while (Working)
                 {
                     Account.Player.UpdateVillageList();
-                    var vil = Account.Player.VillageList.FirstOrDefault();
+                    var vil = Account.Player.VillageList[VilInd];
 
                     if (vil != null)
                     {
@@ -84,7 +86,9 @@ namespace TravianHelper.Utils
                         if (vil.Queue.QueueList.Count == 0)
                         {
                             vil.UpdateBuildingList();
-                            var buildings = vil.BuildingList.Where(x => x.BuildingType == 1 || x.BuildingType == 2 || x.BuildingType == 3 || x.BuildingType == 4 && x.Level < 3).OrderBy(x => x.UpgradeCost.MultiRes).ToList();//поля
+                            var buildingResMinLevel = vil.BuildingList.Where(x => x.BuildingType == 1 || x.BuildingType == 2 || x.BuildingType == 3).OrderBy(x => x.Level).FirstOrDefault().Level;// || x.BuildingType == 4 && x.Level < 3).OrderBy(x => x.UpgradeCost.MultiRes).ToList();//поля
+                            var buildings =
+                                vil.BuildingList.Where(x => x.BuildingType == 1 || x.BuildingType == 2 || x.BuildingType == 3 || (x.BuildingType == 4 && x.Level <= buildingResMinLevel - 2)).OrderBy(x => x.UpgradeCost.MultiRes).ToList();
                             buildings = buildings.Where(x => x.UpgradeCost.IsLess(vil.Storage)).ToList();
                             if (buildings.Count != 0)
                             {
@@ -110,7 +114,7 @@ namespace TravianHelper.Utils
                         }
                     }
 
-                    for (var i = 0; i < 20; i++)
+                    for (var i = 0; i < 1; i++)
                         if (Working)
                             Thread.Sleep(500);
                 }

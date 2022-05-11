@@ -270,7 +270,7 @@ namespace TravianHelper.Utils
         {
             try
             {
-                while ((DateTime.Now - _lastRespDate).TotalMilliseconds < 300)
+                while ((DateTime.Now - _lastRespDate).TotalMilliseconds < 100)
                     Thread.Sleep(10);
 
                 var req = new RestRequest("/api/", Method.Post);
@@ -308,7 +308,7 @@ namespace TravianHelper.Utils
                     if (jo.error != null || jo.response != null && jo.response.Count != 0 && jo.response.errors != null && jo.response.errors.Count != null)
                     {
                         error = "Error";
-                        return null;
+                        return jo;
                     }
 
                     if (type == ResponseType.Response && jo.response != null)
@@ -344,7 +344,7 @@ namespace TravianHelper.Utils
         }
 
         public string Rem(string str) => str.Replace("\r", "").Replace("\n", "").Replace(" ", "");
-        private string GetTimeStamp() => ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds).ToString();
+        public string GetTimeStamp() => ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds).ToString();
 
         public dynamic GetDataByName(dynamic data, string name)
         {
@@ -387,7 +387,7 @@ namespace TravianHelper.Utils
         {
             if(!NonReg) return;
             NonReg = false;
-            _regTh = new Thread(RegThFunc);
+            _regTh = new Thread(RegThFuncGaul);
             _regTh.Start();
         }
 
@@ -497,7 +497,7 @@ namespace TravianHelper.Utils
                 Account.Player.UpdateVillageList();
                 var vid = Account.Player.VillageList.First().Id;
                 SendTroops(vid, 536920065, 3, false, "resources", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-                Thread.Sleep(10000); 
+                Thread.Sleep(10000);
                 var body = Chrome.FindElement(By.XPath(".//body"));
                 RegClick(body);
                 DialogAction(1, 2, "backToVillage");
@@ -562,7 +562,7 @@ namespace TravianHelper.Utils
                 vid = Account.Player.VillageList.First().Id;
 
                 var newList = new List<int>();
-                var destv   = -1;
+                var destv = -1;
                 counter1 = 0;
                 while (newList.Count == 0)
                 {
@@ -593,6 +593,236 @@ namespace TravianHelper.Utils
 
                 if (destv == -1) return;
                 SendTroops(vid, destv, 3, false, "resources", 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+                Thread.Sleep(20000);
+                RegClick(body);
+                DialogAction(303, 1, "activate");
+                Thread.Sleep(2000);
+                RegClick(body);
+                Account.Player.Hero.Update();
+                Account.Player.Hero.UpdateItems();
+                UseHeroItem(1, Account.Player.Hero.Items.First(x => x.ItemType == 120).Id, vid);
+                Thread.Sleep(10000);
+                RegClick(body);
+                DialogAction(399, 1, "activate");
+                Thread.Sleep(3000);
+                RegClick(body);
+                DialogAction(399, 1, "finish");
+                Thread.Sleep(1500);
+                RegClick(body);
+                CollectReward(vid, 205);
+                Thread.Sleep(1500);
+                RegClick(body);
+                UpdateVillageName(vid, Account.Name);
+                Thread.Sleep(1500);
+                RegClick(body);
+                CollectReward(vid, 202);
+                Thread.Sleep(3000);
+                RegClick(body);
+                Chrome.Navigate().Refresh();
+                Thread.Sleep(5000);
+                //RegClick(body);
+                Account.RegComplete = true;
+                Account.Save();
+                Account.UpdateAll();
+                Account.OldTaskListWorker.Init();
+                NonReg = true;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"[{Account.NameWithNote}]:Ошибка реги. Минус акк.");
+            }
+        }
+        public void RegThFuncGaul()
+        {
+            try
+            {
+
+                MClient = new MailClient();
+                var counter = 0;
+                while (counter <= 20)
+                {
+                    try
+                    {
+                        MClient.Register($"{Account.Email}", Account.Password).GetAwaiter().GetResult();
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        try
+                        {
+                            MClient.Login(Account.Email, Account.Password).GetAwaiter().GetResult();
+                            break;
+                        }
+                        catch (Exception exception)
+                        {
+
+                        }
+
+                        counter++;
+                        Thread.Sleep(5000);
+                    }
+                }
+
+                if (counter > 20)
+                {
+                    MessageBox.Show("Мыло не нравится");
+                    return;
+                }
+
+                Login($"{Account.Email}", Account.Password);
+                Thread.Sleep(5000);
+                ChooseTribe(3);
+                Thread.Sleep(3000);
+                Post(JObject.Parse(
+                                   "{\"controller\":\"player\",\"action\":\"changeSettings\",\"params\":{\"newSettings\":{\"premiumConfirmation\":3,\"lang\":\"ru\",\"onlineStatusFilter\":2,\"extendedSimulator\":false,\"musicVolume\":0,\"soundVolume\":0,\"uiSoundVolume\":50,\"muteAll\":true,\"timeZone\":\"3.0\",\"timeFormat\":0,\"attacksFilter\":2,\"mapFilter\":123,\"enableTabNotifications\":true,\"disableAnimations\":true,\"enableHelpNotifications\":true,\"enableWelcomeScreen\":true,\"notpadsVisible\":false}},\"session\":\"" +
+                                   GetSession() + "\"}"), out var error);
+                DialogAction(1, 1, "setName", Account.Name);
+                var msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
+                while (msgArr.Length == 0)
+                {
+                    Thread.Sleep(5000);
+                    msgArr = MClient.GetMessages(1).GetAwaiter().GetResult();
+                }
+
+                Thread.Sleep(5000);
+
+                var msg = "";
+                counter = 0;
+                while (counter <= 20)
+                {
+                    try
+                    {
+                        msg = MClient.GetMessageSource(msgArr.FirstOrDefault(x => x.Subject.ToLower().Contains("travian kingdoms")).Id).GetAwaiter().GetResult().Data;
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        counter++;
+                        Thread.Sleep(5000);
+                    }
+                }
+
+                if (counter > 20)
+                {
+                    MessageBox.Show("Error mail reg");
+                    return;
+                }
+
+
+                var str = DecodeQuotedPrintables(msg);
+
+                var link = str.Substring(str.IndexOf($"http://www.kingdoms.com/{Account.Server.Region}/#action=activation;token="), 90 + Account.Server.Region.Length);
+                JsExec.ExecuteScript("window.open()");
+                Chrome.SwitchTo().Window(Chrome.WindowHandles.Last());
+                Chrome.Navigate().GoToUrl(link);
+                Thread.Sleep(5000);
+                Activate();
+                Thread.Sleep(5000);
+                Chrome.Close();
+                Chrome.SwitchTo().Window(Chrome.WindowHandles.First());
+                Thread.Sleep(5000);
+                DialogAction(1, 1, "activate");
+                Thread.Sleep(1500);
+                Account.Player.Update();
+                Account.Player.UpdateVillageList();
+                var vid = Account.Player.VillageList.First().Id;
+                SendTroops(vid, 536920065, 3, false, "resources", 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+                Thread.Sleep(10000);
+                var body = Chrome.FindElement(By.XPath(".//body"));
+                RegClick(body);
+                DialogAction(1, 2, "backToVillage");
+                Thread.Sleep(1500);
+                RegClick(body);
+                BuildingUpgrade(vid, 33, 33);
+                Thread.Sleep(6000);
+                RegClick(body);
+                BuildingUpgrade(vid, 29, 19);
+                Thread.Sleep(1500);
+                RegClick(body);
+                RecruitUnits(vid, 29, 19, "21", 3); //////////////////////////
+                Thread.Sleep(1500);
+                RegClick(body);
+                DialogAction(30, 1, "attack");
+                Thread.Sleep(10000);
+                RegClick(body);
+                DialogAction(34, 1, "activate");
+                Thread.Sleep(1500);
+                RegClick(body);
+                DialogAction(34, 1, "face");
+                Thread.Sleep(1500);
+                RegClick(body);
+                DialogAction(35, 1, "activate");
+                Thread.Sleep(1500);
+                RegClick(body);
+                BuildingUpgrade(vid, 2, 4);
+                Thread.Sleep(6000);
+                RegClick(body);
+                DialogAction(203, 1, "activate");
+                Thread.Sleep(1500);
+                RegClick(body);
+                DialogAction(203, 1, "become_governor");
+                Thread.Sleep(1500);
+                RegClick(body);
+                DialogAction(204, 1, "activate");
+                Thread.Sleep(3000);
+                RegClick(body);
+                new MapSolver().Solve(Account);
+                Thread.Sleep(2000);
+                RegClick(body);
+                DialogAction(302, 1, "activate");
+                Thread.Sleep(5000);
+                RegClick(body);
+                var counter1 = 0;
+                while (Account.Player.VillageList.Count != 1 || Account.Player.VillageList[0].Id < 0)
+                {
+                    Account.Player.Update();
+                    Account.Player.UpdateVillageList();
+
+                    counter1++;
+                    if (counter1 > 10)
+                    {
+                        Account.Name = "REG ERROR";
+                        Account.Save();
+                        return;
+                    }
+
+                    Thread.Sleep(5000);
+                }
+
+                vid = Account.Player.VillageList.First().Id;
+
+                var newList = new List<int>();
+                var destv = -1;
+                counter1 = 0;
+                while (newList.Count == 0)
+                {
+                    newList.Clear();
+                    var data = Post(RPG.GetCache_MapDetails(GetSession(), vid), out error);
+                    if (string.IsNullOrEmpty(error))
+                    {
+                        foreach (var q in data.cache)
+                            if (q.data.npcInfo != null)
+                                newList.Add(Convert.ToInt32(q.name.ToString().Split(':')[1]));
+
+                    }
+
+                    counter1++;
+                    if (counter1 > 10)
+                    {
+                        Account.Name = "REG ERROR";
+                        Account.Save();
+                        return;
+                    }
+
+                    Thread.Sleep(5000);
+                }
+
+                var d1 = Math.Abs(vid - newList[0]);
+                var d2 = Math.Abs(vid - newList[1]);
+                destv = d1 >= d2 ? newList[0] : newList[1];
+
+                if (destv == -1) return;
+                SendTroops(vid, destv, 3, false, "resources", 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1);
                 Thread.Sleep(20000);
                 RegClick(body);
                 DialogAction(303, 1, "activate");
@@ -689,6 +919,14 @@ namespace TravianHelper.Utils
 
         public void Login(string email, string pass)
         {
+            try
+            {
+                Chrome.FindElementByClassName("cmpboxbtnyes")?.Click();
+            }
+            catch (Exception e)
+            {
+
+            }
             Chrome.SwitchTo().Frame(Chrome.FindElementsByTagName("iframe").FirstOrDefault(x => x.GetAttribute("Class") == "mellon-iframe"));
             Chrome.SwitchTo().Frame(Chrome.FindElementByTagName("iframe"));
             Chrome.FindElement(By.Name("email")).SendKeys(email);
@@ -717,8 +955,11 @@ namespace TravianHelper.Utils
                     Logger.Info($"[{Account.Name}]: BuildingUpgrade ({villageId}, {locationId}, {buildingType}) Update FAILED {error}");
                     return false;
                 }
-                
-                Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
+
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -741,7 +982,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -764,7 +1008,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -787,7 +1034,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -809,9 +1059,11 @@ namespace TravianHelper.Utils
                     Logger.Info($"[{Account.Name}]: FinishNow ({villageId}, {queueType}, {price}) Update FAILED {error}");
                     return false;
                 }
-                
 
-                Account.Update(data);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -834,7 +1086,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -856,8 +1111,10 @@ namespace TravianHelper.Utils
                     Logger.Info($"[{Account.Name}]: RecruitUnits ({villageId}, {locationId}, {buildingType}, {unitId}, {count}) Update FAILED {error}");
                     return false;
                 }
-
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -922,7 +1179,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -945,7 +1205,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -968,7 +1231,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1006,6 +1272,95 @@ namespace TravianHelper.Utils
             }
         }
 
+        public bool SetOasis(int villageId, int oasisId)
+        {
+            Logger.Info($"[{Account.Name}]: SetOasis ({villageId}, {oasisId})");
+            try
+            {
+                var data = Post(RPG.SetOasis(GetSession(), villageId, oasisId), out var error, ResponseType.Response);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Logger.Info($"[{Account.Name}]: SetOasis ({villageId}, {oasisId}) Update FAILED {error}");
+                    return false;
+                }
+                return true;
+
+                //Account.Update(data, (long)data.time);
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"[{Account.Name}]: SetOasis ({villageId}, {oasisId}) Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
+                return false;
+            }
+
+        }
+        public bool SetBid(int aucId, int price)
+        {
+            Logger.Info($"[{Account.Name}]: SetBid ({aucId}, {price})");
+            try
+            {
+                var data = Post(RPG.SetBid(GetSession(), aucId, price), out var error, ResponseType.Response);
+                if (!string.IsNullOrEmpty(error) && !error.Contains("BidTooLow"))
+                {
+                    Logger.Info($"[{Account.Name}]: SetBid ({aucId}, {price}) Update FAILED {error}");
+                    return false;
+                }
+                return true;
+
+                //Account.Update(data, (long)data.time);
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"[{Account.Name}]: SetBid ({aucId}, {price}) Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
+                return false;
+            }
+
+        }
+
+        public dynamic GetCache_OasisList(int villageId)
+        {
+            Logger.Info($"[{Account.Name}]: GetCache_OasisList");
+            try
+            {
+                var data = Post(RPG.GetOasis(GetSession(), villageId), out var error, ResponseType.Response);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Logger.Info($"[{Account.Name}]: GetCache_OasisList Update FAILED {error}");
+                    return null;
+                }
+
+                return data;
+                //Account.Update(data, (long)data.time);
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"[{Account.Name}]: GetCache_OasisList Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
+                return null;
+            }
+        }
+
+        public dynamic GetCache_AuctionList(int page)
+        {
+            Logger.Info($"[{Account.Name}]: GetCache_AuctionList");
+            try
+            {
+                var data = Post(RPG.GetAuctions(GetSession(), page), out var error);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Logger.Info($"[{Account.Name}]: GetCache_AuctionList Update FAILED {error}");
+                    return null;
+                }
+
+                return data;
+                //Account.Update(data, (long)data.time);
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"[{Account.Name}]: GetCache_AuctionList Update FAILED with exception:\n{e}\n{e.InnerException}\n{e.InnerException?.InnerException}");
+                return null;
+            }
+        }
+
         #endregion
 
         #region Cache
@@ -1022,7 +1377,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1045,7 +1403,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1068,7 +1429,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1091,7 +1455,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1114,7 +1481,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1137,7 +1507,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1160,7 +1533,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1183,7 +1559,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1206,7 +1585,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1229,7 +1611,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1252,7 +1637,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1275,7 +1663,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1298,7 +1689,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {
@@ -1344,7 +1738,10 @@ namespace TravianHelper.Utils
                     return false;
                 }
 
-                Account.Update(data, (long)data.time);
+                if (data.time != null)
+                    Account.Update(data, (long)data.time);
+                else
+                    Account.Update(data, ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds));
             }
             catch (Exception e)
             {

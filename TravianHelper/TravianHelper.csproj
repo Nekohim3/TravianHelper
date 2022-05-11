@@ -266,9 +266,11 @@
     <Compile Include="StaticData\BuildingsData.cs" />
     <Compile Include="StaticData\TribeData.cs" />
     <Compile Include="TravianEntities\Account.cs" />
+    <Compile Include="TravianEntities\AucLot.cs" />
     <Compile Include="TravianEntities\Building.cs" />
     <Compile Include="TravianEntities\Hero.cs" />
     <Compile Include="TravianEntities\HeroItem.cs" />
+    <Compile Include="TravianEntities\Oasis.cs" />
     <Compile Include="TravianEntities\Player.cs" />
     <Compile Include="TravianEntities\Quest.cs" />
     <Compile Include="TravianEntities\Queue.cs" />

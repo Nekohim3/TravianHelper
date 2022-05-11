@@ -64,14 +64,32 @@
                                                     <ColumnDefinition Width="34"/>
                                                     <ColumnDefinition Width="34"/>
                                                 </Grid.ColumnDefinitions>
-                                                <ListView  Foreground="AliceBlue" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                                <ListView  Foreground="AliceBlue" 
+                                                           WindowChrome.IsHitTestVisibleInChrome="True"
+                                                           VerticalAlignment="Top" 
+                                                           ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+                                                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                            Grid.Column="0" 
                                                            ItemsSource="{Binding Source={x:Static local:g.TabManager}, Path=TabList}"  
                                                            SelectedItem="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab}" 
                                                            BorderThickness="0"  
                                                            FocusVisualStyle="{x:Null}"
+                                                           MaxWidth="1800"
                                                            Background="#222"
                                                             BorderBrush="#955">
+                                                    <ListView.Style>
+                                                        <Style TargetType="ListView">
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="ListView">
+                                                                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled"  WindowChrome.IsHitTestVisibleInChrome="True">
+                                                                            <ItemsPresenter/>
+                                                                        </ScrollViewer>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Style>
+                                                    </ListView.Style>
                                                     <ListView.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <StackPanel Orientation="Horizontal"/>

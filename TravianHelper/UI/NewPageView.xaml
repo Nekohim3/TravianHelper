@@ -32,13 +32,17 @@
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
                         <Button Content="Add" Command="{Binding AddCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
+                        <Button Content="Fast Add" Command="{Binding FastAddCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
                         <Button Content="Edit" Command="{Binding EditCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
                         <Button Content="Delete" Command="{Binding DeleteCmd}" Margin="0,0,3,3" Width="80" Height="20"/>
                         <Separator Background="#955" Margin="0,0,0,3" />
                         <Button Content="Run switch" Command="{Binding RunAndSwitchCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
+                        <!--<Button Content="Auto run" Command="{Binding AutoRunCmd}" Margin="3,0,3,3" Width="80" Height="20"/>-->
+                        <!--<Button Content="Auto run all down" Command="{Binding AutoRunAllDownCmd}" Margin="3,0,3,3" Width="80" Height="20"/>-->
                         <Button Content="Run" Command="{Binding RunCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
                         <Button Content="Run next" Command="{Binding RunNextCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
                         <Button Content="Start all down" Command="{Binding StartDown}" Margin="3,0,3,3" Width="80" Height="20"/>
+                        <Button Content="Kill chrome" Command="{Binding KillChromeCmd}" Margin="3,0,3,3" Width="80" Height="20"/>
                     </StackPanel>
                     <DataGrid Grid.Row="1" ItemsSource="{Binding AccountList}" SelectedItem="{Binding SelectedAccount}" VerticalAlignment="Stretch">
                         <DataGrid.Columns>

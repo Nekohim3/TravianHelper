@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -11,6 +13,7 @@ using Microsoft.Practices.Prism.Commands;
 using Microsoft.Practices.Prism.ViewModel;
 using TravianHelper.Settings;
 using TravianHelper.TravianEntities;
+using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
 namespace TravianHelper.UI
@@ -18,45 +21,46 @@ namespace TravianHelper.UI
     public class AccountSettingsViewModel : NotificationObject
     {
         private char[] _chars = new[]
-                               {
-                                   '0',
-                                   '1',
-                                   '2',
-                                   '3',
-                                   '4',
-                                   '5',
-                                   '6',
-                                   '7',
-                                   '8',
-                                   '9',
-                                   'q',
-                                   'w',
-                                   'e',
-                                   'r',
-                                   't',
-                                   'y',
-                                   'u',
-                                   'i',
-                                   'o',
-                                   'p',
-                                   'a',
-                                   's',
-                                   'd',
-                                   'f',
-                                   'g',
-                                   'h',
-                                   'j',
-                                   'k',
-                                   'l',
-                                   'z',
-                                   'x',
-                                   'c',
-                                   'v',
-                                   'b',
-                                   'n',
-                                   'm'
-                               };
-        private bool     _isEditMode;
+                                {
+                                    '0',
+                                    '1',
+                                    '2',
+                                    '3',
+                                    '4',
+                                    '5',
+                                    '6',
+                                    '7',
+                                    '8',
+                                    '9',
+                                    'q',
+                                    'w',
+                                    'e',
+                                    'r',
+                                    't',
+                                    'y',
+                                    'u',
+                                    'i',
+                                    'o',
+                                    'p',
+                                    'a',
+                                    's',
+                                    'd',
+                                    'f',
+                                    'g',
+                                    'h',
+                                    'j',
+                                    'k',
+                                    'l',
+                                    'z',
+                                    'x',
+                                    'c',
+                                    'v',
+                                    'b',
+                                    'n',
+                                    'm'
+                                };
+
+        private bool _isEditMode;
 
         public bool IsEditMode
         {
@@ -80,7 +84,8 @@ namespace TravianHelper.UI
                 if (!CustomMail)
                 {
                     var r = new Random(_name.Sum(x => x));
-                    Mail = $"{(_name.Length > 4 ? _name.Substring(0, 4) : _name)}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}@{g.Domain}".ToLower();
+                    Mail = $"{(_name.Length > 4 ? _name.Substring(0, 4) : _name)}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}{_chars[r.Next() % _chars.Length]}@{g.Domain}"
+                        .ToLower();
                 }
             }
         }
@@ -145,8 +150,8 @@ namespace TravianHelper.UI
             {
                 _customMail = value;
                 RaisePropertyChanged(() => CustomMail);
-                if(!CustomMail)
-                    Mail = $"{_name}gj@candassociates.com";
+                if (!CustomMail)
+                    Mail = $"{_name}gj@scpulse.com";
             }
         }
 
@@ -200,30 +205,46 @@ namespace TravianHelper.UI
 
         private Action _update;
 
-        public DelegateCommand AddCmd { get; }
-        public DelegateCommand EditCmd { get; }
-        public DelegateCommand DeleteCmd { get; }
-        public DelegateCommand SaveCmd { get; }
-        public DelegateCommand CancelCmd { get; }
+        public DelegateCommand AddCmd     { get; }
+        public DelegateCommand FastAddCmd { get; }
+        public DelegateCommand EditCmd    { get; }
+        public DelegateCommand DeleteCmd  { get; }
+        public DelegateCommand SaveCmd    { get; }
+        public DelegateCommand CancelCmd  { get; }
 
-        public DelegateCommand RunCmd          { get; }
-        public DelegateCommand RunNextCmd      { get; }
-        public DelegateCommand StartDown      { get; }
+        public DelegateCommand RunCmd        { get; }
+        public DelegateCommand RunNextCmd    { get; }
+        public DelegateCommand StartDown     { get; }
+        public DelegateCommand KillChromeCmd { get; }
+        
         public DelegateCommand RunAndSwitchCmd { get; }
+        public DelegateCommand AutoRunCmd      { get; }
+        public DelegateCommand AutoRunAllDownCmd      { get; }
 
         public AccountSettingsViewModel(Action update)
         {
-            _update   = update;
-            AddCmd    = new DelegateCommand(OnAdd, () => ServerList.Count > 0);
-            EditCmd   = new DelegateCommand(OnEdit,   () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
-            DeleteCmd = new DelegateCommand(OnDelete, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            _update = update;
+            AddCmd  = new DelegateCommand(OnAdd, () => ServerList.Count > 0);
+            EditCmd = new DelegateCommand(OnEdit,
+                                          () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ??
+                                                                            true));
+            DeleteCmd = new DelegateCommand(OnDelete,
+                                            () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ??
+                                                                              true));
             SaveCmd   = new DelegateCommand(OnSave);
             CancelCmd = new DelegateCommand(OnCancel);
-            RunCmd = new DelegateCommand(OnRun, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
-            RunAndSwitchCmd = new DelegateCommand(OnRunAndSwitch, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
-            RunNextCmd = new DelegateCommand(OnRunNext, () => AccountList.Count > 0);
-            StartDown = new DelegateCommand(OnStartDown, () => AccountList.Count > 0);
-
+            RunCmd =
+                new DelegateCommand(OnRun,
+                                    () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            RunAndSwitchCmd = new DelegateCommand(OnRunAndSwitch,
+                                                  () => SelectedAccount != null &&
+                                                        (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            RunNextCmd = new DelegateCommand(OnRunNext,   () => AccountList.Count > 0);
+            StartDown  = new DelegateCommand(OnStartDown, () => AccountList.Count > 0);
+            FastAddCmd = new DelegateCommand(OnFastAdd);
+            AutoRunCmd = new DelegateCommand(OnAutoRun, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            AutoRunAllDownCmd = new DelegateCommand(OnAutoRunAllDown, () => SelectedAccount != null && (!g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == SelectedAccount.Id)?.Account.Running.HasValue ?? true));
+            KillChromeCmd = new DelegateCommand(OnKillChrome, () => g.TabManager.TabList.Count == 1);
             Init();
         }
 
@@ -236,11 +257,14 @@ namespace TravianHelper.UI
             RunAndSwitchCmd.RaiseCanExecuteChanged();
             RunNextCmd.RaiseCanExecuteChanged();
             StartDown.RaiseCanExecuteChanged();
+            AutoRunCmd.RaiseCanExecuteChanged();
+            AutoRunAllDownCmd.RaiseCanExecuteChanged();
+            KillChromeCmd.RaiseCanExecuteChanged();
         }
 
         public void Init()
         {
-            if(g.TabManager == null) return;
+            if (g.TabManager == null) return;
             AccountList.Clear();
             var accList = g.Db.GetCollection<Account>().AsQueryable().ToList();
             for (var i = 0; i < accList.Count; i++)
@@ -284,15 +308,16 @@ namespace TravianHelper.UI
                 OnRun();
             }
         }
+
         private void OnStartDown()
         {
-            if(SelectedAccount == null) return;
+            if (SelectedAccount == null) return;
 
             var ind = AccountList.IndexOf(SelectedAccount);
             for (var i = ind; i < AccountList.Count; i++)
             {
                 var tab = g.TabManager.TabList.FirstOrDefault(x => x.IsAccount && x.Account.Id == AccountList[i].Id);
-                if (tab != null && tab.Account.Running == true && tab.Account.RegComplete)
+                if (tab != null && tab.Account.Running == true && tab.Account.RegComplete && tab.Account.Player.VillageList.Count != 0)
                 {
                     tab.Account.OldTaskListWorker.ShowTaskList = true;
                     tab.Account.OldTaskListWorker.Working      = true;
@@ -301,16 +326,59 @@ namespace TravianHelper.UI
 
         }
 
+        private void OnKillChrome()
+        {
+            var chromesD = Process.GetProcessesByName("chromedriver");
+            foreach (var x in chromesD)
+            {
+                try
+                {
+                    x.Kill();
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+            var chromes = Process.GetProcessesByName("chrome");
+            foreach (var x in chromes)
+            {
+                try
+                {
+                    x.Kill();
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+            var conhost = Process.GetProcessesByName("conhost");
+            foreach (var x in conhost)
+            {
+                try
+                {
+                    x.Kill();
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            MessageBox.Show("Done");
+        }
+
         private void OnRunAndSwitch()
         {
             g.TabManager.OpenTab(SelectedAccount, true);
             RaiseCanExecChanged();
         }
+
         public string GenerateName(int len)
         {
             Random   r          = new Random();
-            string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
-            string[] vowels     = { "a", "e", "i", "o", "u", "ae", "y" };
+            string[] consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "t", "v", "w", "x"};
+            string[] vowels     = {"a", "e", "i", "o", "u", "y"};
             string   Name       = "";
             Name += consonants[r.Next(consonants.Length)].ToUpper();
             Name += vowels[r.Next(vowels.Length)];
@@ -326,6 +394,37 @@ namespace TravianHelper.UI
             return Name;
 
 
+        }
+
+        private void OnFastAdd()
+        {
+            OnAdd();
+            OnSave();
+        }
+
+        private void OnAutoRun()
+        {
+            g.TabManager.OpenTab(SelectedAccount, sw:true, auto:true);
+            RaiseCanExecChanged();
+        }
+
+        private void OnAutoRunAllDown()
+        {
+            if(SelectedAccount == null) return;
+            ThreadPool.QueueUserWorkItem(s =>
+                                         {
+                                             var ind = AccountList.IndexOf(SelectedAccount);
+                                             for (var i = ind; i < AccountList.Count; i++)
+                                             {
+                                                 SelectedAccount = AccountList[i];
+                                                 Application.Current.Dispatcher.Invoke(() =>
+                                                                               {
+                                                                                   g.TabManager.OpenTab(SelectedAccount, auto: true);
+                                                                                   RaiseCanExecChanged();
+                                                                               });
+                                                 Thread.Sleep(15000);
+                                             }
+                                         });
         }
 
         private void OnAdd()

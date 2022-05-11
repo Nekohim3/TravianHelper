@@ -100,7 +100,7 @@ namespace TravianHelper.UI
 
             if (Command == "STOP")
             {
-                if(STCmd != null)
+                if (STCmd != null)
                     STCmd.Working = false;
             }
 
@@ -119,7 +119,30 @@ namespace TravianHelper.UI
                 var f = new MapView();
                 f.Show();
             }
+
+            if (cmdType == "RunAutoUpgrade")
+            {
+                try
+                {
+
+                    var vid = Convert.ToInt32(Command.Split(':')[1]);
+                    if (vid < Account.Player.VillageList.Count)
+                    {
+                        Account.ResWorker.VilInd  = vid;
+                        Account.ResWorker.Working = true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Нет такой деревни");
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Нет такой деревни");
+                }
+            }
         }
+
         public SendTroopsCmd STCmd { get; set; }
 
         private void OnSettings()

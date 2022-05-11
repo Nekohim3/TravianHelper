@@ -54,7 +54,7 @@ namespace TravianHelper.UI
             SelectedTab = TabList.FirstOrDefault();
         }
 
-        public void OpenTab(Account acc, bool sw = false)
+        public void OpenTab(Account acc, bool sw = false, bool auto = false)
         {
             var ids = TabList.Where(x => x.IsAccount).Select(x => x.Account.Id).ToList();
             for (var i = 0; i <= ids.Count; i++)
@@ -74,7 +74,7 @@ namespace TravianHelper.UI
             }
             if (sw)
                 SelectedTab = TabList.FirstOrDefault(x => x.Account == acc);
-            acc.Start();
+            acc.Start(auto);
             RaisePropertyChanged(() => AnyRunning);
             RaisePropertyChanged(() => AllStopped);
         }

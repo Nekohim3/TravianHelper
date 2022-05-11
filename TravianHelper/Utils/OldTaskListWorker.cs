@@ -160,7 +160,7 @@ namespace TravianHelper.Utils
             Application.Current.Dispatcher.Invoke(() => { NotBlockWait = false; TaskList.Clear(); });
             if (!File.Exists($"{g.UserDataPath}\\TaskList.txt"))
             {
-                File.WriteAllText($"{g.UserDataPath}\\TaskList.txt", "BuildingUpgrade:24:10/Склад >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:26:17/Рынок >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:28:18/Посольство >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:23:8/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:20:10/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:35:11/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:38:13/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:39:17/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:31:22/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:24:10/Склад >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:24:10/Склад >3\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >3\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >4\r\nWait:10/Ждать 10 сек\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:29:19/Казарма >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:29:19/Казарма >2\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:34:18/Собрать руины\r\nFinishNow:0:5/Закончить\r\nRecruitUnits:29:19:11:5/5 Дубин\r\nCollectReward:/Собрать награды\r\nRecruitUnits:29:19:11:20/20 Дубин\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:21:23/Тайник >1\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:8:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:9:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:12:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:13:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:15:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:2:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:8:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:9:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:12:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:13:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:15:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:2:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:8:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:9:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:12:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:13:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:15:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:27:15/ГЗ >4\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >5\r\nWait:700/Ждать 700 сек\r\nTrade:/Торговля\r\nHeroAttribute:0:0:1/Героя на дерево\r\nHeroAttribute:0:0:0/Героя на все\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:24:10/Склад >4\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:24:10/Склад >5\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >5\r\nFinishNow:1:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:24:10/Склад >6\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:34:25/Реза >1\r\nWait:390/Ждать 390 сек\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:34:25/Реза >2\r\nWait:480/Ждать 480 сек\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:34:25/Реза >3\r\nWait:580/Ждать 580 сек\r\nBuildingUpgrade:34:25/Реза >4\r\nWait:760/Ждать 760 сек\r\nBuildingUpgrade:34:25/Реза >5\r\nWait:1270/Ждать 1270 сек\r\nCollectReward:/Собрать награды\r\nNpcT:1/Нпс на поселка 1\r\nRecruitUnits:34:25:20:1/Нанять поселка 1\r\nNpcT:1/Нпс на поселка 2\r\nRecruitUnits:34:25:20:1/Нанять поселка 2\r\nNpcT:1/Нпс на поселка 3\r\nRecruitUnits:34:25:20:1/Нанять поселка 3\r\nCollectReward:/Собрать награды\r\nNpcT:2/Нпс торговец\r\nBuildingUpgrade:27:15/ГЗ >6\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >7\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >8\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >9\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >10\r\nFinishNow:1:1/Закончить\r\nBuildingDestroy:34/Снос резы\r\nBuildingUpgrade:38:22/Академия >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >3\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >4\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >5\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:38:22/Академия >6\r\nWait:5400/Ждать 5400 сек\r\nBuildingUpgrade:34:25/Собрать руины\r\nWait:720/Ждать 720 сек\r\nBuildingUpgrade:38:22/Академия >7\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:38:22/Академия >8\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:38:22/Академия >9\r\nFinishNow:1:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:38:22/Академия >10\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:37:21/Мастерская >1\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingDestroy:21/Снести тайник\r\nWait:1/Ждать 1 сек\r\nBuildingUpgrade:21:23/Собрать руины\r\nWait:1/Ждать 1 сек\r\nBuildingDestroy:26/Снести рынок\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:26:17/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:28/Снести посольство\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:28:18/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:29/Снести казарму\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:29:19/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:37/Снести мастерскую\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:37:21/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:40:24/Ратуша >1\r\nFinishNow:0:1/Закончить\r\nBuildingDestroy:38/Снести академию\r\nFinishNow:1:5/Закончить\r\nBuildingUpgrade:38:22/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:33/Снести стену\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:33:32/Собать руины\r\nFinishNow:0:5/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:25:11/Амбар >6\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >7\r\nFinishNow:1:1/Закончить\r\nBuildingDestroy:27/Снести ГЗ\r\nFinishNow:1:5/Закончить\r\nBuildingUpgrade:27:15/Собать руины\r\nFinishNow:0:5/Закончить\r\nNpcT:3/Нпс на праздник");
+                File.WriteAllText($"{g.UserDataPath}\\TaskList.txt", "BuildingUpgrade:24:10/Склад >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:26:17/Рынок >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:28:18/Посольство >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:23:8/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:20:10/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:35:11/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:38:13/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:39:17/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:31:22/Собрать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:24:10/Склад >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:24:10/Склад >3\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >3\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >4\r\nWait:10/Ждать 10 сек\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:29:19/Казарма >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:29:19/Казарма >3\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:34:18/Собрать руины\r\nFinishNow:0:5/Закончить\r\nRecruitUnits:29:19:11:5/5 Дубин\r\nCollectReward:/Собрать награды\r\nRecruitUnits:29:19:11:20/20 Дубин\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:21:23/Тайник >1\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:8:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:9:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:12:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:13:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:15:4/Ферма >1\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:2:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:8:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:9:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:12:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:13:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:15:4/Ферма >2\r\nFinishNow:0:2/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:2:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:8:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:9:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:12:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:13:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nBuildingUpgrade:15:4/Ферма >3\r\nFinishNow:0:2/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:27:15/ГЗ >4\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >5\r\nWait:mb5/Ждать ГЗ5\r\nTrade:/Торговля\r\nHeroAttribute:0:0:1/Героя на дерево\r\nHeroAttribute:0:0:0/Героя на все\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:24:10/Склад >4\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:24:10/Склад >5\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >5\r\nFinishNow:1:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:24:10/Склад >6\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:34:25/Реза >1\r\nWait:r1/Ждать резу 1\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:34:25/Реза >2\r\nWait:r2/Ждать резу 2\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:34:25/Реза >3\r\nWait:r3/Ждать резу 3\r\nBuildingUpgrade:34:25/Реза >4\r\nWait:r4/Ждать резу 4\r\nBuildingUpgrade:34:25/Реза >5\r\nWait:r5/Ждать резу 5\r\nCollectReward:/Собрать награды\r\nNpcT:1/Нпс на поселка 1\r\nRecruitUnits:34:25:20:1/Нанять поселка 1\r\nOasis/Оазис\r\nCollectReward:/Собрать награды\r\nNpcT:1/Нпс на поселка 2\r\nRecruitUnits:34:25:20:1/Нанять поселка 2\r\nBid/Ставка на ауке\r\nCollectReward:/Собрать награды\r\nNpcT:1/Нпс на поселка 3\r\nRecruitUnits:34:25:20:1/Нанять поселка 3\r\nCollectReward:/Собрать награды\r\nNpcT:2/Нпс торговец\r\nBuildingUpgrade:27:15/ГЗ >6\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >7\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >8\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >9\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:27:15/ГЗ >10\r\nFinishNow:1:1/Закончить\r\nBuildingDestroy:34/Снос резы\r\nBuildingUpgrade:38:22/Академия >1\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >2\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >3\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >4\r\nFinishNow:0:1/Закончить\r\nBuildingUpgrade:38:22/Академия >5\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:38:22/Академия >6\r\nWait:r0/Ждать резу 0\r\nBuildingUpgrade:34:25/Собрать руины\r\nWait:r-1/Ждать резу null\r\nBuildingUpgrade:38:22/Академия >7\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:38:22/Академия >8\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:38:22/Академия >9\r\nFinishNow:1:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:38:22/Академия >10\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:37:21/Мастерская >1\r\nFinishNow:0:1/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingDestroy:21/Снести тайник\r\nWait:1/Ждать 1 сек\r\nBuildingUpgrade:21:23/Собрать руины\r\nWait:1/Ждать 1 сек\r\nBuildingDestroy:26/Снести рынок\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:26:17/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:28/Снести посольство\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:28:18/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:29/Снести казарму\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:29:19/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:37/Снести мастерскую\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:37:21/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:40:24/Ратуша >1\r\nFinishNow:0:1/Закончить\r\nBuildingDestroy:38/Снести академию\r\nFinishNow:1:5/Закончить\r\nBuildingUpgrade:38:22/Собать руины\r\nFinishNow:0:5/Закончить\r\nBuildingDestroy:33/Снести стену\r\nFinishNow:0:5/Закончить\r\nBuildingUpgrade:33:32/Собать руины\r\nFinishNow:0:5/Закончить\r\nCollectReward:/Собрать награды\r\nBuildingUpgrade:25:11/Амбар >6\r\nFinishNow:1:1/Закончить\r\nBuildingUpgrade:25:11/Амбар >7\r\nFinishNow:1:1/Закончить\r\nBuildingDestroy:27/Снести ГЗ\r\nFinishNow:1:5/Закончить\r\nBuildingUpgrade:27:15/Собать руины\r\nFinishNow:0:5/Закончить\r\nNpcT:3/Нпс на праздник\r\nCeleb/Праздник\r\nCollectReward:/Собрать награды\r\n");
             }
             using (var fs = new FileStream($"{g.UserDataPath}\\TaskList.txt", FileMode.Open, FileAccess.Read))
             using (var sr = new StreamReader(fs))
@@ -346,6 +346,53 @@ namespace TravianHelper.Utils
                 return "";
             }
 
+            if (a[0] == "Oasis")
+            {
+                Application.Current.Dispatcher.Invoke(() => {
+                                                          State = TaskState.InProgress;
+                                                      });
+                if (!CheckOasis())
+                {
+                    Thread.Sleep(5000);
+                    if (!CheckOasis())
+                    {
+                        Thread.Sleep(5000);
+                        if (!CheckOasis())
+                        {
+                        }
+                    }
+                }
+
+                Application.Current.Dispatcher.Invoke(() => {
+                                                          State = TaskState.Finished;
+                                                      });
+                return "";
+            }
+
+            if (a[0] == "Bid")
+            {
+                Application.Current.Dispatcher.Invoke(() => {
+                                                          State = TaskState.InProgress;
+                                                      });
+                if (!Bid())
+                {
+                    Thread.Sleep(5000);
+                    if (!Bid())
+                    {
+                        Thread.Sleep(5000);
+                        if (!Bid())
+                        {
+
+                        }
+                    }
+                }
+
+                Application.Current.Dispatcher.Invoke(() => {
+                                                          State = TaskState.Finished;
+                                                      });
+                return "";
+            }
+
             if (a[0] == "Celeb")
             {
                 Application.Current.Dispatcher.Invoke(() => { State = TaskState.InProgress; });
@@ -520,6 +567,11 @@ namespace TravianHelper.Utils
                 return "";
             }
 
+            if (a[0] == "SVillage")
+            {
+
+            }
+
             if (a[0] == "Wait")
             {
                 Application.Current.Dispatcher.Invoke(() => { State = TaskState.InProgress; });
@@ -615,6 +667,105 @@ namespace TravianHelper.Utils
             return "";
         }
 
+        public bool CheckOasis()
+        {
+            try
+            {
+
+                Account.Player.UpdateVillageList();
+                var vil     = Account.Player.VillageList.FirstOrDefault().Id;
+                var lst     = new List<Oasis>();
+                var counter = 0;
+                while (counter < 5)
+                {
+                    lst.Clear();
+                    var d = Account.Driver.GetCache_OasisList(vil);
+                    foreach (var x in d.response.inReach)
+                    {
+                        lst.Add(new Oasis(Convert.ToBoolean(x.isWild), Convert.ToInt32(x.villageId), Convert.ToInt32(x.usedByVillage), Convert.ToInt32(x.bonus["1"]),
+                                          Convert.ToInt32(x.bonus["2"]),
+                                          Convert.ToInt32(x.bonus["3"]), Convert.ToInt32(x.bonus["4"])));
+                    }
+
+                    if (lst.Any(x => x.UsedByVillage != 0)) return true;
+                    var notWild = lst.Where(x => !x.IsWild).ToList();
+                    if (notWild.Count == 0) return true;
+                    var oasis = notWild.OrderBy(x => x.Bonus.MultiRes).LastOrDefault();
+                    Account.Driver.SetOasis(vil, oasis.VillageId);
+                    Thread.Sleep(3000);
+                    counter++;
+                }
+
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return false;
+        }
+
+        public bool Bid()
+        {
+            try
+            {
+                Account.Player.Update();
+                while (Account.Player.Silver < 300)
+                {
+                    Thread.Sleep(5000);
+                    if (!Worker.Working)
+                    {
+                        return false;
+                    }
+                    Account.Player.Update();
+                }
+
+                var lst  = new List<AucLot>();
+                var page = Account.Driver.GetCache_AuctionList(0);
+                foreach (var x in page.cache[0].data.cache)
+                {
+                    if (page.time != null)
+                        lst.Add(new AucLot(Convert.ToInt32(x.data.id), Convert.ToInt32(x.data.price), Convert.ToInt32(x.data.timeEnd), Convert.ToInt64(page.time)));
+                    else
+                        lst.Add(new AucLot(Convert.ToInt32(x.data.id), Convert.ToInt32(x.data.price), Convert.ToInt32(x.data.timeEnd),
+                                           ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds)));
+                }
+                page = Account.Driver.GetCache_AuctionList(1);
+                foreach (var x in page.cache[0].data.cache)
+                {
+                    if (page.time != null)
+                        lst.Add(new AucLot(Convert.ToInt32(x.data.id), Convert.ToInt32(x.data.price), Convert.ToInt32(x.data.timeEnd), Convert.ToInt64(page.time)));
+                    else
+                        lst.Add(new AucLot(Convert.ToInt32(x.data.id), Convert.ToInt32(x.data.price), Convert.ToInt32(x.data.timeEnd),
+                                           ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds)));
+                }
+                page = Account.Driver.GetCache_AuctionList(2);
+                foreach (var x in page.cache[0].data.cache)
+                {
+                    if (page.time != null)
+                        lst.Add(new AucLot(Convert.ToInt32(x.data.id), Convert.ToInt32(x.data.price), Convert.ToInt32(x.data.timeEnd), Convert.ToInt64(page.time)));
+                    else
+                        lst.Add(new AucLot(Convert.ToInt32(x.data.id), Convert.ToInt32(x.data.price), Convert.ToInt32(x.data.timeEnd),
+                                           ((long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds)));
+                }
+
+                if (lst.Count == 0) return false;
+
+                lst = lst.Where(x => x.TimeEnd - x.UpdateTimeStamp > 50).ToList();
+                if (lst.Count == 0) return false;
+                lst = lst.OrderBy(x => x.Price).ToList();
+                var auc = lst.FirstOrDefault();
+                if (Account.Player.Silver < auc.Price)
+                    return false;
+                return Account.Driver.SetBid(auc.AucId, auc.Price + 1);
+
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         private bool BuildingUpgrade(int locationId, int buildingType, bool check = false)
         {
             if(check) Thread.Sleep(1000);
@@ -626,40 +777,54 @@ namespace TravianHelper.Utils
             {
                 if (vil.BuildingList.First(x => x.Location == locationId).BuildingType != 0)
                 {
-                    while (!vil.Storage.IsGreaterOrEq(vil.BuildingList.First(x => x.Location == locationId).UpgradeCost))
+                    if (b.IsRuin)
                     {
-                        Thread.Sleep(5000);
-                        if (!Worker.Working)
-                        {
-                            return false;
-                        }
 
-                        Account.Player.UpdateQuestList();
-                        foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                    }
+                    else
+                    {
+                        while (!vil.Storage.IsGreaterOrEq(vil.BuildingList.First(x => x.Location == locationId).UpgradeCost))
                         {
-                            Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
-                        }
+                            Thread.Sleep(5000);
+                            if (!Worker.Working)
+                            {
+                                return false;
+                            }
 
-                        vil.Update();
+                            Account.Player.UpdateQuestList();
+                            foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                            {
+                                Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
+                            }
+
+                            vil.Update();
+                        }
                     }
                 }
                 else
                 {
-                    while (!vil.Storage.IsGreaterOrEq(BuildingsData.GetById(buildingType).BuildRes))
+                    if (b.IsRuin)
                     {
-                        Thread.Sleep(5000);
-                        if (!Worker.Working)
-                        {
-                            return false;
-                        }
 
-                        Account.Player.UpdateQuestList();
-                        foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                    }
+                    else
+                    {
+                        while (!vil.Storage.IsGreaterOrEq(BuildingsData.GetById(buildingType).BuildRes))
                         {
-                            Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
-                        }
+                            Thread.Sleep(5000);
+                            if (!Worker.Working)
+                            {
+                                return false;
+                            }
 
-                        vil.Update();
+                            Account.Player.UpdateQuestList();
+                            foreach (var x in Account.Player.QuestList.ToList().Where(x => x.IsCompleted))
+                            {
+                                Account.Driver.CollectReward(Account.Player.VillageList.First().Id, x.Id);
+                            }
+
+                            vil.Update();
+                        }
                     }
                 }
                 return Account.Driver.BuildingUpgrade(vil.Id, locationId, buildingType);
@@ -688,6 +853,7 @@ namespace TravianHelper.Utils
             var r3 = 0;
             var r4 = 0;
             vil.Update();
+            vil.UpdateUnitQueue();
             if (id == 0)
             {
                 r1 = 1250;
@@ -697,7 +863,7 @@ namespace TravianHelper.Utils
             }
             if (id == 1)
             {
-                while (vil.Storage.MultiRes < 10700)
+                while (vil.Storage.MultiRes < 10100 || vil.UnitQueue.UnitList.FirstOrDefault(x => x.Id == 30) != null)
                 {
                     for (var i = 0; i < 20; i++)
                     {
@@ -708,10 +874,11 @@ namespace TravianHelper.Utils
                         }
                     }
                     vil.Update();
+                    vil.UpdateUnitQueue();
                 }
-                r1 = 4000;
-                r2 = 3500;
-                r3 = 3200;
+                r1 = 3000;
+                r2 = 4000;
+                r3 = 3000;
                 r4 = 0;
             }
             if (id == 2)
@@ -739,6 +906,22 @@ namespace TravianHelper.Utils
                 r2 = 4000;
                 r3 = 3030;
                 r4 = 9500;
+            }
+
+            if (id == 4)
+            {
+                r1 = 850  + (vil.Storage.MultiRes - 2350) / 4 - 700;
+                r2 = 1000 + (vil.Storage.MultiRes - 2350) / 4;
+                r3 = 500  + (vil.Storage.MultiRes - 2350) / 4 + 700;
+                r4 = 0    + (vil.Storage.MultiRes - 2350) / 4;
+            }
+
+            if (id == 5)
+            {
+                r1 = 0;
+                r2 = 1000;
+                r3 = (vil.Storage.MultiRes - 1000) / 2;
+                r4 = (vil.Storage.MultiRes - 1000) / 2;
             }
 
             return Account.Driver.NpcTrade(vil.Id, new Resource(r1, r2, r3, r4, -1));

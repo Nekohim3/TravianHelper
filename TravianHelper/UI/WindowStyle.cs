@@ -88,5 +88,15 @@ namespace TravianHelper.UI
                 else SystemCommands.MaximizeWindow(w);
             });
         }
+
+        void ScrollViewer_Wheel(object sender, MouseWheelEventArgs e)
+        {
+            if(!(sender is ScrollViewer sv)) return;
+            if (e.Delta > 0)
+                sv.LineLeft();
+            else
+                sv.LineRight();
+            e.Handled = true;
+        }
     }
 }

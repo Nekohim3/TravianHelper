@@ -174,15 +174,52 @@ namespace TravianHelper.Utils
 
         public static JObject GetOasis(string session, int villageId) =>
             JObject.FromObject(new
-            {
-                action = "getOasisList",
-                controller = "building",
-                session,
-                @params = new
-                {
-                    villageId
-                }
-            });
+                               {
+                                   action     = "getOasisList",
+                                   controller = "building",
+                                   session,
+                                   @params = new
+                                             {
+                                                 villageId
+                                             }
+                               });
+
+        public static JObject SetOasis(string session, int villageId, int oasisId) =>
+            JObject.FromObject(new
+                               {
+                                   action     = "useOasis",
+                                   controller = "village",
+                                   session,
+                                   @params = new
+                                             {
+                                                 oasisId,
+                                                 villageId
+                                             }
+                               });
+
+        public static JObject SetBid(string session, int auctionId, int bidAmount) =>
+            JObject.FromObject(new
+                               {
+                                   action     = "placeBid",
+                                   controller = "auctions",
+                                   session,
+                                   @params = new
+                                             {
+                                                 auctionId,
+                                                 bidAmount
+                                             }
+                               });
+
+        public static JObject GetAuctions(string session, int page) =>
+            new JObject(
+                        new JProperty("action",     "getRunningAuctionPage"),
+                        new JProperty("controller", "auctions"),
+                        new JProperty("session",    session),
+                        new JProperty("params",
+                                      new JObject(
+                                                  new JProperty("filterItemType", 0),
+                                                  new JProperty("filterSlot", -2),
+                                                  new JProperty("page",     page))));
 
         public static JObject Celeb(string session, int villageId) =>
             JObject.FromObject(new

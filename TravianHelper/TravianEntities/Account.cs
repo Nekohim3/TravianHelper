@@ -528,7 +528,7 @@ namespace TravianHelper.TravianEntities
             Driver.Registration();
         }
 
-        public void Start()
+        public void Start(bool auto = false)
         {
             if(Running.HasValue) return;
             if (Proxy == null && ProxyId.HasValue)
@@ -581,38 +581,59 @@ namespace TravianHelper.TravianEntities
                 Application.Current.Dispatcher.Invoke(() => {
                                                           Running = true;
                                                       });
-                
-                var counter = 0;
-                while (Running == true && counter < 5)
+                if (!RegComplete && auto)
                 {
-                    try
+                    Thread.Sleep(5000);
+                    OnReg();
+                    var dt = DateTime.Now;
+                    while (!RegComplete)
                     {
-                        var ele = Driver.Wait(By.Id("villageList"));
-                        if (ele != null)
+                        Thread.Sleep(1000);
+                        if((DateTime.Now - dt).TotalSeconds > 600) return;
+                    }
+                    Thread.Sleep(10000);
+                    Application.Current.Dispatcher.Invoke(() =>
+                                                          {
+                                                              OldTaskListWorker.ShowTaskList = true;
+                                                              OldTaskListWorker.Working      = true;
+                                                          });
+                }
+
+                if (!auto)
+                {
+                    var counter = 0;
+                    while (Running == true && counter < 10)
+                    {
+                        try
                         {
-                            if (!RegComplete)
+                            var ele = Driver.Wait(By.Id("villageList"));
+                            if (ele != null)
                             {
-                                RegComplete = true;
-                                g.Db.GetCollection<Account>().Update(this);
+                                if (!RegComplete)
+                                {
+                                    RegComplete = true;
+                                    g.Db.GetCollection<Account>().Update(this);
+                                }
+
+                                if (RegComplete)
+                                {
+                                    UpdateAll();
+                                    Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "nextVillage()")?.Click();
+                                    Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "previousVillage()")?.Click();
+                                    OldTaskListWorker.Init();
+                                    Application.Current.Dispatcher.Invoke(() => { Loaded = true; });
+                                    break;
+                                }
                             }
 
-                            if (RegComplete)
-                            {
-                                UpdateAll(); 
-                                Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "nextVillage()")?.Click();
-                                Driver.Chrome.FindElementsByTagName("a").FirstOrDefault(x => x.GetAttribute("clickable") == "previousVillage()")?.Click();
-                                OldTaskListWorker.Init();
-                                Application.Current.Dispatcher.Invoke(() => { Loaded = true; });
-                                break;
-                            }
+                        }
+                        catch (Exception e)
+                        {
+                            counter++;
                         }
 
+                        Thread.Sleep(1000);
                     }
-                    catch (Exception e)
-                    {
-                        counter++;
-                    }
-                    Thread.Sleep(1000);
                 }
             });
         }
